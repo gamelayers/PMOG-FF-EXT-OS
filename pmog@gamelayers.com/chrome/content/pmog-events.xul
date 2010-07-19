@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css" ?>
+<?xml-stylesheet href="chrome://pmog/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://pmog/skin/events/events.css" type="text/css"?>
+<?xml-stylesheet href="http://thenethernet.com/css/base.css" media="screen" rel="stylesheet" type="text/css" ?>
+<?xml-stylesheet href="http://thenethernet.com/css/supplemental.css" media="screen" rel="stylesheet" type="text/css" ?>
+<?xml-stylesheet href="http://thenethernet.com/css/ui.tabs.css" media="screen" rel="stylesheet" type="text/css" ?>
+<xul:page xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns="http://www.w3.org/1999/xhtml"
+        id="pmogEventsWindow"
+        title="The Nethernet Events"
+        height="500"
+        width="275"
+        windowtype="TNN:Events">
+
+  <xul:script src="chrome://global/content/globalOverlay.js" />
+  <xul:script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.pack.js"/>
+  <xul:script src="http://thenethernet.com/javascripts/jquery-ui.js" type="text/javascript" />
+  <xul:script src="http://thenethernet.com/javascripts/ui.tabs.js" type="text/javascript"/>
+  <xul:script src="http://thenethernet.com/javascripts/jquery.dimensions.js" type="text/javascript" />
+  <xul:script src="chrome://pmog/content/lib/jquery.jfeed.js" type="application/x-javascript"/>
+  <xul:script src="http://thenethernet.com/javascripts/jquery.tooltip.js" type="application/x-javascript" />
+  <xul:script src="http://thenethernet.com/javascripts/jquery.hoverIntent.js" type="application/x-javascript" />
+  <xul:script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.timeago.js"/>
+  <xul:script type="application/x-javascript" src="chrome://pmog/content/javascript/util.js"/>
+  <xul:script src="chrome://pmog/content/lib/jquery.prettydate.js" type="application/x-javascript" />
+  <xul:script type="application/x-javascript" src="chrome://pmog/content/javascript/pmog-events.js"/>
+  <xul:script type="application/x-javascript" src="chrome://pmog/content/javascript/EventWindowCommands.js"/>
+
+    <xul:commandset id="tnnEventCommandSet" commandupdater="true" events="PmogTrack" oncommandupdate="goUpdateTnnEventsCommands(this);">
+      <xul:command id="cmd_my_events" oncommand="goDoCommand(this.id);" />
+      <xul:command id="cmd_nethernet_events" oncommand="goDoCommand(this.id);" />
+      <xul:command id="cmd_contacts_events" oncommand="goDoCommand(this.id);" />
+    </xul:commandset>
+
+  <xul:toolbox>
+    <xul:toolbar id="pmogEventsToolbar">
+      <xul:toolbarbutton id="nethernetToolbarbutton" label="Nethernet" active="true" command="cmd_nethernet_events" />
+      <xul:toolbarbutton id="yourEventsToolbarbutton" label="Yours" active="false" command="cmd_my_combined" />
+      <xul:toolbarbutton id="contactsEventsToolbarbutton" label="Contacts" active="false" command="cmd_contacts_events" />
+      <!-- <xul:toolbarbutton id="pmailToolbarbutton" label="PMail" />
+      <xul:toolbarbutton id="chatToolbarbutton" label="Chat" /> -->
+    </xul:toolbar>
+  </xul:toolbox>
+    <xul:vbox flex="1">
+      <xul:stack flex="3">
+      <xul:hbox flex="1" style="overflow: auto;">
+          <body style="padding: 10px 10px 25px;">
+          <div id="filterType"><span id="cmd_my_combined" onclick="tabSelected('cmd_my_combined')">All</span> |
+                               <span id="cmd_my_events" onclick="tabSelected('cmd_my_events')">By You</span> |
+                               <span id="cmd_from_me" onclick="tabSelected('cmd_from_me')">For You</span></div>
+          <div id="profileObjectives" class="module width240 noPad">
+            <div id="events_players" class="ui-subtabs-panel" style="text-align: left;">
+              <table class="stripeMe list blueMe">
+                <tbody id="addEventsHere">
+
+                </tbody>
+              </table>
+              <div class="bottomNav">
+
+              </div>
+            </div>
+          </div>
+        </body>
+      </xul:hbox>
+      <xul:hbox id="spinnerLayer" hidden="true" flex="1" style="background: url('chrome://pmog/content/macthrob2.png') no-repeat center center;"></xul:hbox>
+    </xul:stack>
+    </xul:vbox>
+
+    <script>
+      <![CDATA[
+        jQuery(document).ready(function() {
+          throbberLayer = document.getElementById('spinnerLayer');
+
+          if (mainBrowser().Pmog.user && mainBrowser().Pmog.user.authenticated) {
+            tabSelected('cmd_nethernet_events');
+            jQuery('#yourEventsToolbarbutton').css('list-style-image', 'url("' + mainBrowser().Pmog.BASE_URL + mainBrowser().Pmog.user.avatar_tiny + '")');
+          }
+        });
+      ]]>
+    </script>
+
+</xul:page>
+

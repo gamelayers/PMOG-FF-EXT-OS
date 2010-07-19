@@ -1,0 +1,40 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.cust_checkbox{
+  font-size:14px;
+  cursor: pointer;
+}
+html|*.cust_checkbox_on{
+  background:url(chrome://pmog/skin/checkbox/images/checkbox_on.png) no-repeat 0 0;
+}
+html|*.cust_radio_on{
+  background:url(chrome://pmog/skin/checkbox/images/radiobox_on.png) no-repeat 0 0;
+}
+html|*.cust_checkbox_off{
+  background:url(chrome://pmog/skin/checkbox/images/checkbox_off.png) no-repeat 0 0;
+}
+html|*.cust_radio_off{
+  background:url(chrome://pmog/skin/checkbox/images/checkbox_off.png) no-repeat 0 0;
+}
+html|*.cust_checkbox_disabled_on{
+  background:url(chrome://pmog/skin/checkbox/images/checkbox_disabled_on.png) no-repeat 0 0;
+}
+html|*.cust_checkbox_disabled_off{
+  background:url(chrome://pmog/skin/checkbox/images/disabled_off.png) no-repeat 0 0;
+}
+html|*.cust_radio_disabled_on{
+  background:url(chrome://pmog/skin/checkbox/images/radiobox_disabled_on.png) no-repeat 0 0;
+}
+html|*.cust_radio_disabled_off{
+  background:url(chrome://pmog/skin/checkbox/images/disabled_off.png) no-repeat 0 0;
+}
+html|*.group{
+  color:#333;
+}
+html|fieldset{
+    border:1px solid #ccc;
+}
+html|fieldset label{
+  color:#999;
+}

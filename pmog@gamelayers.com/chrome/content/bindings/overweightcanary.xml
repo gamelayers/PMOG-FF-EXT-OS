@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="overweightcanaryBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="overweightcanaryform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Overweight Canary" margin="80" header="overweightCanaryHeader">
+        <div class="greyBox" style="max-width: 220px;">
+          <div class="formLabel">Detonate up to 10 mines on a url:</div>
+          <div><xul:textbox anonid="sendTo" emptytext="enter url here" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) document.getBindingParent(this)._doSend();" /></div>
+          <div class="formLabel"><span anonid="overweightCanaryCount"></span><img src="chrome://pmog/skin/images/icons/overweight_canary-16.png" style="display:inline;"/> remaining.</div>
+        </div>
+
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="canaryButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+          </div>
+          <div class="rightButton">
+            <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();" />
+          </div>
+          <div class="button-divider">
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="_toField">
+        jQuery(this).anonymousByAttr("sendTo");
+      </xbl:field>
+
+      <xbl:field name="_sendButton">
+        jQuery(this).anonymousByAttr("canaryButton");
+      </xbl:field>
+
+      <xbl:field name="overweightCanaryCount">
+        jQuery(this).anonymousByAttr("overweightCanaryCount");
+      </xbl:field>
+
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:property name="url" onget="return this._toField.value;"
+                                     onset="return this.setUrl(val);" />
+
+      <xbl:method name="show">
+        <xbl:body>
+           <![CDATA[
+            this.overweightCanaryCount.textContent = Pmog.user.inventory.overweight_canaries;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setUrl">
+        <xbl:parameter name="sitename" />
+        <xbl:body>
+          <![CDATA[
+            this._toField.value = sitename;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+            var url;
+
+            url = strip(this._toField.value);
+
+            if(url === '') {
+              ovrlay.overlay.clearErrors();
+              ovrlay.overlay.addError("You must specify a url");
+              return false;
+            }
+
+            Pmog.sendCanary(url);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/overweightcanaryform.css"/>
+    </xbl:resources>
+  </xbl:binding>
+</xbl:bindings>

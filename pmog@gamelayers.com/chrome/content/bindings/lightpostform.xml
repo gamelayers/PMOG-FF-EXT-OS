@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="lightpostBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+      <xbl:binding id="lightpostform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+        <xbl:content>
+          <xul:pbox anonid="overlay" title="Light a Lightpost" margin="128" header="lightpostHeader">
+            <div class="greyBox" style="display: block;">
+              <div class="formLabel">Leave a light for your Missions:</div>
+              <div>
+                <xul:textbox anonid="lightpost_tags" emptytext="Tags" />
+              </div>
+              <div>
+                <xul:textbox anonid="lightpost_description" multiline="true" emptytext="Description" />
+              </div>
+              <div class="formLabel">
+                <span anonid="lightpostCount"></span> <img src="chrome://pmog/skin/images/icons/lightpost-16.png" style="display:inline;"/> remaining.
+              </div>
+            </div>
+            <div anonid="buttonContainer" class="buttonBox">
+              <div class="leftButton">
+                <xul:toolbarbutton anonid="lightpostButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+              </div>
+              <div class="rightButton">
+                <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+              </div>
+              <div class="button-divider">
+              </div>
+            </div>
+          </xul:pbox>
+        </xbl:content>
+
+        <xbl:implementation>
+          <xbl:field name="overlay">
+            jQuery(this).anonymousByAttr("overlay");
+          </xbl:field>
+
+          <xbl:field name="title">
+            this.overlay.title;
+          </xbl:field>
+
+          <xbl:field name="spinner">
+            this.overlay.spinner;
+          </xbl:field>
+
+          <xbl:field name="tags">
+            jQuery(this).anonymousByAttr("lightpost_tags");
+          </xbl:field>
+
+          <xbl:field name="description">
+            jQuery(this).anonymousByAttr("lightpost_description");
+          </xbl:field>
+
+          <xbl:field name="lightpostCount">
+            jQuery(this).anonymousByAttr("lightpostCount");
+          </xbl:field>
+
+          <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+          <xbl:method name="show">
+            <xbl:body>
+              <![CDATA[
+                this.lightpostCount.textContent = Pmog.user.inventory.lightposts;
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+          <xbl:method name="_doSend">
+            <xbl:body>
+              <![CDATA[
+                ovrlay = this;
+
+                var contents = {};
+                contents.lightpost = {};
+
+                contents.lightpost.tags = ovrlay.tags.value;
+                contents.lightpost.description = ovrlay.description.value;
+
+                lightpostJSON = jQuery.toJSON(contents);
+
+                //Pmog.logger.debug("Sending: " + toJSONString(lightpostJSON));
+
+                jQuery.ajax({
+                  url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/lightposts.json?authenticity_token=' + Pmog.user.authenticity_token,
+                  type: 'POST',
+                  data: lightpostJSON,
+                  dataType: 'json',
+                  contentType: "application/json; charset=utf-8",
+                  panel_id: Pmog.tab_observer.selected_tab().panel_id,
+                  success: function(data, statusText) {
+                    Pmog.lightpostHandleSuccess(data, ovrlay, this.panel_id)
+                  },
+                  error: function(data, statusText, errorObject) {
+                    Pmog.lightpostHandleError(data.status, data.responseText, ovrlay);
+                  },
+                });
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+        </xbl:implementation>
+
+        <xbl:resources>
+          <xbl:stylesheet src="chrome://pmog/skin/overlays/lightpostform.css"/>
+        </xbl:resources>
+
+      </xbl:binding>
+
+      <xbl:binding id="puzzlepostform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+        <xbl:content>
+          <xul:pbox anonid="overlay" title="Light a Puzzle Lightpost" margin="105" header="puzzlepostHeader">
+            <div class="greyBox" style="display: block;">
+              <div class="formLabel">Leave a light for your Missions:</div>
+              <div>
+                <xul:textbox anonid="lightpost_tags" emptytext="Tags" />
+              </div>
+              <div>
+                <xul:textbox anonid="lightpost_description" multiline="true" emptytext="Description" />
+              </div>
+              <div class="formLabel">
+                <span anonid="lightpostCount"></span> <img src="chrome://pmog/skin/images/icons/lightpost-16.png" style="display:inline;"/> remaining.
+              </div>
+            </div>
+            <div anonid="puzzle_post_form" class="greyBox">
+              <div style="max-width: 220px;">
+                <xul:vbox anonid="puzzle_post_desc">
+                  <span style="margin-bottom:10px; display: block;">Only the right answer will allow people to continue your mission.</span>
+                  <div>
+                    <span style="display:block;">Question:</span>
+                    <xul:textbox anonid="puzzle_question" />
+                  </div>
+                  <div>
+                    <span style="display:block;">Answer:</span>
+                    <xul:textbox anonid="puzzle_answer" />
+                  </div>
+                </xul:vbox>
+              </div>
+            </div>
+            <div anonid="buttonContainer" class="buttonBox">
+              <div class="leftButton">
+                <xul:toolbarbutton anonid="lightpostButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+              </div>
+              <div class="rightButton">
+                <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+              </div>
+              <div class="button-divider">
+              </div>
+            </div>
+          </xul:pbox>
+        </xbl:content>
+
+        <xbl:implementation>
+          <xbl:field name="puzzleCheckbox">
+            jQuery(this).anonymousByAttr("puzzle_post");
+          </xbl:field>
+
+          <xbl:field name="puzzleForm">
+            jQuery(this).anonymousByAttr("puzzle_post_form");
+          </xbl:field>
+
+          <xbl:field name="puzzleDesc">
+            jQuery(this).anonymousByAttr("puzzle_post_desc");
+          </xbl:field>
+
+          <xbl:field name="puzzleQuestion">
+            jQuery(this).anonymousByAttr("puzzle_question");
+          </xbl:field>
+
+          <xbl:field name="puzzleAnswer">
+            jQuery(this).anonymousByAttr("puzzle_answer");
+          </xbl:field>
+
+          <xbl:field name="overlay">
+            jQuery(this).anonymousByAttr("overlay");
+          </xbl:field>
+
+          <xbl:field name="title">
+            this.overlay.title;
+          </xbl:field>
+
+          <xbl:field name="spinner">
+            this.overlay.spinner;
+          </xbl:field>
+
+          <xbl:field name="tags">
+            jQuery(this).anonymousByAttr("lightpost_tags");
+          </xbl:field>
+
+          <xbl:field name="description">
+            jQuery(this).anonymousByAttr("lightpost_description");
+          </xbl:field>
+
+          <xbl:field name="lightpostCount">
+            jQuery(this).anonymousByAttr("lightpostCount");
+          </xbl:field>
+
+          <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+          <xbl:method name="show">
+            <xbl:body>
+              <![CDATA[
+                this.lightpostCount.textContent = Pmog.user.inventory.puzzle_posts;
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+          <xbl:method name="_doSend">
+            <xbl:body>
+              <![CDATA[
+                ovrlay = this;
+
+                var contents = {};
+                contents.lightpost = {};
+
+                contents.lightpost.tags = ovrlay.tags.value;
+                contents.lightpost.description = ovrlay.description.value;
+
+                contents.upgrade = {};
+                contents.upgrade.question = this.puzzleQuestion.value;
+                contents.upgrade.answer = this.puzzleAnswer.value;
+
+                lightpostJSON = jQuery.toJSON(contents);
+
+                jQuery.ajax({
+                  url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/lightposts.json?authenticity_token=' + Pmog.user.authenticity_token,
+                  type: 'POST',
+                  data: lightpostJSON,
+                  dataType: 'json',
+                  contentType: "application/json; charset=utf-8",
+                  panel_id: Pmog.tab_observer.selected_tab().panel_id,
+                  success: function(data, statusText) {
+                    Pmog.lightpostHandleSuccess(data, ovrlay, this.panel_id)
+                  },
+                  error: function(data, statusText, errorObject) {
+                    Pmog.lightpostHandleError(data.status, data.responseText, ovrlay);
+                  },
+                });
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+        </xbl:implementation>
+
+        <xbl:resources>
+          <xbl:stylesheet src="chrome://pmog/skin/overlays/lightpostform.css"/>
+        </xbl:resources>
+
+      </xbl:binding>
+
+    </xbl:bindings>

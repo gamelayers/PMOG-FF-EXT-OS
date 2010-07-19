@@ -1,0 +1,96 @@
+
+/* ======= STAR-RATER ======== */
+.star-rating,
+.star-rating a:hover,
+.star-rating a:active,
+.star-rating a:focus,
+.star-rating .current-rating{
+  background: url(star.gif) left -1000px repeat-x;
+}
+.star-rating{
+  position:relative;
+  width:125px;
+  height:25px;
+  overflow:hidden;
+  list-style:none;
+  margin:auto;
+  padding:0;
+  background-position: left top;
+}
+.star-rating li{
+  display: inline;
+}
+.star-rating a,
+.star-rating .current-rating{
+  position:absolute;
+  top:0;
+  left:0;
+  text-indent:-1000em;
+  height:25px;
+  line-height:25px;
+  outline:none;
+  overflow:hidden;
+  border: none;
+}
+.star-rating a:hover,
+.star-rating a:active,
+.star-rating a:focus{
+  background-position: left bottom;
+}
+.star-rating .current-rating{
+  z-index:1;
+  background-position: left center;
+}
+
+.inline-rating{
+  display:-moz-inline-box;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.small-star{
+  width:50px;
+  height:10px;
+}
+.small-star,
+.small-star a:hover,
+.small-star a:active,
+.small-star a:focus,
+.small-star .current-rating{
+  background-image: url(star_small.gif);
+  line-height: 10px;
+  height: 10px;
+}
+
+/* @group Star Rating */
+.itemRating[rating] {
+  display: -moz-box;
+  width: 78px;
+  height: 18px;
+  list-style-image: url("chrome://mozapps/skin/extensions/ratings.png");
+}
+
+.itemRating[rating="0"] {
+  -moz-image-region: rect(0px 78px 18px 0px);
+}
+
+.itemRating[rating="1"] {
+  -moz-image-region: rect(18px 78px 36px 0px);
+}
+
+.itemRating[rating="2"] {
+  -moz-image-region: rect(36px 78px 54px 0px);
+}
+
+.itemRating[rating="3"] {
+  -moz-image-region: rect(54px 78px 72px 0px);
+}
+
+.itemRating[rating="4"] {
+  -moz-image-region: rect(72px 78px 90px 0px);
+}
+
+.itemRating[rating="5"] {
+  -moz-image-region: rect(90px 78px 108px 0px);
+}
+/* @end */

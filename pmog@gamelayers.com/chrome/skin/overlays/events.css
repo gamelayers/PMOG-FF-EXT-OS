@@ -1,0 +1,67 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.button {
+    width: 30px;
+  height: 30px;
+  position: relative;
+  top: 70%;
+}
+
+html|*.prev {
+    background: url(chrome://pmog/skin/overlays/navigateLeft.png) no-repeat center center;
+    float: left;
+    left: 9px;
+     z-index: 6;
+}
+
+html|*.next {
+    background: url(chrome://pmog/skin/overlays/navigateRight.png) no-repeat center center;
+    float: right;
+    right: 5px;
+  z-index: 8;
+}
+
+html|*.button.disabled {
+  opacity: 0.3;
+}
+
+html|*.overlayWrapper {
+  text-align: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+html|*.eventList {
+  text-align: left;
+  width: 100%;
+  height: 100%;
+}
+
+html|*.boxContainer {
+  margin: -35px -15px 0 0;
+}
+
+html|*.spinner {
+  background: transparent url(chrome://pmog/skin/images/shared/throbber-56.png) no-repeat center center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+html|*.hc {
+  width: 56px;
+  left: 0;
+  margin-left: auto;
+  right: 0;
+  margin-right: 0;
+}
+
+html|*.vc {
+  height: 56px;
+  top: 0;
+  margin-top: auto;
+  bottom: 0;
+  margin-bottom: auto;
+}

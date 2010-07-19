@@ -1,0 +1,51 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+.scrollbutton-up {
+  list-style-image: url("chrome://global/skin/arrow/arrow-up.gif");
+  -moz-image-region: auto; /* cut off inheritance */
+}
+
+.scrollbutton-down {
+  list-style-image: url("chrome://global/skin/arrow/arrow-dn.gif");
+  -moz-image-region: auto; /* cut off inheritance */
+}
+
+.topScrollButton {
+  border-bottom: 1px solid #C0C0C0;
+  background-color: #dcdcdc;
+  height: 16px;
+}
+
+.bottomScrollButton {
+  border-top: 1px solid #C0C0C0;
+  background-color: #dcdcdc;
+  height: 16px;
+}
+
+.scrollButtonContainer {
+  -moz-box-pack: center;
+  -moz-box-align: center;
+}
+
+.scrollTextArea, html|*.scrollTextArea {
+  color: #5A5A5A;
+  position: relative;
+  max-width: 220px;
+}
+
+html|*[anonid=content] {
+  white-space: pre-wrap;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  font-size: 12px;
+}
+
+scrollbox[anonid=scrollbox] {
+  min-height: 56px;
+  max-height: 166px;
+  -moz-box-flex: 1;
+  overflow: hidden;
+}

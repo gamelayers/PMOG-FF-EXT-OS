@@ -1,0 +1,49 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.stash_crate_label {
+  color: #4C4C4C;
+  font-weight: bold;
+}
+
+html|*.stash_crate_label:hover {
+  cursor: pointer;
+}
+.greyBox,
+.three-corner-box,
+html|*.greyBox,
+html|*.three-corner-box {
+  max-width: 100%;
+}
+
+html|*.smallLabel {
+  font-size: 10px;
+  font-style: italic;
+  float: right;
+  position: relative;
+  top: -15px;
+}
+
+html|*.form-field {
+  width: 20%;
+  display: inline-block;
+  font-weight: bold;
+}
+
+html|*.lock_crate_form textbox {
+  width: 75%;
+  margin-left: 0;
+}
+
+html|*.entry_form,
+.checkbox-label {
+  font-size: 11px;
+}
+
+html|*.toolSpinnerRow {
+  width: 300px;
+}
+
+dpspinner, toolspinner {
+  width: 140px;
+}

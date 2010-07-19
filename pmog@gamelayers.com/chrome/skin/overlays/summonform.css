@@ -1,0 +1,18 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+textbox {
+  width: 215px;
+  margin-right: 0;
+}
+
+textbox,
+checkbox {
+  margin-left: 0;
+}
+
+html|*.greyBox,
+html|*.three-corner-box,
+html|*.buttonBox {
+  max-width: 220px;
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  ondialogaccept="return onOK();"
+  onload="onLoad();"
+  title="The Nethernet Report A bug"
+  id="pmog_bug_report"
+  buttonlabelcancel="Cancel"
+  buttonlabelaccept="Submit">
+
+  <script type= "application/x-javascript" src= "chrome://pmog/content/bug_report/bug_report.js"/>
+  <grid flex="1">
+    <columns>
+      <column/>
+    </columns>
+    <rows>
+      <row>
+        <vbox>
+          <label value="Submit a bug report to The Nethernet" style="padding-bottom:1.0em;font-size:2.0em;font-weight:bolder;"/>
+          <label value="" id="version_number"/>
+        </vbox>
+      </row>
+
+      <row>
+        <vbox style="border:1px solid #aaa;padding:2px;">
+          <textbox hidden="true" id="core_dump" wrap="on" multiline="true" readonly="true" style="width:400px;height:200px;background-color:#ddd;color:#aaa;"/>
+          <label value="See what information is being sent to The Nethernet." onclick="document.getElementById('core_dump').setAttribute('hidden', false);document.getElementById('show_core_dump').setAttribute('hidden', true);sizeToContent();" id="show_core_dump" style="cursor:pointer;font-weight:bolder;"/>
+        </vbox>
+      </row>
+
+      <row>
+        <label value="Additional Information" style="padding-top:1.0em;font-weight:bolder;"/>
+      </row>
+      <row>
+        <label value="This information will help us debug the problem."/>
+      </row>
+      <row>
+        <hbox>
+          <label value="Email Address (required): "/>
+          <textbox id="email" />
+         </hbox>
+      </row>
+      <row>
+        <label value="Describe the issue you're having and any steps to reproduce it:"/>
+      </row>
+
+      <row>
+        <textbox id="description" multiline="true" style="width:400px;height:100px;"/>
+      </row>
+
+      <row>
+        <label value="Thanks for helping us improve The Nethernet!" style="padding-top:1.0em;font-weight:bolder;"/>
+      </row>
+
+    </rows>
+  </grid>
+</dialog>

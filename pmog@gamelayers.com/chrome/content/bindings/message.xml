@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<xbl:bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns="http://www.w3.org/1999/xhtml" id="messageBindings">
+  <xbl:binding id="message" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="" margin="40" header="messageHeader">
+        <div class="max-width-220">
+          <div class="greyBox">
+            <div anonid="content" class="scrollTextArea" />
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="replyButton" oncommand="document.getBindingParent(this).reply();"/>
+              <xul:toolbarbutton anonid="huzzahButton" oncommand="document.getBindingParent(this).close();" hidden="true"/>
+              <xul:toolbarbutton anonid="tauntButton" oncommand="document.getBindingParent(this).taunt();" hidden="true"/>
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="addAllyButton" oncommand="document.getBindingParent(this).addAlly();" hidden="true"/>
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+            </div>
+            <div class="button-divider"/>
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="content">
+        jQuery(this).anonymousByAttr("content");
+      </xbl:field>
+      <xbl:field name="replyButton">
+        jQuery(this).anonymousByAttr("replyButton");
+      </xbl:field>
+      <xbl:field name="tauntButton">
+        jQuery(this).anonymousByAttr("tauntButton");
+      </xbl:field>
+      <xbl:field name="huzzahButton">
+        jQuery(this).anonymousByAttr("huzzahButton");
+      </xbl:field>
+      <xbl:field name="contactButton">
+        jQuery(this).anonymousByAttr("addContactButton");
+      </xbl:field>
+      <xbl:field name="rivalButton">
+        jQuery(this).anonymousByAttr("addRivalButton");
+      </xbl:field>
+      <xbl:field name="allyButton">
+        jQuery(this).anonymousByAttr("addAllyButton");
+      </xbl:field>
+      <xbl:property name="isVolatile" readonly="true" onget="return false;"/>
+      <xbl:property name="message" onget="return this.content.textContent;" onset="return this.setMessage(val);"/>
+      <xbl:method name="setMessage">
+        <xbl:parameter name="msg"/>
+        <xbl:body><![CDATA[
+          jQuery(this.content).append( escapeSpecial(msg) );
+
+          jQuery(this.content).autolink();
+
+          jQuery(this.content).children().each( function() {
+            if (this.tagName == 'a') {
+              prepareLink(this);
+            }
+          });
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="reply">
+        <xbl:parameter name="from"/>
+        <xbl:body><![CDATA[
+          Pmog.hud.openReply(this.player);
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="onClose">
+        <xbl:body><![CDATA[
+          Pmog.markMessageRead(this);
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="taunt">
+        <xbl:parameter name="from"/>
+        <xbl:body><![CDATA[
+            Pmog.hud.openReply(this.params.body.deferred_recipient);
+          ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="show">
+        <xbl:parameter name="params"/>
+        <xbl:body><![CDATA[
+          msg = this;
+          this.params = params;
+          this.setMessage(params.body.content);
+          this.setPlayer(params.body.from);
+          this.overlay.makeLink(Pmog.BASE_URL + "/users/" + this.player);
+
+          jQuery(this.overlay._title).append('<span>New PMail from <a href="' + Pmog.BASE_URL + '/users/' + msg.player + '">' + msg.player + '</a></span>');
+
+          jQuery("a", this.overlay._title).each(function() {
+            prepareLink(this);
+          });
+
+          if (params.body.avatar) {
+            this.overlay.setAvatar(Pmog.BASE_URL + params.body.avatar);
+          }
+
+          if (params.body.relationship) {
+            this.relationship = params.body.relationship;
+          }
+
+          if (params.body.deferred_recipient) {
+            this.actionTarget = params.body.deferred_recipient;
+          }
+
+          if (params.body.from === "TheNethernet") {
+            this.replyButton.hidden = true;
+            this._determineVisibleButtons(params.body.context);
+          }
+
+          return this;
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="_determineVisibleButtons">
+        <xbl:parameter name="context"/>
+        <xbl:body><![CDATA[
+          switch (this.relationship) {
+          case 'self':
+            this.replyButton.hidden = true;
+            break;
+          case 'none':
+          case 'contact':
+            if (context === 'taunt') {
+              this.tauntButton.hidden = false;
+              this.rivalButton.hidden = false;
+              this.replyButton.hidden = true;
+            } else {
+              this.allyButton.hidden = false;
+            }
+            break;
+          case 'ally':
+          case 'rival':
+            if (context === 'taunt') {
+              this.tauntButton.hidden = false;
+            }
+            this.allyButton.hidden = true;
+            this.rivalButton.hidden = true;
+            break;
+          default:
+            this.huzzahButton.hidden = false;
+            break;
+          }
+        ]]></xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+  <xbl:binding id="summon" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="A Summons!" margin="40" header="summonHeader">
+        <div style="text-align:left;padding:5px;width:200px;">
+          <p><span anonid="player" onclick="document.getBindingParent(this).openProfile();"/> has summoned you to
+          </p>
+          <p style="overflow:hidden;">
+            <xul:label anonid="url" onclick="document.getBindingParent(this).go();"/>
+          </p>
+        </div>
+        <xul:vbox style="padding: 5px;" anonid="messageLabel" collapsed="true">
+          With the following message: <br/>
+          <div anonid="content">
+          </div>
+        </xul:vbox>
+        <xul:hbox anonid="buttons" pack="center" align="end">
+          <xul:image anonid="accept_button" src="chrome://pmog/skin/images/summon/summoned_button.png" onclick="document.getBindingParent(this).go();"/>
+          <xul:spacer anonid="btnSpacer" style="width: 10px;"/>
+          <xul:image anonid="close_button" src="chrome://pmog/skin/images/shared/ignore_button.png" onclick="document.getBindingParent(this).close();"/>
+        </xul:hbox>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="_content">
+        jQuery(this).anonymousByAttr("content");
+      </xbl:field>
+      <xbl:field name="_messageLabel">
+        jQuery(this).anonymousByAttr("messageLabel");
+      </xbl:field>
+      <xbl:field name="_summonMessage">
+        jQuery(this).anonymousByAttr("summonMessage");
+      </xbl:field>
+      <xbl:field name="_url">
+        jQuery(this).anonymousByAttr("url");
+      </xbl:field>
+      <xbl:property name="isVolatile" readonly="true" onget="return false;"/>
+      <xbl:property name="message" onget="return this._content.textContent" onset="return this.setMessage(val);"/>
+      <xbl:property name="url" onget="return this._url.textContent;" onset="return this.setUrl(val);"/>
+      <xbl:method name="setMessage">
+        <xbl:parameter name="msg"/>
+        <xbl:body><![CDATA[
+          this._content.textContent = '"' + msg + '"';
+          this._messageLabel.collapsed = false;
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="setUrl">
+        <xbl:parameter name="url"/>
+        <xbl:body><![CDATA[
+          this._url.textContent = url;
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="onClose">
+        <xbl:body><![CDATA[
+          Pmog.markMessageRead(this);
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="go">
+        <xbl:body><![CDATA[
+          ovrlay = this;
+          var that = this;
+
+          // Send the summons confirmation.
+          jQuery.ajax({
+            url: Pmog.private_url() + '/users/' + Pmog.user.login + '/messages/'+ that.params.body.id +'/summoned.json?authenticity_token=' + Pmog.user.authenticity_token,
+            type: 'POST',
+            dataType: 'json',
+            data: '',
+            contentType: "application/json; charset=utf-8",
+            panel_id: Pmog.tab_observer.selected_tab().panel_id,
+            success: function() {
+              Pmog.hud.openAndReuseOneTabPerURL(that.url);
+              that.close();
+            }
+          });
+        ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="show">
+        <xbl:parameter name="params"/>
+        <xbl:body><![CDATA[
+          //msg = this;
+          this.params = params;
+          if (params.body.content != "") {
+            this.setMessage(params.body.content);
+          }
+          this.setUrl(params.body.url);
+          this.setPlayer(params.body.from);
+
+          return this;
+        ]]></xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

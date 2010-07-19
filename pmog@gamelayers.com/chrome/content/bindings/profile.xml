@@ -1,0 +1,669 @@
+<?xml version="1.0"?>
+<xbl:bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns="http://www.w3.org/1999/xhtml" id="profileBindings">
+
+  <xbl:binding id="badges">
+    <xbl:content>
+      <xul:vbox flex="1">
+      <div class="profile-header">Recent Badges Earnt</div>
+      <div class="tabbed_html_form" style="text-align: center;">
+        <div anonid="noBadgeMessage" style="display: none;">
+          <strong>You haven't earned any badges yet.</strong>
+        </div>
+        <table anonid="badgeTable" style="border-collapse: collapse; padding: 0; margin: 0; width: 100%">
+          <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                <img anonid="badge0" /><br />
+                <div anonid="badge_0_label" />
+            </td>
+            <td style="text-align: center; vertical-align: middle;">
+              <img anonid="badge1" /><br />
+              <div anonid="badge_1_label" />
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: center; vertical-align: middle;">
+              <img anonid="badge2" /><br />
+              <div anonid="badge_2_label" />
+            </td>
+            <td style="text-align: center; vertical-align: middle;">
+              <img anonid="badge3" /><br />
+              <div anonid="badge_3_label" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </xul:vbox>
+    </xbl:content>
+    <xbl:implementation>
+
+      <xbl:field name="noBadgeMessage">
+        jQuery(this).anonymousByAttr('noBadgeMessage');
+      </xbl:field>
+
+      <xbl:field name="badgeTable">
+        jQuery(this).anonymousByAttr('badgeTable');
+      </xbl:field>
+
+      <xbl:method name="showBadgesFor">
+        <xbl:parameter name="user"/>
+        <xbl:body>
+          <![CDATA[
+          if (user.recent_badges.length <= 0) {
+            jQuery(this.badgeTable).hide();
+            if (user.login === Pmog.user.login) {
+              jQuery(this.noBadgeMessage).show();
+            } else {
+              jQuery(this.noBadgeMessage).empty().append("<strong>" + user.login + " hasn't earned any badges yet.</strong>");
+              jQuery(this.noBadgeMessage).show();
+            }
+          } else {
+            jQuery(this.noBadgeMessage).hide();
+            jQuery(this.badgeTable).show();
+            try{
+              for(var x in user.recent_badges) {
+                  var f = document.getAnonymousElementByAttribute(this, "anonid", "badge"+x );
+                  var badge_title = document.getAnonymousElementByAttribute(this, "anonid", "badge_" + x + '_label' );
+                  badge_title.textContent = user.recent_badges[x].name;
+                  f.src = user.recent_badges[x].image;
+                  f.setAttribute('tooltiptext', user.recent_badges[x].name);
+                  f.setAttribute('onclick', "new function() { var url ='"+user.recent_badges[x].url+"';Pmog.hud.openAndReuseOneTabPerURL(url) }();return false;");
+                  badge_title.setAttribute('onclick', "new function(){ var url ='"+user.recent_badges[x].url+"';Pmog.hud.openAndReuseOneTabPerURL(url) }();return false;");
+              }
+            } catch(e) {
+              log("Error showing badges.")
+            }
+          }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:property name="user" onget="return this.getAttribute('user');" onset="return this.setAttribute('user', val);"/>
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="otherprofile" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" type="wide-overlay" title="Mini-Profile:">
+        <xul:vbox anonid="privateProfile" flex="1" hidden="true" style="background-color: white;" pack="center">
+          <xul:image src="chrome://pmog/skin/images/shared/private.png" flex="1" />
+          <xul:label style="margin-top: 25px; color: black; font-weight: bold;" value="This is a private profile!" />
+          <xul:label style="color: black; font-weight: bold;margin-bottom: 10px; " value="We kindly thank you to enquire elsewhere." />
+          <xul:label value="Actions" style="font-weight:bold;margin-left:0px;color:#666;"/>
+          <xul:toolbar style="border:none">
+            <xul:toolbarbutton anonid="grenade" class="contact_action grenade_icon" tooltiptext="Throw a Grenade" onclick="Pmog.tossGrenade(document.getBindingParent(this)._player);" />
+            <xul:toolbarbutton anonid="st_nick" class="contact_action st_nick_icon" tooltiptext="Attach a St. Nick" onclick="Pmog.attachStNick(document.getBindingParent(this)._player);" />
+            <xul:toolbarbutton anonid="summon" class="contact_action summon_icon" tooltiptext="Summon this Player" onclick="Pmog.hud.toggleOverlayForm('summonform', { buttonId: 'pmog-toolbar' });" />
+            <xul:toolbarbutton anonid="mail" class="contact_action mail_icon" tooltiptext="Send a PMail to this player" onclick="Pmog.hud.openReply(document.getBindingParent(this)._player);" />
+          </xul:toolbar>
+        </xul:vbox>
+        <div anonid="otherProfileWindow" class="display_form greyBox">
+          <div class="max-width-290">
+            <div class="floatLeft centerize">
+              <img anonid="miniAvatar" onclick="document.getBindingParent(this).profileLink();" style="display: block;" />
+              <xul:toolbar anonid="actions_tray_button" style="border:none; background-color: #DCDCDC;">
+                <xul:toolbarbutton anonid="grenade" class="contact_action grenade_icon" tooltiptext="Throw a Grenade" onclick="Pmog.tossGrenade(document.getBindingParent(this).pData.login);" />
+                <xul:toolbarbutton anonid="st_nick" class="contact_action st_nick_icon" tooltiptext="Attach a St. Nick" onclick="Pmog.attachStNick(document.getBindingParent(this).pData.login);" />
+                <xul:toolbarbutton anonid="summon" class="contact_action summon_icon" tooltiptext="Summon this Player" onclick="Pmog.hud.toggleOverlayForm('summonform', { buttonId: 'pmog-toolbar' });" />
+                <xul:toolbarbutton anonid="mail" class="contact_action mail_icon" tooltiptext="Send a PMail to this player" onclick="Pmog.hud.openReply(document.getBindingParent(this).pData.login);" />
+              </xul:toolbar>
+            </div>
+            <div anonid="profileInfo">
+              <div anonid="profile_level">
+              </div>
+              <xul:hbox anonid="starRatingBox" style="padding-top: 10px;">
+                <xul:label class="star_off" />
+                <xul:label class="star_off" />
+                <xul:label class="star_off" />
+                <xul:label class="star_off" />
+                <xul:label class="star_off" />
+                <div style="color:#000;">0 votes</div>
+              </xul:hbox>
+              <div anonid="fullName" style="font-weight: bold;" />
+              <div anonid="userParticulars" />
+              <div anonid="registered" />
+              <div anonid="motto" style="padding-top: 10px;" />
+            </div>
+          </div>
+          <div style="clear: both;"></div>
+          <div class="items" anonid="items">
+            <div class="accordionList display_form" id="profileList">
+              <a class="tray_button">
+                <span>Inventory</span>
+              </a>
+              <div class="tray" anonid="inventory_tray" flex="1">
+                <div>
+                  <xul:label value="Current Currency" class="profile-header" />
+                  <div class="tabbed_html_form">
+                    <xul:hbox>
+                      <xul:hbox>
+                        <xul:toolbarbutton class="datapoint" anonid="profile_datapoints" orient="horizontal" style="padding-left:4px;" />
+                      </xul:hbox>
+                    </xul:hbox>
+                  </div>
+                  <xul:label value="Inventory" class="profile-header" />
+                  <div class="tabbed_html_form">
+                    <xul:inventory anonid="inventory" />
+                  </div>
+                </div>
+              </div>
+              <a class="tray_button">
+                <span>Levels and Classes</span>
+              </a>
+              <div class="tray" anonid="levels_tray">
+                <div class="tabbed_html_form">
+                  <xul:vbox flex="1">
+                    <xul:vbox>
+                      <xul:label anonid="association_0_label" value=""/>
+                      <xul:hbox>
+                        <xul:label value="Level" style="font-size:small;margin:1px 0px 0px 24px;"/>
+                        <xul:label anonid="association_0_level" value=""/>
+                      </xul:hbox>
+                    </xul:vbox>
+                    <xul:vbox>
+                      <xul:label anonid="association_1_label" value=""/>
+                      <xul:hbox>
+                        <xul:label value="Level" style="font-size:small;margin:1px 0px 0px 24px;"/>
+                        <xul:label anonid="association_1_level" value=""/>
+                      </xul:hbox>
+                    </xul:vbox>
+                  </xul:vbox>
+                  <xul:vbox flex="1" pack="start" align="left">
+                    <xul:vbox>
+                      <xul:label anonid="association_2_label" value=""/>
+                      <xul:hbox>
+                        <xul:label value="Level" style="font-size:small;margin:1px 0px 0px 24px;"/>
+                        <xul:label anonid="association_2_level" value=""/>
+                      </xul:hbox>
+                    </xul:vbox>
+                    <xul:vbox>
+                      <xul:label anonid="association_3_label" value=""/>
+                      <xul:hbox>
+                        <xul:label value="Level" style="font-size:small;margin:1px 0px 0px 24px;"/>
+                        <xul:label anonid="association_3_level" value=""/>
+                      </xul:hbox>
+                    </xul:vbox>
+                  </xul:vbox>
+                  <xul:vbox flex="1" pack="start" align="left">
+                    <xul:vbox>
+                      <xul:label anonid="association_4_label" value=""/>
+                      <xul:hbox>
+                        <xul:label value="Level" style="font-size:small;margin:1px 0px 0px 24px;"/>
+                        <xul:label anonid="association_4_level" value=""/>
+                      </xul:hbox>
+                    </xul:vbox>
+                    <xul:vbox>
+                      <xul:label anonid="association_5_label" value=""/>
+                      <xul:hbox>
+                        <xul:label value="Level" style="font-size:small;margin:1px 0px 0px 24px;"/>
+                        <xul:label anonid="association_5_level" value=""/>
+                      </xul:hbox>
+                    </xul:vbox>
+                  </xul:vbox>
+                </div>
+                <div style="text-align: center;" anonid="primaryAssocDesc" />
+                <div class="tabbed_html_form" anonid="leveling" style="display: none;">
+                  <xul:vbox flex="1">
+                    <xul:hbox style="padding: 6px;">
+                      <xul:label value="Datapoint Progress: " />
+                      <xul:label anonid="level" value="Progress Bar" hidden="true" />
+                      <xul:hbox anonid="pmog_level_progress_background" class="pmog_level_progress_background">
+                        <xul:vbox anonid="pmog_level_progress_bar" class="pmog_level_progress_bar" />
+                      </xul:hbox>
+                      <xul:label anonid="next_level" value="Progress Bar"/>
+                    </xul:hbox>
+                    <xul:hbox style="padding: 6px;">
+                      <xul:label value="Classpoint Progress:" />
+                      <xul:label anonid="cp_level" value="Progress Bar" hidden="true" />
+                      <xul:hbox anonid="pmog_level_cp_progress_background" class="pmog_level_progress_background">
+                        <xul:vbox anonid="pmog_level_cp_progress_bar" class="pmog_level_cp_progress_bar" />
+                      </xul:hbox>
+                      <xul:label anonid="cp_next_level" value="Progress Bar"/>
+                    </xul:hbox>
+                  </xul:vbox>
+                </div>
+              </div>
+              <a class="tray_button">
+                <span>Badges</span>
+              </a>
+              <div class="tray" anonid="events_tray">
+                <xul:badges anonid="badges" flex="1" />
+              </div>
+              <a class="tray_button">
+                <span>Events</span>
+              </a>
+              <div class="tray" anonid="events_tray">
+                <div class="tabbed_html_form max-width-290">
+                  <ul anonid="eventslist" class="eventList" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <xul:label anonid="profileLink" style="margin-top:6px;" value="" class="cancel_label" flex="1" onclick="document.getBindingParent(this).profileLink();" />
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:field name="level_title">
+        jQuery(this).anonymousByAttr("profile_level");
+      </xbl:field>
+
+      <xbl:field name="star_rating">
+        jQuery(this).anonymousByAttr("starRatingBox");
+      </xbl:field>
+
+      <xbl:field name="full_name">
+        jQuery(this).anonymousByAttr("fullName");
+      </xbl:field>
+
+      <xbl:field name="userParticulars">
+        jQuery(this).anonymousByAttr("userParticulars");
+      </xbl:field>
+
+      <xbl:field name="registered">
+        jQuery(this).anonymousByAttr("registered");
+      </xbl:field>
+
+      <xbl:field name="motto">
+        jQuery(this).anonymousByAttr("motto");
+      </xbl:field>
+
+      <xbl:field name="inventory">
+        jQuery(this).anonymousByAttr("inventory");
+      </xbl:field>
+
+      <xbl:field name="datapoints">
+        jQuery(this).anonymousByAttr("profile_datapoints");
+      </xbl:field>
+
+      <xbl:field name="eventList">
+        jQuery(this).anonymousByAttr("eventslist");
+      </xbl:field>
+
+      <xbl:field name="badges">
+        jQuery(this).anonymousByAttr("badges");
+      </xbl:field>
+
+      <xbl:field name="header">
+        jQuery(this).anonymousByAttr("otherProfileAvatarHeader");
+      </xbl:field>
+
+      <xbl:field name="linkToProfile">
+        jQuery(this).anonymousByAttr("profileLink");
+      </xbl:field>
+
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="profileInfo">
+        jQuery(this).anonymousByAttr("profileInfo");
+      </xbl:field>
+
+      <xbl:field name="privateProfile">
+        jQuery(this).anonymousByAttr("privateProfile");
+      </xbl:field>
+
+      <xbl:field name="otherProfileWindow">
+        jQuery(this).anonymousByAttr("otherProfileWindow");
+      </xbl:field>
+
+      <xbl:field name="primaryAssocDesc">
+        jQuery(this).anonymousByAttr("primaryAssocDesc");
+      </xbl:field>
+
+      <xbl:field name="miniAvatar">
+        jQuery(this).anonymousByAttr("miniAvatar");
+      </xbl:field>
+
+      <xbl:field name="profileData">
+        jQuery(this).anonymousByAttr("profileInfo");
+      </xbl:field>
+
+      <xbl:field name="actionToolbar">
+        jQuery(this).anonymousByAttr("actions_tray_button");
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:body>
+          <![CDATA[
+            jQuery('#profileList').accordion({animated: "superbounce", autoHeight: false});
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="profileLink">
+        <xbl:body>
+          <![CDATA[
+            Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + "/users/" + this.pData.login);
+            this.close();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setStarRatings">
+        <xbl:body>
+          <![CDATA[
+            var ratingBox = this.star_rating;
+
+            for (var i = 0; i <= 4; i++) {
+              if (this.pData.rating > i) {
+                ratingBox.childNodes[i].className = "star_on";
+              } else {
+                ratingBox.childNodes[i].className = "star_off";
+              }
+            }
+
+            ratingBox.lastChild.textContent = this.pData.total_ratings + " votes";
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setFullName">
+        <xbl:body>
+          <![CDATA[
+            var forename = "";
+            var surname = "";
+
+            if (this.pData && this.pData.forename) {
+              forename = this.pData.forename;
+            }
+
+            if (this.pData && this.pData.surname) {
+              surname = this.pData.surname;
+            }
+
+            this.full_name.textContent = forename + " " + surname;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setParticulars">
+        <xbl:body>
+          <![CDATA[
+             var val = "";
+             if (this.pData) {
+               var gend = '';
+               if (this.pData.gender) {
+                 if (/m|M/.test(this.pData.gender)) {
+                   gend = "male";
+                 } else {
+                   gend = "female";
+                 }
+
+                 val = val + gend;
+
+                 if (this.pData.country) {
+                   val =  val + ", " + this.pData.country;
+                 }
+               }
+             }
+
+             this.userParticulars.textContent = val;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setRegistered">
+        <xbl:body>
+          <![CDATA[
+            var val = "";
+            if (this.pData && this.pData.last_active) {
+              val = "Active: " + this.pData.last_active;
+            }
+
+            this.registered.textContent = val;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setMotto">
+        <xbl:body>
+          <![CDATA[
+            var val = "";
+            if (this.pData && this.pData.motto) {
+              val = "Motto: " + this.pData.motto;
+            }
+
+            this.motto.textContent = val;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setDatapoints">
+        <xbl:body>
+          <![CDATA[
+          var dp = "";
+          var ldp = "";
+
+          if (this.pData && this.pData.datapoints >= 0) {
+            dp = this.pData.datapoints;
+          }
+          this.datapoints.label = commaFormatted(dp) + " datapoints";
+
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setAvatar">
+        <xbl:body>
+          <![CDATA[
+            var imgUrl = "chrome://pmog/skin/images/icons/contacts-48.png";
+            if (this.pData && this.pData.avatar_small) {
+              imgUrl = Pmog.BASE_URL + this.pData.avatar_small.replace("small", "medium");
+            }
+
+            this.miniAvatar.src = imgUrl;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setProfileLink">
+        <xbl:body>
+          <![CDATA[
+            var profile = this;
+            profile.linkToProfile.value = "Visit " + profile.pData.login + "'s full profile";
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setPlayer">
+        <xbl:parameter name="playerName" />
+        <xbl:body>
+          <![CDATA[
+            var levelTray = jQuery(this).anonymousByAttr("leveling");
+
+            if (playerName === Pmog.user.login) {
+              jQuery(levelTray).show();
+              jQuery(this.actionToolbar).hide();
+            } else {
+              jQuery(levelTray).hide();
+              jQuery(this.actionToolbar).show();
+            }
+            this._player = playerName;
+
+            this.overlay.title = "Mini-Profile: " + playerName;
+            this.overlay._title.setAttribute("style", "font-weight:bold;");
+            this.overlay.makeLink(Pmog.BASE_URL + "/users/" + playerName);
+
+            this.pollUser();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="loadRecentEvents">
+        <xbl:parameter name="recentEvents"/>
+        <xbl:body>
+          <![CDATA[
+            for (var i = this.eventList.childNodes.length - 1; i >= 0; i--){
+              this.eventList.removeChild(this.eventList.childNodes[i]);
+            }
+
+            for(var x = 0; x < 5; x++) {
+              try {
+                var evntTxt = stripHTML(recentEvents[x].message);
+                jQuery(this.eventList).append( '<li class="profileEvent">' + escapeSpecial(evntTxt) + '</li>' );
+              } catch(e) {
+                log("Error appending event: " + e);
+              }
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setAssociations">
+        <xbl:body>
+          <![CDATA[
+          // Associations
+          var classes = ['primary', 'secondary', 'tertiary'];
+          y = 0;
+          for(var x in this.pData.levels) {
+              var assoc_label   = document.getAnonymousElementByAttribute(this, "anonid", "association_" + y + '_label' );
+              var assoc_level   = document.getAnonymousElementByAttribute(this, "anonid", "association_" + y + '_level' );
+              assoc_label.value = x.capitalize();
+              assoc_level.value = this.pData.levels[x];
+              y++;
+              var the_style = "";
+              the_style += "margin-top:4px; padding-left: 18px;";
+              the_style += " background-repeat: no-repeat;";
+              the_style += " background-position: 0 0;";
+              the_style += " text-align:left; height: 18px;";
+              the_style += " background-image:url(" + "chrome://pmog/skin/images/icons/associations/" + x.toLowerCase() + "-16.png" + ");";
+
+              assoc_label.setAttribute('style', the_style);
+              assoc_level.setAttribute('style', "text-align:left;padding-left:0px;color: #000;");
+          }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setLevelProgress">
+        <xbl:body>
+          <![CDATA[
+            if(this.pData.login === Pmog.user.login) {
+
+              var bar   = document.getAnonymousElementByAttribute(this, "anonid", "pmog_level_progress_bar");
+              bar.setAttribute("style", "width:"+ (80 * (parseInt(Pmog.user.level_percentage, 10) / 100)) + "px;");
+
+              var bar   = document.getAnonymousElementByAttribute(this, "anonid", "pmog_level_cp_progress_bar");
+              bar.setAttribute("style", "width:"+ (80 * (parseInt(Pmog.user.level_cp_percentage, 10) / 100)) + "px;");
+
+              var level   = document.getAnonymousElementByAttribute(this, "anonid", "level");
+              level.value = Pmog.user.level;
+
+              var cp_level   = document.getAnonymousElementByAttribute(this, "anonid", "cp_level");
+              cp_level.value = Pmog.user.level;
+
+              var next_level   = document.getAnonymousElementByAttribute(this, "anonid", "next_level");
+              next_level.value = Pmog.user.next_level;
+
+              var cp_next_level   = document.getAnonymousElementByAttribute(this, "anonid", "cp_next_level");
+              cp_next_level.value = Pmog.user.next_level;
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setData">
+        <xbl:parameter name="playerData" />
+        <xbl:body>
+          <![CDATA[
+            if (playerData === null) {
+              Pmog.notice('Unable to get player data.', 'critical');
+            } else if (playerData.private) {
+              jQuery(this.otherProfileWindow)[0].hidden = true;
+              jQuery(this.privateProfile)[0].hidden = false;
+            } else {
+              jQuery(this.otherProfileWindow)[0].hidden = false;
+              jQuery(this.privateProfile)[0].hidden = true;
+
+              this.pData = new PmogUser();
+              this.pData.update(playerData);
+
+              this.level_title.textContent = "Level " + this.pData.current_level + " " + this.pData.primary_association.capitalize();
+
+              if (this.pData.login === Pmog.user.login) {
+                this.primaryAssocDesc.textContent = "Your primary class is " + this.pData.primary_association.capitalize();
+              } else {
+                this.primaryAssocDesc.textContent = this.pData.login + "'s primary class is " + this.pData.primary_association.capitalize();
+              }
+
+              this.setStarRatings();
+
+              if (this.pData.forename === "private") {
+                jQuery(this.profileInfo).hide();
+              } else {
+                jQuery(this.profileInfo).show();
+
+                this.setFullName();
+
+                this.setParticulars();
+              }
+
+              this.setRegistered();
+
+              this.setMotto();
+
+              this.inventory.showInventory(this.pData.login, ['portals','crates','st_nicks','lightposts','armor','mines','watchdogs', 'skeleton_keys']);
+
+              this.setDatapoints();
+
+              if (this.pData.recent_events === "private") {
+                jQuery(this.eventList).hide();
+              } else {
+                jQuery(this.eventList).show();
+                this.loadRecentEvents(this.pData.recent_events);
+              }
+
+              if (this.pData.recent_badges === "private") {
+                this.badges.hidden = true;
+              } else {
+                this.badges.hidden = false;
+                this.badges.showBadgesFor(this.pData);
+              }
+
+              this.setAssociations();
+
+              this.setAvatar();
+
+              this.setProfileLink();
+
+              this.setLevelProgress();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="pollUser">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/users/' + ovrlay.player + '.json?authenticity_token=' + Pmog.user.authenticity_token + '&version=' + Pmog.version,
+              type: 'GET',
+              data: '',
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              success: function(data, statusText) {
+                ovrlay.setData(data);
+              },
+              error: function(data, statusText, errorObject) {
+                ovrlay.overlay.addError("error getting player");
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

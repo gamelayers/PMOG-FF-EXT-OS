@@ -1,0 +1,178 @@
+<xbl:bindings id="inviteBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <xbl:binding id="inviteform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Invite someone to The Nethernet" margin="40" header="inviteHeader">
+        <div class="greyBox">
+          <div anonid="initialMessage" style="max-width:240px;">
+            Bring someone else in range of your St. Nicks, Grenades and Crates. For each friend who joins, you will get 200 datapoints &amp; and progress towards badges like this one:
+          </div>
+          <div anonid="badgeContainer">
+            <img anonid="badgeImg" />
+          </div>
+          <xul:textbox anonid="recipient" emptytext="EMail to Invite" />
+          <br />
+          <xul:textbox anonid="message" multiline="true" spellcheck="true" maxlength="500" emptytext="Write your message"  />
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="inviteButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+          </div>
+          <div class="rightButton">
+            <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" flex="1" onclick="document.getBindingParent(this).close();" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:body>
+        <![CDATA[
+          this._badgeImage.src = Pmog.BASE_URL + Pmog.user.next_invite_badge;
+        ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:field name="_recipientField">
+        jQuery(this).anonymousByAttr("recipient");
+      </xbl:field>
+
+      <xbl:field name="_messageField">
+        jQuery(this).anonymousByAttr("message");
+      </xbl:field>
+
+      <xbl:field name="_inviteButton">
+        jQuery(this).anonymousByAttr("inviteButton");
+      </xbl:field>
+
+      <xbl:field name="_cancelLink">
+        jQuery(this).anonymousByAttr("cancelLink");
+      </xbl:field>
+
+      <xbl:field name="_buttonSpacer">
+        jQuery(this).anonymousByAttr("buttonSpacer");
+      </xbl:field>
+
+      <xbl:field name="_badgeImage">
+        jQuery(this).anonymousByAttr("badgeImg");
+      </xbl:field>
+
+      <xbl:field name="_badgeContainer">
+        jQuery(this).anonymousByAttr("badgeContainer");
+      </xbl:field>
+
+      <xbl:field name="_initialMessage">
+        jQuery(this).anonymousByAttr("initialMessage");
+      </xbl:field>
+
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:property name="recipient" onget="return this._recipientField.value;"
+                                 onset="return this.setRecipient(val)" />
+
+      <xbl:property name="message" readonly="true" onget="return this._messageField.value;" />
+
+      <xbl:method name="setRecipient">
+        <xbl:parameter name="recipient" />
+        <xbl:body>
+          <![CDATA[
+            form = this;
+            form._recipientField.value = recipient;
+            jQuery(form._recipientField.inputField).effect("highlight", { color: "yellow" }, 2000);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            var contents = {};
+            contents.recipient = ovrlay.recipient;
+            contents.message = ovrlay.message;
+            JSONmsg = jQuery.toJSON(contents);
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/users/' + Pmog.user.login + '/messages/invite.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              data: JSONmsg,
+              dataType: 'json',
+              timeout: 10000,
+              contentType: "application/json; charset=utf-8",
+              panel_id: Pmog.tab_observer.selected_tab().panel_id,
+              success: function(data, statusText) {
+                Pmog.mail_notice(data.flash.notice, "info", ovrlay);
+                ovrlay._recipientField.reset();
+                ovrlay._messageField.reset();
+                ovrlay._badgeContainer.style.display = 'none'
+                ovrlay._initialMessage.style.display = 'none'
+              },
+              error: function(data, statusText, errorObject) {
+                var resp = jQuery.evalJSON(data.responseText);
+                if (data.status == 422) {
+                  //Pmog.mail_notice(resp.flash.error, "warning", ovrlay);
+                  ovrlay.overlay.addError(resp.flash.error);
+                  ovrlay._buttonSpacer.hidden = "true";
+                  ovrlay._cancelLink.hidden = "true";
+                  ovrlay.recipient = resp.friend;
+                  jQuery(ovrlay._inviteButton).attr("anonid", "addContactButton");
+                  jQuery(ovrlay._inviteButton).attr("oncommand", "document.getBindingParent(ovrlay).addToFriends();");
+                } else {
+                  //Pmog.mailHandleError(data.status, data.responseText, ovrlay);
+                  ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                }
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="addToFriends">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            var contents = {};
+            contents.type = "acquaintance";
+            JSONmsg = jQuery.toJSON(contents);
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/acquaintances/add/' + ovrlay.recipient + '.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              data: JSONmsg,
+              dataType: 'json',
+              timeout: 10000,
+              contentType: "application/json; charset=utf-8",
+              panel_id: Pmog.tab_observer.selected_tab().panel_id,
+              success: function(data, statusText) {
+                Pmog.mailHandleSuccess(data, ovrlay, this.panel_id)
+              },
+              error: function(data, statusText, errorObject) {
+                Pmog.mailHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

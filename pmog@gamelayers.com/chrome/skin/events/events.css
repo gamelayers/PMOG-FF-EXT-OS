@@ -1,0 +1,82 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+toolbarbutton {
+  -moz-box-orient: vertical;
+}
+
+toolbarbutton[disabled=true],
+menuitem[disabled=true] {
+  cursor: default;
+}
+
+toolbarbutton[disabled=true] image {
+  opacity: 0.5;
+}
+
+toolbarbutton:not([disabled=true]):hover {
+  cursor: pointer;
+}
+
+#nethernetToolbarbutton {
+  list-style-image: url("chrome://pmog/skin/images/icons/n-32.png");
+}
+
+#yourEventsToolbarbutton {
+  list-style-image: url("chrome://pmog/skin/images/icons/news-32.png");
+}
+
+#contactsEventsToolbarbutton {
+  list-style-image: url("chrome://pmog/skin/images/icons/contacts-32.png");
+}
+
+#pmailToolbarbutton {
+  list-style-image: url("chrome://pmog/skin/images/icons/pmail-32.png");
+}
+
+#chatToolbarbutton {
+  list-style-image: url("chrome://pmog/skin/images/icons/chat-32-gold.png");
+}
+
+#selectedTabDescription {
+  background-color: #999;
+}
+
+html|div#throbber {
+  display: none;
+  position: absolute;
+  background: rgba(0,0,0,0.61) url(chrome://pmog/content/macthrob2.png) no-repeat 50% 50%;
+}
+
+html|*.actionbar {
+  position: absolute;
+  max-width: 400px;
+  padding: 4px;
+  font-weight: bold;
+  font-size: 11px;
+  color: #000;
+}
+
+html|*.centerblock {
+  display: inline-block;
+  text-align: center;
+}
+
+html|*.overEvent:hover,
+html|*.actionbar {
+  background-image: url('http://localhost:3000/images/shared/back_module-blue.png');
+  background-color: rgba(189,215,228,0.75);
+}
+
+html|*.small-text {
+  font-size: 9px;
+  color: #999;
+}
+
+toolbarbutton[active=true] {
+  background-color: #999;
+}
+
+html|*.cellContent {
+  max-width: 200px;
+}

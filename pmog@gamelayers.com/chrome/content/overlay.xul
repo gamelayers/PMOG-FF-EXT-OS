@@ -1,0 +1,646 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css" ?>
+<?xml-stylesheet href="chrome://global/content/" type="text/css" ?>
+<?xml-stylesheet href="chrome://pmog/skin/pmog.css" type="text/css"?>
+<?xml-stylesheet href="chrome://pmog/skin/platform-toolbar.css" type="text/css"?>
+<?xml-stylesheet href="chrome://pmog/skin/toolbar.css" type="text/css"?>
+<?xml-stylesheet href="chrome://pmog/skin/star-rater/rater.css" type="text/css"?>
+<!DOCTYPE overlay [
+  <!ENTITY % pmogDTD SYSTEM "chrome://pmog/locale/pmog.dtd">
+%pmogDTD;
+]>
+
+<?xul-overlay href="chrome://pmog/content/partials/codex_menu.xul"?>
+<?xul-overlay href="chrome://pmog/content/partials/lightposts_menu.xul"?>
+<?xul-overlay href="chrome://pmog/content/partials/missions_menu.xul"?>
+<?xul-overlay href="chrome://pmog/content/partials/help_menu.xul"?>
+<overlay id="hud_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <script type="application/javascript" src="chrome://global/content/customizeToolbar.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/load-pmog.js"/>
+  <!-- // Load order of these scripts is important. -->
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.pack.js"/>
+  <script type="application/x-javascript">
+    <![CDATA[
+      var jQuery = jQuery.noConflict();
+    ]]>
+  </script>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/jquery.xulmensions.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.easing.compatibility.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.easing.1.3.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery-ui-personalized-1.5.3.min.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/jquery.xul.effects.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.json.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.mousehold.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.event.wheel-1.0.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.newsticker.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/jquery.utils.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/jquery.xulselectors.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.rater.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.timers.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.uuid.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.truncator.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.ui.carousel.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/jquery.timeago.js"/>
+  <script type="application/x-javascript">
+    <![CDATA[
+      jQuery.timeago.settings.allowFuture = true;
+    ]]>
+  </script>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/util.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/caching.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/sqlite_connector.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/passive_record.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/object_parser.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/portal_dialogue.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/tab.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/tab_observer.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/special_effect.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/display.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/page.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/pmog_user.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/pmog_session_manager.js" />
+  <script type="application/x-javascript" src="chrome://pmog/content/lib/queue.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/PmogException.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/pmogCommands.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/hud.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/pmog.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/UrlListener.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/pmog.notices.js"/>
+  <script type="application/x-javascript" src="chrome://pmog/content/javascript/pmogPreferenceObserver.js" />
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="strings_pmog"
+      src="chrome://pmog/locale/pmog.properties"/>
+  </stringbundleset>
+  <commandset id="mainCommandSet">
+    <command id="cmd_pmog_togglePause" oncommand="Pmog.togglePause();" />
+    <commandset id="pmogTrackCommandSet" commandupdater="true" events="PmogTrack" oncommandupdate="goUpdatePmogTrackCommands(this);">
+      <command id="cmd_pmog_summon" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_armor" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_dodge" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_disarm" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_vengeance" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_stealth_mine" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_abundant_mine" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_deploy_mine" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_deploy_upgraded_mine" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_deploy_giftcard" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_grenadeform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_deploy_watchdog" disabled="true" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_crateform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_portalform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_abundantportalform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_stswatterform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_overweightcanaryform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_lightpostform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_puzzlepostform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_overclockform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_impedeform" oncommand="goDoCommand(this.id);" />
+    </commandset>
+    <commandset id="pmogGeneralCommandSet" commandupdater="true" events="PmogStateChange" oncommandupdate="goUpdatePmogTrackCommands(this);">
+      <command id="cmd_toggle_pmog" oncommand="goDoCommand('cmd_toggle_pmog');" />
+      <command id="cmd_pmog_preferences" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_help" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_visit_pmog" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_visit_profile" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_contacts" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_visit_forums" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_visit_blog" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_visit_toolbar_help" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_reset" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_report_a_bug" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_manage_profiles" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_play" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_invite" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_toggle_shoppe" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_toggle_profile" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_stnickform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_bnickform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pause" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_signout" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_ignored_sites" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_make_mission" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_resume_play" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_navbar_play" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_open_messageform" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_get_messages" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_toggle_pmail_poll" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_open_events_window" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_queue_or_jaunt" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_visit_guide" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_mine_upgrades" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_shoppe_bacon" oncommand="goDoCommand(this.id);" />
+      <command id="cmd_pmog_key_commands" oncommand="goDoCommand(this.id);" />
+    </commandset>
+  </commandset>
+  <popupset id="mainPopupSet">
+    <popup id="pmog_login_menu">
+      <menuitem id='view_profile' label="&pmog.view_profile;" command="cmd_pmog_toggle_profile" />
+    </popup>
+    <popup id="pmog_lightpost_menu">
+      <menuitem id='deploy_lightpost' label="&pmog.deploy_lightpost;" command="cmd_toggle_lightpostform" />
+      <menuitem id='buy_lightposts' label="&pmog.buy_lightpost;" oncommand="Pmog.hud.buy('lightposts');"/>
+      <menuitem id='edit_lightposts' label="&pmog.edit_lightpost;" oncommand="Pmog.hud.edit_lightpost();"/>
+      <menuitem id="lean_lightposts" label="&pmog.learn_about; &pmog.lightposts;" oncommand="Pmog.hud.learn_about('lightposts');"/>
+    </popup>
+    <popup id="pmog_portal_menu">
+      <menuitem id='deploy_portal' label="&pmog.deploy_portal;" command="cmd_toggle_portalform" />
+      <menuitem id='buy_portals' label="&pmog.buy_portal;" oncommand= "Pmog.hud.buy('portals');"/>
+      <menuitem id="learn_portals" label="&pmog.learn_about; &pmog.portals;" oncommand="Pmog.hud.learn_about('portals');"/>
+    </popup>
+    <popup id="pmog_mine_menu">
+      <menuitem id= 'deploy_mine' label="&pmog.deploy_mine;" command="cmd_deploy_mine" />
+      <menuitem id= 'buy_mines' label="&pmog.buy_mine;" oncommand="Pmog.hud.buy('mines');"/>
+      <menuitem id="learn_mines" label="&pmog.learn_about; &pmog.mines;" oncommand="Pmog.hud.learn_about('mines');"/>
+    </popup>
+    <popup id="pmog_grenade_menu">
+      <menuitem id= 'throw_grenade' label="&pmog.throw_grenade;" command="cmd_toggle_grenadeform" />
+      <menuitem id= 'buy_greandes' label="&pmog.buy_grenade;" command="Pmog.hud.buy('grenades');"/>
+      <menuitem id= "learn_grenades" label="&pmog.learn_about; &pmog.grenades;" oncommand="Pmog.hud.learn_about('grenades');"/>
+    </popup>
+    <popup id="pmog_crate_menu">
+      <menuitem id='deploy_crate' label="&pmog.deploy_crate;" command="cmd_toggle_crateform" />
+      <menuitem id='buy_crate' label="&pmog.buy_crate;" oncommand="Pmog.hud.buy('crates');"/>
+      <menuitem id="learn_crates" label="&pmog.learn_about; &pmog.crates;" oncommand="Pmog.hud.learn_about('crates');"/>
+    </popup>
+    <popup id="pmog_armor_menu">
+      <menuitem id='deploy_armor_off' label="&pmog.take_armor_off;" command="cmd_toggle_armor" />
+      <menuitem id='deploy_armor_on' label="&pmog.put_armor_on;" command="cmd_toggle_armor" />
+      <menuitem id='buy_armor' label="&pmog.buy_armor;" oncommand="Pmog.hud.buy('armor');"/>
+      <menuitem id="learn_armor" label="&pmog.learn_about; &pmog.armor;" oncommand="Pmog.hud.learn_about('armor');"/>
+    </popup>
+    <popup id="pmog_profile_context">
+      <menuitem id='open_pmog_profile' label="&pmog.view_profile;" command="cmd_pmog_visit_profile" />
+      <menuitem id='open_pmog_events' label="&pmog.view_events;" command="cmd_open_events_window" />
+    </popup>
+    <panel id="notepanel" noautofocus="true" noautohide="true">
+      <notificationbox id="notebox" flex="1" />
+    </panel>
+    <tooltip id="pmogTooltip" position="end_before" onpopupshowing="Pmog.onTooltipPopupShowing(this);">
+      <label id="pmogTooltipLabel" crop="center" flex="1" value="" />
+    </tooltip>
+    <panel id="contactsform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <contactsform id="contacts" />
+    </panel>
+    <panel id="messageform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <messageform id="pmailForm" />
+    </panel>
+    <panel id="shoppeform" onpopupshown="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <shoppeform id="shoppe" />
+    </panel>
+    <panel id="profile" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <profile id="otherPlayerProfile" />
+    </panel>
+    <panel id="crateform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <crateform id="crateForm" />
+    </panel>
+    <panel id="lightpostform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <lightpostform id="lightPostForm" />
+    </panel>
+    <panel id="puzzlepostform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <puzzlepostform id="puzzlePostForm" />
+    </panel>
+    <panel id="portalform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <portalform id="portalForm" />
+    </panel>
+    <panel id="abundantportalform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <abundantportalform id="abundantPortalForm" />
+    </panel>
+    <panel id="summonform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <summonform id="summonForm" />
+    </panel>
+    <panel id="stnickform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <stnickform id="stNickForm" />
+    </panel>
+    <panel id="ballisticstnickform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <ballisticstnickform id="ballisticstNickForm" />
+    </panel>
+    <panel id="grenadeform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <grenadeform id="grenadeForm" />
+    </panel>
+    <panel id="inviteform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <inviteform id="inviteForm" />
+    </panel>
+    <panel id="overclockform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <overclockform id="overclockForm" />
+    </panel>
+    <panel id="impedeform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <impedeform id="impedeForm" />
+    </panel>
+    <panel id="stswatterform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <stswatterform id="stswatterForm" />
+    </panel>
+    <panel id="overweightcanaryform" onpopupshowing="Pmog.hud.showOverlayForm(this.id);" noautohide="true" level="parent" class="pmog-panel">
+      <overweightcanaryform id="overweightcanaryForm" />
+    </panel>
+    <!-- BEGIN EVENT OVERLAY PANELS -->
+    <panel id="branchevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <branch id="branch" />
+    </panel>
+    <panel id="minedamageevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <minedamage id="minedamage" />
+    </panel>
+    <panel id="minearmorevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <minearmor id="minearmor" />
+    </panel>
+    <panel id="minedodgeevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <minedodge id="minedodge" />
+    </panel>
+    <panel id="minedisarmevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <minedisarm id="minedisarm" />
+    </panel>
+    <panel id="minevengeanceevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <minevengeance id="minevengeance" />
+    </panel>
+    <panel id="ballisticknickdamageevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <ballisticnickdamage id="ballisticnickdamage" />
+    </panel>
+    <panel id="ballisticknickarmorevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <ballisticnickarmor id="ballisticnickarmor" />
+    </panel>
+    <panel id="ballisticknickdamageevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <ballisticnickdodge id="ballisticnickdodge" />
+    </panel>
+    <panel id="ballisticknickdamageevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <ballisticnickdisarm id="ballisticnickdisarm" />
+    </panel>
+    <panel id="grenadedamageevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <grenadedamage id="grenadedamage" />
+    </panel>
+    <panel id="grenadearmorevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <grenadearmor id="grenadearmor" />
+    </panel>
+    <panel id="grenadedodgeevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <grenadedodge id="grenadedodge" />
+    </panel>
+    <panel id="grenadedisarmevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <grenadedisarm id="grenadedisarm" />
+    </panel>
+    <panel id="grenadevengeaceevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <grenadevengeance id="grenadevengeance" />
+    </panel>
+    <panel id="messageevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <message id="message" />
+    </panel>
+    <panel id="summonevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <summon id="summon" />
+    </panel>
+    <panel id="portalevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <portal id="portal" />
+    </panel>
+    <panel id="portalratingevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <portalrating id="portalrating" />
+    </panel>
+    <panel id="crateevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <crate id="crate" />
+    </panel>
+    <panel id="puzzleevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <puzzle id="puzzle" />
+    </panel>
+    <panel id="missionfoundevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <missionfound id="missionfound" />
+    </panel>
+    <panel id="giftcardevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <giftcard id="giftcard" />
+    </panel>
+    <panel id="carouselevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <carousel id="carousel" />
+    </panel>
+    <panel id="overclockevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <overclock id="overclock-event" />
+    </panel>
+    <panel id="impedeevent" noautohide="true" type="event" level="parent" class="pmog-panel">
+      <impede id="impede-event" />
+    </panel>
+    <panel id="overclock-panel" noautohide="true" type="buff" level="parent" class="pmog-panel buff-panel">
+      <buff id="overclock" type="overclock" />
+    </panel>
+
+    <panel id="impede-panel" noautohide="true" type="buff" level="parent" class="pmog-panel buff-panel">
+      <buff id="impede" type="impede" />
+    </panel>
+
+    <panel id="extended-buff" level="parent" class="pmog-panel">
+      <buff-detail id="buff-detail" />
+    </panel>
+
+    <panel id="scrim-panel" level="parent" onpopupshown="this.firstChild.onPanelOpen();" class="pmog-panel">
+      <scrim id="scrim" type="damage" />
+    </panel>
+
+    <!-- END EVENT OVERLAY PANELS -->
+  </popupset>
+  <keyset>
+    <key id="lightpost_key" modifiers="control alt" key="&pmog.lightpost_deploy_key;" command="cmd_toggle_lightpostform" />
+    <key id="portal_key" modifiers="control alt" key="&pmog.portal_deploy_key;" command="cmd_toggle_portalform" />
+    <key id="giftcard_key" modifiers="control alt" key="&pmog.giftcard_deploy_key;" command="cmd_deploy_giftcard" />
+    <key id="mine_key" modifiers="control alt" key="&pmog.mine_deploy_key;" command="cmd_deploy_mine" />
+    <key id="grenade_key" modifiers="control alt" key="&pmog.grenade_throw_key;" command="cmd_toggle_grenadeform" />
+    <key id="watchdog_key" modifiers="control alt" key="&pmog.watchdog_deploy_key;" command="cmd_deploy_watchdog" />
+    <key id="st_nick_key" modifiers="control alt" key="&pmog.st_nick_deploy_key;" command="cmd_toggle_stnickform" />
+    <key id="crate_key" modifiers="control alt" key="&pmog.crate_deploy_key;" command="cmd_toggle_crateform" />
+    <key id="armor_key" modifiers="control alt" key="&pmog.armor_deploy_key;" command="cmd_toggle_armor" />
+    <key id="im_key" modifiers="control alt" key="&pmog.im_deploy_key;" command="cmd_open_messageform" />
+    <key id="jaunt_key" modifiers="control alt" key="&pmog.jaunt_key;" oncommand="Pmog.jaunt();" />
+    <key id="venture_key" modifiers="control alt" key="&pmog.venture_key;" oncommand="Pmog.hud.add_venture(true);"/>
+    <key id="profile_key" modifiers="control alt" key="&pmog.profile_key;" command="cmd_pmog_toggle_profile" />
+    <key id="toggle_hud_key" modifiers="control alt" key="&pmog.toggle_hud_key;" command="cmd_toggle_pmog" />
+  </keyset>
+
+  <menupopup id="menu_HelpPopup">
+    <menu id="help_menu_pmog" class="menu-iconic help_icon" label="&pmog.pmog;"/>
+  </menupopup>
+
+  <menupopup id="menu_ToolsPopup">
+    <menu id="tool_menu_pmog" class="menu-iconic bukkit_icon" label="&pmog.pmog;" insertbefore="javascriptConsole">
+      <menupopup>
+        <menuitem id="menu_pmog_toggle_hud" class="menuitem-iconic gear_icon" label="&pmog.show_hide_the_pmog_toolbar;" command="cmd_toggle_pmog"/>
+        <menuitem id="menu_pmog_key_commands_help" label="&pmog.key_commands;" class="menuitem-iconic gear_icon pmog_menu_item" command="cmd_pmog_key_commands" />
+        <menuitem id="menu_pmog_preferences" label="&pmog.preferences;" class="menuitem-iconic gear_icon" command="cmd_pmog_preferences" />
+        <menuitem id="menu_pmog_help" label="&pmog.help;" class="menuitem-iconic help_icon" command="cmd_pmog_help" />
+      </menupopup>
+    </menu>
+  </menupopup>
+
+  <toolbox id="navigator-toolbox">
+    <toolbarpalette id="BrowserToolbarPalette">
+
+      <toolbarbutton id="awesome-button" label="&pmog.awesome;" class="toolbar-button icononly" tiptext="&pmog.awesome_tooltip;" command="cmd_deploy_giftcard" />
+
+      <toolbarbutton id="attack-button" orient="horizontal" label="&pmog.attack;" class="toolbar-button icononly mine_icon" tiptext="&pmog.attack_tooltip;" command="cmd_deploy_mine" />
+
+      <toolbarbutton id="mine-upgrade-button" type="menu-button" orient="horizontal" label="&pmog.attack;" class="toolbar-button icononly mine_icon" tiptext="Upgraded mines" command="cmd_deploy_upgraded_mine">
+        <menupopup id="pmog_attack" class="pmog_menu_popup" onpopupshown="Pmog.setTooltipState(false);">
+          <menuitem id="attack-stealth-mine" label="&pmog.stealth_mine;" tooltiptext="&pmog.stealth_mine_tooltip;" class="menuitem-iconic pmog_menu_item" command="cmd_toggle_stealth_mine" type="checkbox" />
+          <menuitem id="attack-abundant-mine" label="&pmog.abundant_mine;" tooltiptext="&pmog.abundant_mine_tooltip;" class="menuitem-iconic pmog_menu_item" command="cmd_toggle_abundant_mine" type="checkbox" />
+          <menuseparator />
+          <menuitem class="menuitem-iconic pmog_menu_item bacon_icon" label="Get Bacon" command="cmd_pmog_shoppe_bacon" />
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="grenadeform-button" label="&pmog.grenade;" class="icononly toolbar-button" tiptext="&pmog.grenade_tooltip;" command="cmd_toggle_grenadeform" />
+
+      <toolbarbutton id="crateform-button" label="&pmog.crate;" class="icononly toolbar-button" tiptext="&pmog.crate_tooltip;" command="cmd_toggle_crateform"/>
+
+      <toolbarbutton id="lightpostform-button" label="&pmog.lightpost;" class="icononly toolbar-button" tiptext="&pmog.lightpost_tooltip;" command="cmd_toggle_lightpostform" />
+
+      <toolbarbutton id="puzzlepostform-button" label="Puzzle Lightpost" class="icononly toolbar-button" tiptext="Require a player to answer a trivia question before continuing a mission." command="cmd_toggle_puzzlepostform" />
+
+      <toolbarbutton id="portalform-button" label="&pmog.portal;" class="icononly toolbar-button" tiptext="&pmog.portal_tooltip;" command="cmd_toggle_portalform" />
+
+      <toolbarbutton id="abundantportalform-button" label="Abundant Portal" class="icononly toolbar-button" tiptext="Get Datapoints every time a player takes your Portal" command="cmd_toggle_abundantportalform" />
+
+      <toolbarbutton id="stnickform-button" label="&pmog.st_nick;" class="icononly toolbar-button" tiptext="&pmog.st_nick_tooltip;" command="cmd_toggle_stnickform" />
+
+      <toolbarbutton id="ballisticstnickform-button" label="Ballistic St. Nick" class="icononly toolbar-button" tiptext="Immediately destroys the armor of the person who triggers it" command="cmd_toggle_bnickform" />
+
+      <toolbarbutton id="watchdog-button" label="&pmog.watchdog;" class="icononly toolbar-button" tiptext="&pmog.watchdog_tooltip;" command="cmd_deploy_watchdog" />
+
+      <toolbarbutton id="messageform-button" type="menu-button" orient="horizontal" label="0" tiptext="&pmog.pmail_tooltip;" class="toolbar-button always-label" command="cmd_open_messageform">
+        <menupopup id="pmog_im_acquaintances_popup" class="pmog_menu_popup">
+          <menuitem id="pmog_im_acquaintances_popup_latest_message" class="menu-iconic pmog_menu_item pmog_menu_header" label="&pmog.latest_message;" image="chrome://pmog/skin/images/icons/pmail-16.png" command="cmd_get_messages" />
+          <vbox id="pmog_im_acquaintances_popup_vbox"/>
+<<<<<<< HEAD:pmog@gamelayers.com/chrome/content/overlay.xul
+          <menuitem id="pmog_im_acquaintances_popup_new_message" class="menu-iconic pmog_menu_item pmog_menu_header" label="&pmog.your_mailbox;" image="chrome://pmog/skin/images/icons/pmail-16.png" oncommand="Pmog.hud.visit_mailbox()"/>
+          <menuitem id="toggle_pmail_polling" label="&pmog.auto_pmail_poll;" tooltiptext="&pmog.auto_pmail_poll_tooltip;" command="cmd_toggle_pmail_poll" type="checkbox" />
+=======
+          <menuitem id="pmog_im_acquaintances_popup_new_message"
+                        class="menu-iconic pmog_menu_item pmog_menu_header"
+                        label="&pmog.your_mailbox;"
+                        image="chrome://pmog/skin/images/icons/pmail-16.png"
+                        oncommand="Pmog.hud.visit_mailbox()"/>
+          <menuitem id="toggle_pmail_polling"
+                        label="&pmog.auto_pmail_poll;"
+                        tooltiptext="&pmog.auto_pmail_poll_tooltip;"
+                        command="cmd_toggle_pmail_poll"
+                        type="checkbox" />
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="events-button" type="menu-button" orient="horizontal" label="&pmog.events;" tiptext="&pmog.events_tooltip;" class="always-label toolbar-button events-button-default" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/events');">
+        <menupopup id="events_menupopup" class="pmog_menu_popup">
+          <menuitem oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/events');" label="&pmog.open_event_window;" />
+          <menuseparator />
+          <menuitem observes="showEventOverlays" command="showEventOverlays" checked="true" />
+          <menuitem observes="hideEventOverlays" command="hideEventOverlays" />
+          <menuseparator />
+          <menuitem id="quest-events" label="See More Game Events" tooltiptext="&pmog.events_tooltip;" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/events');" />
+          <menuitem id="quest-events"
+                        label="See Your Events"
+                        class="menuitem-iconic pmog_menu_item"
+                        oncommand="Pmog.hud.visit_events()"/>
+
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="forums-button" type="menu-button" orient="horizontal" tiptext="Forums" class="toolbar-button icononly" command="cmd_pmog_visit_forums">
+        <menupopup id="pmog_forums_popup" class="pmog_menu_popup">
+          <menuitem id="pmog_forums_popup_latest" label="Forums Front Page" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums');" />
+          <menuseparator id="pmog_action_menu_separator" />
+          <menuitem id="pmog_forums_popup_community" label="The Nethernet Community News" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/the-nethernet-news');" />
+          <menuitem id="pmog_forums_popup_tools" label="Community Tools" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/social-tools');" />
+          <menuitem id="pmog_forums_popup_newbs" label="Newbie Forum" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/shoat-sanctuary');" />
+          <menuitem id="pmog_forums_popup_bugs" label="Bug Reports" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/help-support-bug-reports');" />
+          <menuitem id="pmog_forums_popup_gameplay" label="Gameplay" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/gameplay');" />
+          <menuitem id="pmog_forums_popup_strategy" label="Strategy" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/straturgy');" />
+          <menuitem id="pmog_forums_popup_trading" label="Trading and Promotion" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/trading');" />
+          <menuitem id="pmog_forums_popup_games" label="Forum Games" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/forum-games');" />
+>>>>>>> r1.1.2:pmog@gamelayers.com/chrome/content/overlay.xul
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="contactsform-button" label="&pmog.contacts;" class="icononly toolbar-button" tiptext="&pmog.contacts_tooltip;" command="cmd_pmog_contacts" />
+
+      <toolbarbutton id="profile-button" label="&pmog.profile;" class="icononly toolbar-button" tiptext="&pmog.profile_tooltip;" command="cmd_pmog_toggle_profile" context="pmog_profile_context" />
+
+      <toolbarbutton id="shoppeform-button" label="&pmog.shoppe;" class="icononly toolbar-button" tiptext="&pmog.shoppe_tooltip;" command="cmd_pmog_toggle_shoppe" />
+
+      <toolbarbutton id="blog-button" label="&pmog.blog;" tiptext="&pmog.blog_tooltip;" class="icononly toolbar-button" command="cmd_pmog_visit_blog" />
+
+      <toolbarbutton id="help-button" type="menu-button" orient="horizontal" label="&pmog.help;" tiptext="&pmog.help_tooltip;" class="icononly toolbar-button" command="cmd_visit_guide">
+        <menupopup id="pmog_help" class="pmog_menu_popup">
+          <menuitem id="help-howto" label="How to play The Nethernet" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/guide');" />
+          <menu id="pmog_toolbar_codex_menu" class="menu-iconic pmog_menu_item" label="&pmog.codex;"/>
+          <menuitem id="help-retake-intro" label="Take Introduction Mission" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/missions/welcome_to_the_nethernet');" />
+          <menuitem id="pmog_forums_popup_newbs" label="Newbie Forum" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/shoat-sanctuary');" />
+          <menuitem id="help-blog" label="Community News Blog" class="menuitem-iconic pmog_menu_item" command="cmd_pmog_visit_blog" />
+          <menuitem id="menu_pmog_key_commands_help" label="&pmog.key_commands;" class="menuitem-iconic gear_icon pmog_menu_item" command="cmd_pmog_key_commands" />
+          <menuitem id="menu_pmog_report_a_bug" label="&pmog.report_a_bug;" class="menuitem-iconic report_bug_icon pmog_menu_item" command="cmd_report_a_bug" />
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="config-button" type="menu" label="&pmog.pmog_menu;" tiptext="&pmog.pmog_menu_tooltip;" class="icononly toolbar-button">
+        <menupopup id="pmog_actions" class="pmog_menu_popup">
+
+          <menu id="quest-button" label="&pmog.quest;" class="menu-iconic gear_icon pmog_menu_item" tiptext="&pmog.quest_tooltip;" command="cmd_queue_or_jaunt">
+            <menupopup id="pmog_quest" class="pmog_menu_popup">
+              <menuitem id="quest-jaunt" label="&pmog.jaunt;" class="menuitem-iconic pmog_menu_item" tooltiptext="&pmog.jaunt_tooltip;" oncommand="Pmog.jaunt();" key="jaunt_key" />
+              <menuitem id="quest-suggested" label="&pmog.venture;" class="menuitem-iconic pmog_menu_item" tooltiptext="&pmog.venture_tooltip;" oncommand="Pmog.hud.add_venture();" key="venture_key" />
+              <menuitem id="pmog_missions" label="&pmog.missions_central;" tooltiptext="&pmog.missions_central_tooltip;" class="menuitem-iconic missions_icon pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/missions/');" />
+              <menu id="pmog_toolbar_missions_menu"></menu>
+              <menuitem id="quest-awsmattack" label="&pmog.awsmattack;" tooltiptext="&pmog.awsmattack_tooltip;" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/awsm-attack');" />
+            </menupopup>
+          </menu>
+
+          <menu id="events-button" label="&pmog.events;" class="menu-iconic gear_icon pmog_menu_item events-button-default" command="cmd_open_events_window">
+            <menupopup id="events_menupopup" class="pmog_menu_popup">
+              <menuitem command="cmd_open_events_window" label="&pmog.open_event_window;" />
+              <menuseparator />
+              <menuitem observes="showEventOverlays" command="showEventOverlays" checked="true" />
+              <menuitem observes="hideEventOverlays" command="hideEventOverlays" />
+              <menuseparator />
+              <menuitem id="quest-events" label="See More Game Events" tooltiptext="&pmog.events_tooltip;" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/events');" />
+              <menuitem id="quest-events" label="See Your Events" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.hud.visit_events()"/>
+            </menupopup>
+          </menu>
+
+          <menu id="forums-button" label="&pmog.forums;" class="menu-iconic pmog_menu_item forum_menuitem">
+            <menupopup id="pmog_forums_popup" class="pmog_menu_popup">
+              <menuitem id="pmog_forums_popup_latest" label="Forums Front Page" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums');" />
+              <menuitem id="pmog_forums_latest" label="Latest Posts" class="menuitem-iconic pmog_menu_item forum_menuitem" command="cmd_pmog_visit_forums" />
+              <menuseparator id="pmog_action_menu_separator" />
+              <menuitem id="pmog_forums_popup_community" label="The Nethernet Community News" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/community-news');" />
+              <menuitem id="pmog_forums_popup_tools" label="Community Tools" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/social-tools');" />
+              <menuitem id="pmog_forums_popup_newbs" label="Newbie Forum" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/shoat-sanctuary');" />
+              <menuitem id="pmog_forums_popup_bugs" label="Bug Reports" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/bug-reports-technical-support ');" />
+              <menuitem id="pmog_forums_popup_gameplay" label="Gameplay" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/gameplay');" />
+              <menuitem id="pmog_forums_popup_strategy" label="Strategy" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/straturgy');" />
+              <menuitem id="pmog_forums_popup_trading" label="Trading and Promotion" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/trading');" />
+              <menuitem id="pmog_forums_popup_games" label="Forum Games" class="menuitem-iconic pmog_menu_item forum_menuitem" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/forums/forum-games');" />
+            </menupopup>
+          </menu>
+
+          <menu id="pmog_preferences_menu" class="menu-iconic gear_icon pmog_menu_item" label="&pmog.preferences;">
+            <menupopup id="pmog_preference_actions" class="pmog_menu_popup">
+              <menuitem id="pmog_preferences" label="&pmog.in_game_preferences;" class="menuitem-iconic pmog_menu_item gear_icon" onclick="checkForMiddleClick(this, event)" oncommand="Pmog.hud.preferences();" />
+              <menuitem id="pmog_ignored_preferences" label="&pmog.ignored_sites;" class="menuitem-iconic gear_icon pmog_menu_item" onclick="checkForMiddleClick(this, event)" command="cmd_ignored_sites" />
+              <menuitem id="menu_pmog_manage_profiles" label="&pmog.manage_profiles;" class="menuitem-iconic gear_icon pmog_menu_item" command="cmd_pmog_manage_profiles" />
+              <menuitem id="menu_pmog_version" label="The Nethernet Version" class="menuitem-iconic pmog_version pmog_menu_item" command="cmd_pmog_verions" />
+            </menupopup>
+          </menu>
+
+          <menuitem id="pmog_visit_pmog" label="&pmog.visit_pmog;" class="menuitem-iconic pmog_menu_item n_icon" onclick="checkForMiddleClick(this, event)" oncommand="Pmog.hud.visit_pmog();"/>
+
+          <menuitem id="pmog_invite" class='menuitem-iconic pmog_menu_item' label="&pmog.invite;" tiptext="&pmog.invite_tooltip;" command="cmd_pmog_invite" />
+
+          <menuitem id="menu_pmog_pause_pmog" label="&pmog.pause;" class="menuitem-iconic pmog_menu_item" command="cmd_pmog_togglePause" />
+
+          <menuitem id="menu_pmog_reset_toolbar" label="Reset Toolbar" class="menuitem-iconic pmog_menu_item" oncommand="Pmog.resetToolbar();" />
+
+          <menuseparator id="pmog_action_menu_separator" />
+
+          <menu id="pmog_switch_users_logged_in" class="menu-iconic login_icon pmog_menu_item" label="&pmog.switchUser;">
+            <menupopup id="pmog_switch_users_logged_in_popup" class="pmog_menu_popup">
+              <menuitem id="pmog_switch_users_logged_in_new_user" label="&pmog.new_login;" onclick="checkForMiddleClick(this, event)" class="menuitem-iconic login_icon pmog_menu_item permanent" oncommand="Pmog.hud.switch_users(null, true);"/>
+              <menuseparator class="permanent switch-user-stop" />
+              <menuitem id="login_via_twitter" label="Twitter Login" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/oauth/new/twitter');" class="toolbar-button permanent" />
+              <menuitem id="forgot_password_link" label="Forgot Password" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/sessions/find');" class="toolbar-button permanent" />
+            </menupopup>
+          </menu>
+
+          <menuitem id="sign_out" label="&pmog.sign_out;" class="menuitem-iconic logout_icon pmog_menu_item" onclick="checkForMiddleClick(this, event)" command="cmd_signout" />
+
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbaritem id="toolbar-messageitem">
+        <description id="toolbar-message" value="Welcome to The Nethernet"/>
+      </toolbaritem>
+
+      <toolbarbutton id="pmog-toolbar-throbber" class="toolbar-button" collapsed="true" />
+
+      <toolbarbutton id="datapoint-button" label="" class="always-label toolbar-button" tiptext="&pmog.datapoints_tooltip;" command="cmd_pmog_toggle_shoppe" />
+
+      <toolbarbutton id="bacon-button" label="" class="always-label toolbar-button" tiptext="&pmog.bacon_tooltip;" command="cmd_pmog_shoppe_bacon" />
+
+      <toolbarbutton id="overclockform-button" class="icononly toolbar-button" tiptext="&pmog.overclock_tooltip;" command="cmd_toggle_overclockform" />
+
+      <toolbarbutton id="impedeform-button" class="icononly toolbar-button" tiptext="&pmog.impede_tooltip;" command="cmd_toggle_impedeform" />
+
+      <toolbarbutton id="stswatterform-button" class="icononly toolbar-button" tiptext="St. Swatter - Remove all the St. Nicks attached to a player" command="cmd_toggle_stswatterform" />
+
+      <toolbarbutton id="overweightcanaryform-button" class="icononly toolbar-button" tiptext="Overweight Canary - Remove up to 10 mines from a specific website" command="cmd_toggle_overweightcanaryform" />
+
+      <toolbarbutton id="armor-button" status="off" class="toolbar-button always-label" label="0" tiptext="&pmog.armor_tooltip;" command="cmd_toggle_armor" key="armor_key" />
+
+      <toolbarbutton id="dodge-button" status="off" class="toolbar-button always-label" orient="horizontal" label="0" tiptext="Dodge - Safely avoid Mines and Grenades" command="cmd_toggle_dodge" />
+
+      <toolbarbutton id="disarm-button" status="off" class="toolbar-button always-label" orient="horizontal" label="0" tiptext="Disarm - Safely avoid Mines and Grenades" command="cmd_toggle_disarm" />
+
+      <toolbarbutton id="vengeance-button" status="off" class="toolbar-button always-label" orient="horizontal" label="0" tiptext="Vengeance - Cause Mines and Grenades to backfire" command="cmd_toggle_vengeance" />
+
+      <!-- <toolbarbutton id="skeleton-key-button" class="icononly toolbar-button skeleton_key_icon" tiptext="&pmog.create_skeleton_key_tooltip;" command="cmd_toggle_skeletonkeyform" /> -->
+
+    </toolbarpalette>
+
+
+      <toolbar id="pmog-toolbar" class="chromeclass-toolbar" collapsed="false" customizable="true" context="toolbar-context-menu" iconsize="small" mode="full" toolbarname=""
+               defaultset="awesome-button,lightpostform-button,attack-button,portalform-button,stnickform-button,armor-button,separator,crateform-button,puzzlepostform-button,mine-upgrade-button,abundantportalform-button,ballisticstnickform-button,stswatterform-button,overweightcanaryform-button,grenadeform-button,watchdog-button,overclockform-button,impedeform-button,dodge-button,disarm-button,vengeance-button,separator,messageform-button,contactsform-button,profile-button,separator,shoppeform-button,blog-button,help-button,config-button,spring,toolbar-messageitem,pmog-toolbar-throbber,spring,datapoint-button,bacon-button">
+      </toolbar>
+
+      <toolbar id="pmog-logged-out" collapsed="false" align="center" flex="1">
+        <toolbarbutton id="tnnSignupLogo" onclick="Pmog.hud.openSignupForm();" class="toolbar-button" />
+        <toolbarbutton id="sign_up_link" label="Sign Up" onclick="Pmog.hud.openSignupForm();" class="menu-in-toolbar toolbar-button signup" />
+        <toolbarspacer />
+        <toolbarbutton type="menu" label="&pmog.login;" id="login_when_logged_out" class="toolbar-button">
+          <menupopup id="pmog_switch_users_not_logged_in_popup" class="pmog_menu_popup">
+            <menuitem label="&pmog.new_login;" id="pmog_switch_users_not_logged_in_new_user" onclick="checkForMiddleClick(this, event)" class="menuitem-iconic login_icon pmog_menu_item permanent" oncommand="Pmog.hud.switch_users(null, true);"/>
+            <menuseparator class="permanent switch-user-stop" />
+            <menuitem id="login_via_twitter" label="Twitter Login" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/oauth/new/twitter');" class="toolbar-button permanent" />
+            <menuitem id="forgot_password_link" label="Forgot Password" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/sessions/find');" class="toolbar-button permanent" />
+          </menupopup>
+        </toolbarbutton>
+        <toolbarspacer />
+        <toolbarbutton id="options-button" type="menu" label="&pmog.pmog_menu;" tiptext="&pmog.pmog_menu_tooltip;" class="toolbar-button">
+          <menupopup id="pmog_actions" class="pmog_menu_popup">
+            <menuitem id="pmog_visit_pmog" label="&pmog.visit_pmog;" class="menuitem-iconic pmog_menu_item n_icon" onclick="checkForMiddleClick(this, event)" oncommand="Pmog.hud.visit_pmog();" />
+            <menu id="logged_out_help" label="Help">
+              <menupopup id="pmog_help" class="pmog_menu_popup">
+                <menuitem id="help-howto" label="How to play on The Nethernet" class="menuitem-iconic pmog_menu_item" command="cmd_pmog_visit_toolbar_help" />
+                <menuitem id="help-forums" label="Go to the Forums" class="menuitem-iconic pmog_menu_item" command="cmd_pmog_visit_forums" />
+                <menuitem id="help-blog" label="Community News Blog" class="menuitem-iconic pmog_menu_item" command="cmd_pmog_visit_blog" />
+                <menuitem id="menu_pmog_report_a_bug" label="&pmog.report_a_bug;" class="menuitem-iconic report_bug_icon pmog_menu_item" command="cmd_report_a_bug" />
+                <menuitem id="menu_pmog_manage_profiles" label="&pmog.manage_profiles;" class="menuitem-iconic gear_icon pmog_menu_item" command="cmd_pmog_manage_profiles" />
+                <menuitem id="menu_pmog_version" label="The Nethernet Version" class="menuitem-iconic pmog_version pmog_menu_item" command="cmd_pmog_verions" />
+              </menupopup>
+            </menu>
+          </menupopup>
+        </toolbarbutton>
+        <toolbarspacer />
+        <toolbarbutton id="logged_out_throbber" class="toolbar-button" collapsed="true" />
+        <toolbarspacer />
+        <toolbaritem>
+          <label id="logged_out_message" value="" />
+        </toolbaritem>
+      </toolbar>
+  </toolbox>
+  <!-- Extend Firefox status bar -->
+  <statusbar id="status-bar">
+    <statusbarpanel id="PmogStatusBar" context="PmogStatusContextMenu" onmousedown="goDoCommand('cmd_toggle_pmog');">
+      <image id="pmog_status_icon" tiptext="&pmog.hide_the_pmog_toolbar;"/>
+    </statusbarpanel>
+  </statusbar>
+  <script>
+    <![CDATA[
+    jQuery(document).ready(function() {
+
+      jQuery('#pmog-toolbar toolbarbutton').hover(
+        function(event) {
+          Pmog.onTBBMouseOver(this,event);
+        },
+        function() {
+          Pmog.onTBBMouseOut(this);
+        }).bind("mousemove", function() {
+          Pmog.onTBBMouseMove(this);
+        });
+
+        window.addEventListener("load", function (e) { Pmog.init(); }, false);
+      });
+    ]]>
+  </script>
+
+    <broadcasterset id="mainBroadcasterSet">
+     <broadcaster id="showEventOverlays" label="Show Event Overlays" autoCheck="false" type="radio" name="nethernet_event_overlays" oncommand="Pmog.setShowEvents(true)" />
+    <broadcaster id="hideEventOverlays" label="Hide Event Overlays" autoCheck="false" type="radio" name="nethernet_event_overlays" oncommand="Pmog.setShowEvents(false)" />
+    </broadcasterset>
+  </overlay>
+

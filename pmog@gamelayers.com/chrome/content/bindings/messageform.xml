@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="messageBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+      <xbl:binding id="messageform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+        <xbl:content>
+          <xul:pbox anonid="overlay" title="Send a Pmail:" margin="40" header="messageHeader">
+            <div class="greyBox">
+              <div class="character-limit-box">
+                <span anonid="character_counter">500</span> characters (500 max)
+              </div>
+              <div>
+                  <xul:textbox anonid="messageBody" multiline="true" spellcheck="true" maxlength="500" emptytext="Message..." />
+              </div>
+              <div>
+                  <xul:textbox anonid="messageTo" emptytext="@playername" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) { document.getBindingParent(this)._doSend(); }" />
+              </div>
+            </div>
+            <div anonid="buttonContainer" class="buttonBox">
+              <div class="leftButton">
+                <xul:toolbarbutton anonid="sendButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+              </div>
+              <div class="rightButton">
+                <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+              </div>
+              <div class="button-divider">
+              </div>
+            </div>
+          </xul:pbox>
+      </xbl:content>
+
+      <xbl:resources>
+        <xbl:stylesheet src="chrome://pmog/skin/overlays/messageform.css"/>
+      </xbl:resources>
+
+        <xbl:implementation>
+
+          <xbl:field name="overlay">
+            jQuery(this).anonymousByAttr("overlay");
+          </xbl:field>
+
+          <xbl:field name="title">
+            this.overlay.title;
+          </xbl:field>
+
+          <xbl:field name="spinner">
+            this.overlay.spinner;
+          </xbl:field>
+
+          <xbl:field name="_toField">
+            jQuery(this).anonymousByAttr("messageTo");
+          </xbl:field>
+
+          <xbl:field name="_messageField">
+            jQuery(this).anonymousByAttr("messageBody");
+          </xbl:field>
+
+          <xbl:field name="_characterCount">
+            jQuery(this).anonymousByAttr("character_counter");
+          </xbl:field>
+
+          <xbl:field name="_sendButton">
+            jQuery(this).anonymousByAttr("sendButton");
+          </xbl:field>
+
+          <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+          <xbl:property name="recipient" onget="return this._toField.value;"
+                                     onset="return this.setRecipient(val);" />
+
+          <xbl:property name="message" onget="return this._messageField.value;"
+                                   onset="return this.setMessage(val);" />
+
+          <xbl:constructor>
+            <![CDATA[
+
+            ]]>
+          </xbl:constructor>
+
+          <xbl:method name="show">
+            <xbl:body>
+            <![CDATA[
+
+            if (this.getAttribute("to")) {
+              this.setRecipient(this.getAttribute("to"));
+            }
+
+            msgFrm = this;
+              jQuery(document).ready(function(){
+                  jQuery(msgFrm._messageField.inputField).keyup(function() {
+                      var charLimit = 500;
+                      var charLength = this.textLength;
+                      msgFrm._characterCount.textContent = (charLimit - charLength);
+                      if((charLimit - charLength) < 0 ) {
+                          msgFrm._characterCount.style.color = "red";
+                          msgFrm._sendButton.hidden = true;
+                      } else {
+                          msgFrm._characterCount.style.color = "black";
+                          msgFrm._sendButton.hidden = false;
+                      }
+                  });
+              });
+
+              msgFrm._messageField.focus();
+            ]]>
+            </xbl:body>
+          </xbl:method>
+
+          <xbl:method name="setRecipient">
+            <xbl:parameter name="playername" />
+            <xbl:body>
+              <![CDATA[
+                this._toField.value = '@' + playername;
+                jQuery(this._toField.inputField).effect("highlight", { color: "yellow" }, 3000);
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+          <xbl:method name="setMessage">
+            <xbl:parameter name="message" />
+            <xbl:body>
+              <![CDATA[
+                this._messageField.value = message;
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+          <xbl:method name="_doSend">
+            <xbl:body>
+              <![CDATA[
+                ovrlay = this;
+
+                if(ovrlay._messageField.textLength > 500){
+                  alert('You cannot send a message over 500 characters in length.')
+                  return false;
+                }
+
+                var contents = {};
+                contents.pmail_to = this.recipient;
+                contents.pmail_message = this.message;
+
+                JSONmsg = jQuery.toJSON(contents);
+
+                var fhService =
+                          Components.classes["@mozilla.org/satchel/form-history;1"].getService(Components.interfaces.nsIFormHistory2);
+                fhService.addEntry("pmogPmailTo", this.recipient);
+
+                jQuery.ajax({
+                  url: Pmog.private_url() + '/users/' + Pmog.user.login + '/messages.json?authenticity_token=' + Pmog.user.authenticity_token,
+                  type: 'POST',
+                  data: JSONmsg,
+                  dataType: 'json',
+                  contentType: "application/json; charset=utf-8",
+                  panel_id: Pmog.tab_observer.selected_tab().panel_id,
+                  success: function(data, statusText) {
+                    // Pmog.logger.debug(toJSONString(data));
+                    Pmog.mailHandleSuccess(data, ovrlay, this.panel_id);
+                  },
+                  error: function(data, statusText, errorObject) {
+                    contents = null;
+                    ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                  },
+                });
+              ]]>
+            </xbl:body>
+          </xbl:method>
+
+        </xbl:implementation>
+      </xbl:binding>
+    </xbl:bindings>

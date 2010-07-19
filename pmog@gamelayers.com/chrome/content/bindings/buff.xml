@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Buff Bindings
+  Created by Marc Adams on 2009-06-03.
+  Copyright (c) 2009 GameLayers Inc.. All rights reserved.
+-->
+
+<xbl:bindings id="buffBindings"
+        xmlns:xbl="http://www.mozilla.org/xbl"
+        xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns="http://www.w3.org/1999/xhtml">
+
+<xbl:binding id="buff">
+  <xbl:content>
+    <div>
+      <div anonid="closeButton" class="closeButton" onclick="document.getBindingParent(this).close();"></div>
+      <div anonid="buffBox" class="buff-overlay">
+        <span anonid="charges" class="count"></span>
+      </div>
+    </div>
+  </xbl:content>
+
+  <xbl:implementation>
+    <xbl:field name="_closeButton">
+      jQuery(this).anonymousByAttr("closeButton");
+    </xbl:field>
+    <xbl:field name="_buffBox">
+      jQuery(this).anonymousByAttr("buffBox");
+    </xbl:field>
+    <xbl:field name="_charges">
+      jQuery(this).anonymousByAttr("charges");
+    </xbl:field>
+    <xbl:field name="_type">
+      null
+    </xbl:field>
+    <xbl:field name="_source">
+      null
+    </xbl:field>
+    <xbl:field name="_timestamp">
+      null
+    </xbl:field>
+
+    <xbl:property name="charges">
+      <xbl:getter>
+        return this._charges.textContent;
+      </xbl:getter>
+      <xbl:setter>
+        return this._charges.textContent = val;
+      </xbl:setter>
+    </xbl:property>
+
+    <xbl:property name="type">
+      <xbl:getter>
+        return this._type;
+      </xbl:getter>
+      <xbl:setter>
+        return this.setType(val);
+      </xbl:setter>
+    </xbl:property>
+
+    <xbl:constructor>
+      <![CDATA[
+        if (this.getAttribute("type")) {
+          this.type = this.getAttribute("type");
+        }
+
+        if (this.getAttribute("charges")) {
+          this.charges = this.getAttribute("charges");
+        }
+
+        var overlay = this;
+        jQuery(overlay._buffBox).click(function(event) {
+          var extendedBuff = jQuery('#buff-detail')[0];
+          extendedBuff.type = overlay.type;
+          var deets = {};
+          deets.charges = overlay.charges;
+          deets.source = overlay._source;
+          deets.timestamp = overlay._timestamp;
+          deets.type = overlay.type;
+          deets.avatar = overlay.avatar;
+          extendedBuff.display(deets);
+          extendedBuff.parentNode.openPopupAtScreen(event.screenX, event.screenY, false);
+        });
+
+      ]]>
+    </xbl:constructor>
+
+    <xbl:method name="setType">
+      <xbl:parameter name="type" />
+      <xbl:body>
+        <![CDATA[
+           this._type = type;
+           jQuery(this._buffBox).removeClass();
+           jQuery(this._buffBox).addClass("buff-overlay " + type);
+        ]]>
+      </xbl:body>
+    </xbl:method>
+
+    <xbl:method name="close">
+      <xbl:body>
+        <![CDATA[
+          this.parentNode.hidePopup();
+        ]]>
+      </xbl:body>
+    </xbl:method>
+
+  </xbl:implementation>
+
+  <xbl:resources>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/base-overlay.css"/>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/base-buff.css"/>
+  </xbl:resources>
+</xbl:binding>
+
+<xbl:binding id="extendedBuff">
+  <xbl:content>
+    <div class="max-width-220">
+      <div anonid="closeButton" class="closeButton" onclick="document.getBindingParent(this).close();"></div>
+      <div anonid="buffBox" class="extended-buff-overlay">
+        <div anonid="buff-extended-container" class="buff-extended-info">
+          <span anonid="buff-extended-text" class="extended-info-inner-text"></span>
+        </div>
+        <div anonid="buffed-by-container" class="buff-extended-detail">
+          <span anonid="buffed-by-text" class="buff-extended-detail-text"></span>
+        </div>
+      </div>
+    </div>
+  </xbl:content>
+
+  <xbl:implementation>
+    <xbl:field name="_buffBox">
+      jQuery(this).anonymousByAttr("buffBox");
+    </xbl:field>
+    <xbl:field name="buffExtendedBox">
+      jQuery(this).anonymousByAttr("buff-extended-container");
+    </xbl:field>
+    <xbl:field name="buffExtendedText">
+      jQuery(this).anonymousByAttr("buff-extended-text");
+    </xbl:field>
+    <xbl:field name="buffByBox">
+      jQuery(this).anonymousByAttr("buffed-by-container");
+    </xbl:field>
+    <xbl:field name="buffByText">
+      jQuery(this).anonymousByAttr("buffed-by-text");
+    </xbl:field>
+    <xbl:field name="_type">
+      null
+    </xbl:field>
+
+    <xbl:property name="type">
+      <xbl:getter>
+        return this._type;
+      </xbl:getter>
+      <xbl:setter>
+        return this.setType(val);
+      </xbl:setter>
+    </xbl:property>
+
+    <xbl:constructor>
+      <![CDATA[
+        if (this.getAttribute("type")) {
+          this.type = this.getAttribute("type");
+        }
+      ]]>
+    </xbl:constructor>
+
+    <xbl:method name="display">
+      <xbl:parameter name="options" />
+      <xbl:body>
+        <![CDATA[
+          this.source = options.source;
+          this.timestamp = options.timestamp;
+          this.charges = options.charges;
+
+          var buff_name;
+          var cp_diff;
+          if (options.type === "overclock") {
+            buff_name = "overclocked";
+            cp_diff = "5 more";
+          } else {
+            buff_name = "impeded";
+            cp_diff = "5 fewer";
+          }
+
+          jQuery(this.buffExtendedText).empty().append("<span>You've been " + buff_name + "! For the next " + options.charges + " moves you make, you'll earn " + cp_diff + " classpoints<img class='compact' style='margin-bottom: -4px;' src='chrome://pmog/skin/images/icons/classpoint-16.png' />!</span>");
+          jQuery(this.buffByText).empty().append("<span>You were " + buff_name + " by <span class='link' onclick='document.getBindingParent(this).openProfile()'>" + options.source + "</span></span>");
+          jQuery(this.buffByBox).css("background", "rgba(255,255,255,0.85) url(" + Pmog.BASE_URL + "/" + options.avatar + ") no-repeat 5px center");
+
+        ]]>
+      </xbl:body>
+    </xbl:method>
+
+    <xbl:method name="setType">
+      <xbl:parameter name="type" />
+      <xbl:body>
+        <![CDATA[
+           this._type = type;
+           jQuery(this._buffBox).removeClass();
+           jQuery(this._buffBox).addClass("extended-buff-overlay");
+           jQuery(this.buffByBox).removeClass();
+           jQuery(this.buffExtendedBox).removeClass();
+           jQuery(this.buffExtendedBox).addClass("buff-extended-info " + type + "-detail");
+
+           if (type === "overclock") {
+            jQuery(this._buffBox).addClass("good");
+            jQuery(this.buffByBox).addClass("buff-extended-detail-good");
+           }
+
+           if (type === "impede") {
+            jQuery(this._buffBox).addClass("bad");
+            jQuery(this.buffByBox).addClass("buff-extended-detail-bad");
+           }
+        ]]>
+      </xbl:body>
+    </xbl:method>
+
+    <xbl:method name="close">
+      <xbl:body>
+        <![CDATA[
+          this.parentNode.hidePopup();
+        ]]>
+      </xbl:body>
+    </xbl:method>
+
+    <xbl:method name="openProfile">
+      <xbl:body>
+        <![CDATA[
+          var profileOverlay = jQuery('profile')[0];
+          if (profileOverlay.parentNode.state === "open") {
+            if (profileOverlay.player !== this.source) {
+              profileOverlay.setPlayer(this.source);
+            } else {
+              profileOverlay.close();
+            }
+          } else {
+            Pmog.hud.toggleOverlayForm('profile');
+            profileOverlay.setPlayer(this.source);
+          }
+        ]]>
+      </xbl:body>
+    </xbl:method>
+
+  </xbl:implementation>
+
+  <xbl:resources>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/base-overlay.css"/>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/base-buff.css"/>
+    <xbl:stylesheet src="chrome://pmog/skin/pmog_xul_forms.css"/>
+  </xbl:resources>
+</xbl:binding>
+
+
+</xbl:bindings>

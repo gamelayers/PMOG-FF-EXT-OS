@@ -1,0 +1,310 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="baseBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="eventCarousel" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+  <xbl:content>
+    <div anonid="overlayWrapper" class="overlayWrapper">
+      <div anonid="spinner" class="spinner" style="display: none;"></div>
+      <div anonid="leftButton" class="prev button">
+      </div>
+      <div anonid="rightButton" class="next button">
+      </div>
+      <xul:pbox anonid="boxContainer" class="boxContainer">
+        <div class="eventList" anonid="eventList">
+          <ul>
+          </ul>
+        </div>
+      </xul:pbox>
+      <div class="clear">
+      </div>
+    </div>
+  </xbl:content>
+
+  <xbl:implementation>
+    <xbl:field name="eventList">
+      jQuery(this).anonymousByAttr('eventList');
+    </xbl:field>
+    <xbl:field name="prevButton">
+      jQuery(this).anonymousByAttr('leftButton');
+    </xbl:field>
+    <xbl:field name="nextButton">
+      jQuery(this).anonymousByAttr('rightButton');
+    </xbl:field>
+    <xbl:field name="boxContainer">
+      jQuery(this).anonymousByAttr('boxContainer');
+    </xbl:field>
+    <xbl:field name="wrapper">
+      jQuery(this).anonymousByAttr('overlayWrapper');
+    </xbl:field>
+    <xbl:field name="spinner">
+      jQuery(this).anonymousByAttr('spinner');
+    </xbl:field>
+
+    <xbl:property name="isVolatile" readonly="true" onget="return true;" />
+
+    <xbl:method name="show">
+      <xbl:parameter name="params"/>
+      <xbl:body>
+        <![CDATA[
+          jQuery(this.boxContainer.titleBox).hide();
+          var overlay = this.loadEvents(params);
+
+          var items = jQuery(overlay).anonymousNodes();
+          jQuery(this.eventList).carousel({
+            beforeStart: function(before, after) {
+              // perhaps dynamically load content of li's in 'after'
+              jQuery(".button", items).removeClass('disabled');
+              if (after.index(jQuery("ul", overlay.eventList).find('li:first')) >= 0) {
+                jQuery(overlay.prevButton).addClass('disabled');
+              }
+
+              if (after.index(jQuery("ul", overlay.eventList).find('li:last')) >= 0) {
+                jQuery(overlay.nextButton).addClass('disabled');
+              }
+            },
+            circular: false
+
+          });
+
+          jQuery('#pmog-toolbar').fadeIn(2000, function() {
+            jQuery(overlay.eventList).carousel('_init');
+          });
+
+          jQuery('#pmog-toolbar').fadeIn(2000, function() {
+            overlay.boxContainer.style.marginTop = "-25px";
+            overlay.boxContainer.style.marginRight = "-15px";
+            overlay.boxContainer._closeButton.removeAttribute('onclick');
+            jQuery(overlay.boxContainer._closeButton).click(function() { jQuery('carousel')[0].close(); });
+          });
+
+          jQuery(this.prevButton).click(function() {
+            jQuery(overlay.eventList).carousel('prev');
+          });
+
+          jQuery(this.nextButton).click(function() {
+            jQuery(overlay.eventList).carousel('next');
+          });
+
+          return true;
+        ]]>
+      </xbl:body>
+    </xbl:method>
+    <xbl:method name="loadEvents">
+      <xbl:parameter name="params"/>
+      <xbl:body>
+        <![CDATA[
+            var overlay = this;
+            jQuery("ul", this.eventList).empty();
+            params.body.messages.forEach(
+
+            function(element, index, array) {
+              var msg = element;
+              var event = document.createElement('cevent');
+              var li = document.createElementNS(HTMLNS, "li");
+              li.appendChild(event);
+              jQuery("ul", overlay.eventList).append(li);
+
+              jQuery(event.message).append( escapeSpecial(fixLinks(msg.content)) );
+
+              jQuery(event.message).prepend('<a href="' + Pmog.BASE_URL + '/users/' + msg.from + '">' + msg.from + '</a> ');
+
+              event.avatar.src = Pmog.BASE_URL + msg.avatar;
+
+              jQuery("a", event.message).each(function() {
+                var regex = /"(\/users\/\w*)"/;
+                this.href = this.href.replace(regex, '"' + Pmog.BASE_URL + '$1' + '"');
+                prepareLink(this);
+              });
+
+              jQuery(event.actionButtons).append(Pmog.addActionButtons(msg, msg.from));
+              jQuery('img.pmail', event.actionButtons).click(function() {
+                Pmog.hud.openReply(msg.from);
+              });
+
+              jQuery('img.stnick', event.actionButtons).click(function() {
+                Pmog.attachStNick(msg.from);
+              });
+
+              jQuery('img.grenade', event.actionButtons).click(function() {
+                Pmog.tossGrenade(msg.from);
+              });
+
+              jQuery('img.crateform', event.actionButtons).click(function() {
+                Pmog.hud.toggleOverlayForm('crateform', {
+                  showArg: msg.from });
+              });
+
+              jQuery('img.rival', event.actionButtons).click(function() {
+                Pmog.addRival(msg.from)
+              });
+
+              jQuery('img.ally', event.actionButtons).click(function() {
+                Pmog.addAlly(msg.from);
+              });
+
+              jQuery(event.actionText).append('<span>in response to</span> <a href="' + Pmog.BASE_URL + '/users/' + msg.from + '">' + msg.from + '</a>');
+              jQuery("a", event.actionText).each( function() {
+                prepareLink(this);
+              });
+
+              event.eventIndex.textContent = index + 1;
+              event.eventCount.textContent = params.body.messages.length;
+              event.totalEventCount.textContent = params.body.unread_count;
+              var eDate = new Date(msg.timestamp);
+              event.timestamp.textContent = jQuery.timeago(eDate);
+
+              switch (msg.context) {
+                case "crate_looted":
+                case "giftcard_looted":
+                case "acquaintance_added":
+                case "ally_added":
+                case "puzzle_crate_looted":
+                case "signup":
+                case "mission_completed":
+                case "overclock_cast":
+                  jQuery(event.mainBox).removeClass('redBox').addClass('greenBox');
+                  break;
+                case "mine_tripped":
+                case "grenade_tripped":
+                case "rival_added":
+                case "mine_deflected":
+                case "mine_disarmed":
+                case "mine_dodged":
+                case "grenade_deflected":
+                case "grenade_disarmed":
+                case "grenade_dodged":
+                case "exploding_crate_detonated":
+                case "st_nick_activated":
+                case "watchdog_activated":
+                case "ballistic_st_nick_attached":
+                case "mine_vengeance":
+                case "exploding_crate_deflected":
+                case "impede_cast":
+                  jQuery(event.mainBox).removeClass('greenBox').addClass('redBox');
+                  break;
+              };
+            });
+
+            return this;
+        ]]>
+      </xbl:body>
+    </xbl:method>
+    <xbl:method name="close">
+      <xbl:body>
+        <![CDATA[
+          jQuery("ul", this.eventList).empty();
+          Pmog.hud.removeEventOverlay(this);
+        ]]>
+      </xbl:body>
+    </xbl:method>
+    <xbl:method name="markAllRead">
+      <xbl:body>
+        <![CDATA[
+
+        jQuery(this).ajaxStart(function() { jQuery(this.spinner).show(); })
+                      .ajaxStop(function() { jQuery(this.spinner).hide(); });
+
+          jQuery.ajax({
+            url: Pmog.BASE_URL + '/users/' + Pmog.user.login + '/events/mark_all_read.json',
+            type: 'GET',
+            dataType: 'json',
+            data: '',
+            success: function(data, statusText) {
+              // Pmog.logger.debug('Mark all read result: ' + toJSONString(data));
+              Pmog.notice(data.flash.notice);
+            },
+          });
+        ]]>
+      </xbl:body>
+    </xbl:method>
+  </xbl:implementation>
+
+  <xbl:handlers>
+    <xbl:handler event="keypress">
+      <![CDATA[
+        if (event.keyCode == event.DOM_VK_ESCAPE) {
+          event.target.close();
+        }
+      ]]>
+    </xbl:handler>
+  </xbl:handlers>
+
+  <xbl:resources>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/base-overlay.css"/>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/events.css"/>
+  </xbl:resources>
+</xbl:binding>
+
+  <xbl:binding id="carouselEvent">
+    <xbl:content>
+      <div class="eventContainer">
+        <div anonid="mainBox" class="three-corner-box redBox">
+          <div anonid="titleContainer">
+            <div anonid="linkableContent">
+              <img anonid="overlayAvatar" class="avatar" />
+              <div anonid="message" class="eventMessage"></div>
+              <div anonid="timestamp" class="eventTimestamp"></div>
+              <div class="clear"></div>
+            </div>
+          </div>
+        </div>
+        <div anonid="eventActionBar" class="eventActionBar">
+          <span anonid="actionButtons"></span> <span anonid="actionText"></span>
+        </div>
+        <div anonid="eventStreamInfo" class="eventStreamInfo">
+            <span anonid="eventIndex">1</span> of <span anonid="eventCount">10</span> (<span anonid="totalEventCount">1000</span> total) personal events | <a onclick="Pmog.showSystemEvents();">See all</a> | <a onclick="jQuery('carousel')[0].markAllRead();">Mark all read</a>
+        </div>
+      </div>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="message">
+        jQuery(this).anonymousByAttr("message");
+      </xbl:field>
+      <xbl:field name="avatar">
+        jQuery(this).anonymousByAttr("overlayAvatar");
+      </xbl:field>
+      <xbl:field name="timestamp">
+        jQuery(this).anonymousByAttr("timestamp");
+      </xbl:field>
+      <xbl:field name="actionBar">
+        jQuery(this).anonymousByAttr("eventActionBar");
+      </xbl:field>
+      <xbl:field name="actionButtons">
+        jQuery(this).anonymousByAttr("actionButtons");
+      </xbl:field>
+      <xbl:field name="actionText">
+        jQuery(this).anonymousByAttr("actionText");
+      </xbl:field>
+      <xbl:field name="eventIndex">
+        jQuery(this).anonymousByAttr('eventIndex');
+      </xbl:field>
+      <xbl:field name="eventCount">
+        jQuery(this).anonymousByAttr('eventCount');
+      </xbl:field>
+      <xbl:field name="totalEventCount">
+        jQuery(this).anonymousByAttr('totalEventCount');
+      </xbl:field>
+      <xbl:field name="closeButton">
+        jQuery(this).anonymousByAttr('closeButton');
+      </xbl:field>
+      <xbl:field name="eventStreamInfo">
+        jQuery(this).anonymousByAttr('eventStreamInfo');
+      </xbl:field>
+      <xbl:field name="mainBox">
+        jQuery(this).anonymousByAttr('mainBox');
+      </xbl:field>
+    </xbl:implementation>
+
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/single_event.css"/>
+    </xbl:resources>
+  </xbl:binding>
+
+</xbl:bindings>

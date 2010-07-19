@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog buttons="accept"
+    title="Nethernet Preferences"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    width="500"
+    height="400"
+    onload="pmog_options_src();"
+    id="pmog_preferences">
+   
+    <script type= "application/x-javascript" src= "chrome://pmog/content/options/options.js"/>  
+    <vbox flex="1">
+    <caption label="Nethernet Preferences" style="font-size:2.0em;font-weight:bolder;margin:0 0 1.0em 0;"/>
+    <iframe
+      type = "content"
+      id   = "pmog-options-iframe"
+      name = "pmog_preferences"
+      flex = "1"
+      src  = "chrome://pmog/content/options/loading.html" style="overflow-x:hidden;" />
+  </vbox>
+</dialog>

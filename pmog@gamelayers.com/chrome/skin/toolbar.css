@@ -1,0 +1,414 @@
+/* @group Toolbar Buttons */
+
+#pmog-toolbar,
+#pmog-logged-out {
+  padding: 2px;
+}
+
+toolbarbutton[disabled=true],
+menuitem[disabled=true] {
+  cursor: default;
+}
+
+toolbarbutton[disabled=true] image {
+  opacity: 0.5;
+}
+
+#pmog-logged-out checkbox {
+  margin: 2px 2px 2px 2px;
+}
+
+#pmog-toolbar toolbarbutton:not([disabled=true]):hover,
+#pmog-logged-out toolbarbutton:not([disabled=true]):hover {
+  cursor: pointer;
+  background-color: #AAA;
+  border: 1px solid #666;
+}
+
+#pmog-toolbar toolbarbutton > .toolbarbutton-menubutton-button,
+#pmog-toolbar toolbarbutton > .toolbarbutton-menubutton-button:hover,
+#pmog-toolbar toolbarbutton > .toolbarbutton-menubutton-button:hover:active
+#pmog-logged-out toolbarbutton > .toolbarbutton-menubutton-button,
+#pmog-logged-out toolbarbutton > .toolbarbutton-menubutton-button:hover,
+#pmog-logged-out toolbarbutton > .toolbarbutton-menubutton-button:hover:active {
+  border: 0;
+}
+
+#pmog-toolbar toolbarbutton > .toolbarbutton-menubutton-button,
+#pmog-logged-out toolbarbutton > .toolbarbutton-menubutton-button {
+  margin: 0;
+  padding: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+toolbar:not([mode="text"]) #back-button .toolbarbutton-menubutton-dropmarker,
+toolbar:not([mode="text"]) #forward-button .toolbarbutton-menubutton-dropmarker {
+  margin-top: 1px;
+}
+
+#pmog-toolbar toolbarbutton:not([disabled=true]):active,
+#pmog-toolbar toolbarbutton:not([disabled=true])[open="true"]
+#pmog-logged-out toolbarbutton:not([disabled=true]):active,
+#pmog-logged-out toolbarbutton:not([disabled=true])[open="true"] {
+  border: thin inset #7f7f7f;
+}
+
+#pmog-toolbar label,
+#pmog-logged-out label,
+#pmog-toolbar label:hover,
+#pmog-logged-out label:hover {
+  margin: 0px;
+  padding: 0px 0px 0px 2px;
+}
+
+#play_attack_watchdog[disabled=true] {
+  display: none;
+}
+
+/* Used by external websites to determine if  the extension is installed. */
+
+.pmog_installed {
+  display: none;
+}
+
+/*#pmog-toolbar .chromeclass-toolbar-additional, #pmog-toolbar .toolbarbutton-1 {
+  display: none;
+}*/
+
+/*
+  Used by external websites to determine if the extension is installed.
+  Define this style in the external stylesheet set the display to none.
+  Then use this style to re-enable the content for those with the plugin instlled.
+*/
+
+toolbarbutton.signup {
+  font-weight: bold;
+  background-color: #CCC;
+}
+
+.pmog_not_installed {
+  display: block;
+}
+
+#pmog-toolbar toolbarseparator {
+  background: url("chrome://pmog/skin/images/separator.png") transparent repeat-y;
+  width: 4px;
+  height: 16px;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 2px 0px 2px;
+}
+
+.toolbar-button {
+  padding:0px 2px 0px 2px;
+  margin:0px;
+}
+
+#pmog-toolbar[mode="full"] .toolbarbutton-1,
+#pmog-toolbar[mode="full"] .toolbarbutton-menubutton-button {
+  min-width: 0px;
+}
+
+#pmog-toolbar[mode="text"] .toolbarbutton-icon {
+  display: block;
+}
+
+#pmog-toolbar[mode="icons"] .icononly .toolbarbutton-text,
+#pmog-toolbar[mode="both"] .icononly .toolbarbutton-text,
+.icononly .toolbarbutton-text,
+.icononly toolbarbutton.toolbarbutton-menubutton-button .toolbarbutton-text {
+  display: none;
+}
+
+#pmog-toolbar[mode="icons"] .always-label .toolbarbutton-text,
+#pmog-toolbar[mode="icons"] .always-label toolbarbutton.toolbarbutton-menubutton-button .toolbarbutton-text,
+.always-label .toolbarbutton-text,
+.always-label toolbarbutton.toolbarbutton-menubutton-button .toolbarbutton-text {
+  display: block;
+}
+
+#awesome-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/dp_card-16.png);
+}
+
+.mine_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/mine-16.png);
+}
+
+.stealth_mine_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/stealthmine-16.png);
+}
+
+.abundant_mine_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/abundantmine-16.png);
+}
+
+.super_mine_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/supermine-16.png);
+}
+
+#quest-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/missions-16.png);
+}
+
+#create-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/create-16.png);
+}
+
+#grenadeform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/grenade-16.png);
+}
+
+#overclockform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/alarmclock_16.png);
+}
+
+#impedeform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/ballandchain_16.png);
+}
+
+
+#crateform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/crate-16.png);
+}
+
+#lightpostform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/lightpost-16.png);
+}
+
+#puzzlepostform-button,
+.puzzle_post_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/puzzlegate-16.png);
+}
+
+#portalform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/portal-16.png);
+}
+
+#abundantportalform-button,
+.abundant_portal_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/abundant_portal-16.png);
+}
+
+#stnickform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/st_nick-16.png);
+}
+
+#ballisticstnickform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/ballistic-16.png);
+}
+
+
+#stswatterform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/st_swatter-16.png);
+}
+
+#overweightcanaryform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/overweight_canary-16.png);
+}
+
+#watchdog-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/watchdog-16.png);
+}
+
+#contactsform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/contacts-16.png);
+}
+
+#messageform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/pmail-16.png);
+}
+
+
+.forum_menuitem {
+  list-style-image: url(chrome://pmog/skin/images/icons/forums-16.png);
+}
+
+#profile-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/associations/shoat-16.png);
+}
+
+#shoppeform-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/shoppestroked-16.png);
+}
+
+.events-button-default {
+  list-style-image: url(chrome://pmog/skin/images/defaultevents.png);
+}
+
+.events-button-events {
+  list-style-image: url(chrome://pmog/skin/images/eventshere.png);
+}
+
+#blog-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/news-16.png);
+}
+
+#help-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/help-16.png);
+}
+
+#options-button,
+#config-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/gear-16.png);
+}
+
+#datapoint-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/datapoint-16.png);
+}
+
+#bacon-button,
+.bacon_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/bacon-16.png);
+}
+
+#armor-button {
+  list-style-image: url(chrome://pmog/skin/images/icons/armor-16.png);
+}
+
+#pmog_abilities_popup_title {
+  color: black;
+  margin-left: -20px;
+}
+
+#abilities_menu,
+#dodge-button[status=on],
+.dodge_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/dodge-16.png);
+}
+
+#dodge-button[status=off] {
+  list-style-image: url(chrome://pmog/skin/images/icons/dodge-off-16.png);
+}
+
+#pmog_abilities_popup_toggle_dodge {
+  /* list-style-image: url(chrome://pmog/skin/images/icons/dodge-16.png); */
+}
+
+#pmog_abilities_popup_toggle_disarm {
+  /* list-style-image: url(chrome://pmog/skin/images/icons/disarm-16.png); */
+}
+
+#disarm-button[status=on],
+.disarm_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/disarm-16.png);
+}
+
+#disarm-button[status=off] {
+  list-style-image: url(chrome://pmog/skin/images/icons/disarm-off-16.png);
+}
+
+#vengeance-button[status=on],
+.vengeance_icon {
+  list-style-image: url(chrome://pmog/skin/images/icons/vengeance-16.png);
+}
+
+#vengeance-button[status=off] {
+  list-style-image: url(chrome://pmog/skin/images/icons/vengeance-off-16.png);
+}
+
+#armor-button[status=off] {
+  list-style-image: url(chrome://pmog/skin/images/icons/armor_off-16.png);
+}
+
+#armor-button[status=on] {
+  list-style-image: url(chrome://pmog/skin/images/icons/armor_on-16.png);
+}
+
+/* @end */
+
+
+/* @group Menu Items */
+
+/* not functioning yet */
+.pmog_menu_item[mode="icons"] label {
+  display: none !important;
+}
+
+/* @group Help Menu */
+#help-howto {
+  list-style-image: url(chrome://pmog/skin/images/icons/help-16.png);
+}
+
+#help-manual {
+  list-style-image: url(chrome://pmog/skin/images/icons/codex-16.png);
+}
+
+#help-forums {
+  list-style-image: url(chrome://pmog/skin/images/icons/gear-16.png);
+}
+
+#help-blog {
+  list-style-image: url(chrome://pmog/skin/images/icons/news-16.png);
+}
+
+#help-retake-intro {
+  list-style-image: url(chrome://pmog/skin/images/icons/missions-16.png);
+}
+/* @end */
+
+/* @group Create Menu */
+#create-mission-tabs {
+  list-style-image: url(chrome://pmog/skin/images/icons/explore-16.png);
+}
+
+#create-portal-here {
+  list-style-image: url(chrome://pmog/skin/images/icons/portal-16.png);
+}
+
+#create-watchdog {
+  list-style-image: url(chrome://pmog/skin/images/icons/watchdog-16.png);
+}
+
+#create-crate {
+  list-style-image: url(chrome://pmog/skin/images/icons/crate-16.png);
+}
+
+#create-skeleton-key {
+  list-style-image: url(chrome://pmog/skin/images/icons/skeleton_key-16.png);
+}
+/* @end */
+
+/* @group Quest Menu */
+#quest-next {
+  list-style-image: url(chrome://pmog/skin/images/icons/venture-16.png);
+}
+
+#quest-jaunt {
+  list-style-image: url(chrome://pmog/skin/images/icons/portal-16.png);
+}
+
+#quest-minigame {
+  list-style-image: url(chrome://pmog/skin/images/icons/contacts-16.png);
+}
+
+#quest-suggested {
+  list-style-image: url(chrome://pmog/skin/images/icons/explore-16.png);
+}
+
+#quest-events {
+  list-style-image: url(chrome://pmog/skin/images/icons/gear-16.png);
+}
+
+#quest-awsmattack {
+  list-style-image: url(chrome://pmog/skin/images/icons/awsmattack-16.png);
+}
+
+#loginSubmit {
+  list-style-image: url(chrome://pmog/skin/images/icons/n-16.png);
+}
+
+#tnnSignupLogo {
+  list-style-image: url(chrome://pmog/skin/images/icons/n-16.png);
+}
+/* @end */
+
+/* @end */
+
+#toolbar-message {
+  color: #A02923;
+  font-weight:bold;
+  padding-right:4px;
+  padding-left:4px;
+}
+

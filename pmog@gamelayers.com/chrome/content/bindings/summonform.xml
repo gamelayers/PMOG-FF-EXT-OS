@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="summonBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <xbl:binding id="summonform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+    <xul:pbox anonid="overlay" title="Summon A Player Here" margin="40" header="summonHeader">
+      <div class="greyBox">
+        <div>Invite someone to this site:</div>
+        <xul:textbox anonid="summon_here" emptytext="" disabled="true"/>
+        <br />
+        <div>With this message:</div>
+        <xul:textbox anonid="message" multiline="true" spellcheck="true" maxlength="500" emptytext="Write here" />
+        <br />
+        <xul:textbox anonid="summoned" emptytext="@playername" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) document.getBindingParent(this)._doSend();" />
+      </div>
+      <div anonid="buttonContainer" class="buttonBox">
+        <div class="leftButton">
+          <xul:toolbarbutton anonid="summonButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+        </div>
+        <div class="rightButton">
+          <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+        </div>
+        <div class="button-divider"></div>
+      </div>
+    </xul:pbox>
+    </xbl:content>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/summonform.css"/>
+    </xbl:resources>
+    <xbl:implementation>
+
+          <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:body>
+        <![CDATA[
+          var url = Pmog.get_page().url;
+
+          if (url.protocol != 'https:') {
+              var website = document.getAnonymousElementByAttribute(this, "anonid", "summon_here");
+              website.value = Pmog.get_page().url;
+          } else {
+              gBrowser.getNotificationBox().appendNotification("You cannot summon another player on The Nethernet to a secure page.", "", null, 7, null);
+              this.close();
+          }
+        ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:field name="_toField">
+        jQuery(this).anonymousByAttr("summoned");
+      </xbl:field>
+
+      <xbl:field name="_summonedField">
+        jQuery(this).anonymousByAttr("summoned");
+      </xbl:field>
+
+      <xbl:field name="_messageField">
+        jQuery(this).anonymousByAttr("message");
+      </xbl:field>
+
+      <xbl:property name="summoned" onget="return this._summonedField.value;"
+                                     onset="return this.setRecipient(val);" />
+
+      <xbl:property name="recipient" onget="return this._toField.value;"
+                                     onset="return this.setRecipient(val);" />
+
+      <xbl:property name="message" readonly="true" onget="return this._messageField.value;" />
+
+      <xbl:method name="setRecipient">
+        <xbl:parameter name="playername" />
+        <xbl:body>
+          <![CDATA[
+            this._summonedField.value = '@' + playername;
+            jQuery(this._toField.inputField).effect("highlight", { color: "yellow" }, 2000);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            if(jQuery('#main-window')[0].getAttribute('pmog_protocol') === 'https') {
+                Pmog.mail_notice(Pmog.propf('you_cant_summon_someone_to_a_secure_page'), "warning", ovrlay);
+                return false;
+            }
+
+            var contents = {};
+            contents.summoned = this.summoned;
+            contents.message = this.message;
+            contents.location_id = Pmog.get_page().id;
+            JSONmsg = jQuery.toJSON(contents);
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/users/' + Pmog.user.login + '/messages/summon.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              data: JSONmsg,
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              panel_id: Pmog.tab_observer.selected_tab().panel_id,
+              success: function(data, statusText) {
+                Pmog.mailHandleSuccess(data, ovrlay, this.panel_id)
+              },
+              error: function(data, statusText, errorObject) {
+                contents = null;
+                Pmog.mailHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

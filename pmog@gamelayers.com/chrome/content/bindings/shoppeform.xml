@@ -1,0 +1,494 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE bindings [
+<!ENTITY % pmogDTD SYSTEM "chrome://pmog/locale/pmog.dtd">
+%pmogDTD;
+]>
+
+<xbl:bindings id="shoppeBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="shoppeform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" type="wide-overlay" margin="90" header="shoppeHeader">
+        <div class="greyBox">
+          <div class="items display_form" anonid="items">
+            <div style="border-bottom: 1px solid black; font-weight: bold; display: block; margin-bottom: 5px;">
+                <span style="display: inline-block; width: 100px; margin: 0;">Tool</span>
+                <span style="display: inline-block; width: 80px; margin: 0; text-align: center;">Cost</span>
+                <span style="display: inline-block; width: 80px; margin: 0; text-align: center;">Quantity</span>
+            </div>
+
+            <xul:shoppeitem tool="armor"
+                            anonid="armor"
+                            price="0"
+                            image="chrome://pmog/skin/images/icons/armor-16.png"
+                            description=" protects the player and their datapoints from damage."
+                            label="Armor"
+                            class="shoppeitem" />
+
+            <xul:shoppeitem tool="crate"
+                            anonid="crates"
+                            price="0"
+                            image="chrome://pmog/skin/images/icons/crate-16.png"
+                            description=" store datapoints and tools on websites."
+                            label="Crates"
+                            class="shoppeitem" />
+
+            <xul:shoppeitem tool="lightpost"
+                             anonid="lightposts"
+                             price="0"
+                             image="chrome://pmog/skin/images/icons/lightpost-16.png"
+                             description=" serve as the building blocks for Missions."
+                             label="Lightposts"
+                             class="shoppeitem" />
+
+            <xul:shoppeitem tool="mine"
+                             anonid="mines"
+                             price="0"
+                             image="chrome://pmog/skin/images/icons/mine-16.png"
+                             description=" trap websites to catch other players."
+                             label="Mines"
+                             class="shoppeitem" />
+
+            <xul:shoppeitem tool="grenade"
+                             anonid="grenades"
+                             price="0"
+                             image="chrome://pmog/skin/images/icons/grenade-16.png"
+                             description=" are used to directly attack other players."
+                             label="Grenades"
+                             class="shoppeitem" />
+
+            <xul:shoppeitem tool="portal"
+                             anonid="portals"
+                             price="0"
+                             image="chrome://pmog/skin/images/icons/portal-16.png"
+                             description=" create hidden links between web sites."
+                             label="Portals"
+                             class="shoppeitem" />
+
+            <xul:shoppeitem tool="st_nick"
+                             anonid="st_nicks"
+                             price="0"
+                             image="chrome://pmog/skin/images/icons/st_nick-16.png"
+                             description=" prevent players from laying mines."
+                             label="St. Nicks"
+                             class="shoppeitem" />
+
+            <xul:shoppeitem tool="watchdog"
+                             anonid="watchdogs"
+                             price="0"
+                             image="chrome://pmog/skin/images/icons/watchdog-16.png"
+                             description=" guard a website and stop mines from being used there."
+                             label="Watchdogs"
+                             class="shoppeitem" />
+            <div style="font-weight:bold;">
+              <span anonid="order_total" style="display: inline;">
+                Total 0
+              </span>
+              <img src="chrome://pmog/skin/images/icons/datapoint-16.png" style="display:inline;"/>
+            </div>
+          </div>
+
+            <xul:hbox anonid="titleContainer">
+              <div anonid="inventoryLabel" class="inventory_label">
+                Current Inventory
+              </div>
+
+              <xul:toolbarbutton anonid="toggleInventoryButton"
+                label="Show"
+                oncommand="document.getBindingParent(this).toggleInventory();"/>
+              <xul:spacer flex="1" />
+            </xul:hbox>
+            <div anonid="inventoryContainer" class="tabbed_html_form" style="display: none; margin-bottom:5px;">
+              <xul:inventory anonid="inventory" />
+            </div>
+          </div>
+
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="purchaseButton" oncommand="document.getBindingParent(this).purchase();" />
+            </div>
+            <div class="rightButton">
+              <xul:label anonid="resetTheShoppe" value="Reset" class="cancel_label" onclick="document.getBindingParent(this).reset();" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="inventory">
+        jQuery(this).anonymousByAttr('inventory');
+      </xbl:field>
+
+      <xbl:field name="inventoryContainer">
+        jQuery(this).anonymousByAttr('inventoryContainer');
+      </xbl:field>
+
+      <xbl:field name="inventoryList">
+        jQuery(this).anonymousByAttr('shoppe_trays');
+      </xbl:field>
+
+      <xbl:field name="watchdogTray">
+        jQuery(this).anonymousByAttr('watchdog_tray');
+      </xbl:field>
+
+      <xbl:field name="watchdogButton">
+        jQuery(this).anonymousByAttr('watchdog_button');
+      </xbl:field>
+
+      <xbl:field name="shoppeSuperContainer">
+        jQuery(this).anonymousByAttr('shoppeSuperContainer');
+      </xbl:field>
+
+      <xbl:field name="shoppeList">
+        jQuery(this).anonymousByAttr('shoppeList');
+      </xbl:field>
+
+      <xbl:field name="dpTotal">
+        jQuery(this).anonymousByAttr('dp_total');
+      </xbl:field>
+
+      <xbl:field name="purchaseButton">
+        jQuery(this).anonymousByAttr('purchaseButton');
+      </xbl:field>
+
+      <xbl:field name="watchdogItem">
+        jQuery(this).anonymousByAttr('watchdogs');
+      </xbl:field>
+
+      <xbl:field name="crateItem">
+        jQuery(this).anonymousByAttr('crates');
+      </xbl:field>
+
+      <xbl:field name="grenadeItem">
+        jQuery(this).anonymousByAttr('grenades');
+      </xbl:field>
+
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:method name="show">
+        <xbl:body>
+          <![CDATA[
+            //this.dpTotal.textContent = commaFormatted(Pmog.user.datapoints);
+
+            if (Pmog.user.levels.benefactor < 3) {
+              jQuery(this.crateItem).hide();
+            }
+
+            if (Pmog.user.levels.vigilante < 7) {
+              jQuery(this.watchdogItem).hide();
+            }
+
+            if (Pmog.user.levels.destroyer < 3) {
+              jQuery(this.grenadeItem).hide();
+            }
+
+            jQuery(this.overlay._title).empty().append('<span>The Nethernet Shoppe</span><br /><span class="smallTitle">You can buy a total of 10 items at one time</span>');
+
+            this.getItems();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+        <xbl:method name="getItems">
+          <xbl:body>
+            <![CDATA[
+               var ovrlay = this;
+
+               jQuery.ajax({
+                 url: Pmog.private_url() + '/shoppe.json?authenticity_token=' + Pmog.user.authenticity_token,
+                 type: 'GET',
+                 dataType: 'json',
+                 contentType: "application/json; charset=utf-8",
+                 success: function(data, statusText) {
+                   ovrlay.displayItems(data);
+                 },
+                 error: function(data, statusText, errorObject) {
+                   ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                 },
+              });
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+        <xbl:method name="reset">
+          <xbl:body>
+            <![CDATA[
+
+              var items = jQuery(this).anonymousNodes();
+              jQuery(items).find(".shoppeitem").each(function() {
+                this.reset();
+              });
+
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+        <xbl:method name="displayItems">
+          <xbl:parameter name="items" />
+          <xbl:body>
+            <![CDATA[
+                for(var x in items) {
+                  var item = jQuery(this).anonymousByAttr(items[x].name);
+                  if(item !== null) {
+                    this.displayItem(item,items[x]);
+                  } else {
+                    //log("Could not find item:" + items[x].name)
+                  }
+                }
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+        <xbl:method name="displayItem">
+          <xbl:parameter name="item" />
+          <xbl:parameter name="data" />
+          <xbl:body>
+            <![CDATA[
+              if(item !== null) {
+                  item.price = data.cost;
+                  item.update();
+              }
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+        <xbl:method name="toggleInventory">
+          <xbl:body>
+            <![CDATA[
+              var shoppe = this;
+              var inventoryButton = jQuery(this).anonymousByAttr('toggleInventoryButton');
+
+              function changeLabel() {
+                var closed = jQuery(shoppe.inventoryContainer).is(":hidden");
+                inventoryButton.label = ( closed ? "Show" : "Hide");
+              }
+
+              jQuery(shoppe.inventoryContainer).toggle("fast", changeLabel);
+
+              this.inventory.showInventory(Pmog.user.login,
+                                           ['portals','crates','st_nicks','lightposts','armor','mines','watchdogs']);
+            ]]>
+          </xbl:body>
+        </xbl:method>
+        <xbl:method name="calculateSubTotal">
+          <xbl:body>
+            <![CDATA[
+            var total= 0;
+            total += document.getAnonymousElementByAttribute(this, "tool", "armor").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "crate").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "lightpost").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "mine").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "portal").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "st_nick").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "watchdog").calculateItemTotal();
+            total += document.getAnonymousElementByAttribute(this, "tool", "grenade").calculateItemTotal();
+
+            document.getAnonymousElementByAttribute(this, "anonid", "order_total").textContent = "Total: " + commaFormatted(total);
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+        <xbl:method name="purchase">
+          <xbl:body>
+            <![CDATA[
+              ovrlay = this;
+
+              jQuery(ovrlay).ajaxStart(function() { this.purchaseButton.setAttribute("disabled", "true"); })
+                                     .ajaxStop(function() { this.purchaseButton.setAttribute("disabled", "false"); });
+
+              var contents = {};
+              contents.order = {};
+
+              contents.order.tools = {};
+
+              contents.order.tools.armor = document.getAnonymousElementByAttribute(this, "tool", "armor").count;
+              contents.order.tools.crates = document.getAnonymousElementByAttribute(this, "tool", "crate").count;
+              contents.order.tools.lightposts = document.getAnonymousElementByAttribute(this, "tool", "lightpost").count;
+              contents.order.tools.mines = document.getAnonymousElementByAttribute(this, "tool", "mine").count;
+              contents.order.tools.portals = document.getAnonymousElementByAttribute(this, "tool", "portal").count;
+              contents.order.tools.st_nicks = document.getAnonymousElementByAttribute(this, "tool", "st_nick").count;
+              contents.order.tools.watchdogs = document.getAnonymousElementByAttribute(this, "tool", "watchdog").count;
+              contents.order.tools.grenades = document.getAnonymousElementByAttribute(this, "tool", "grenade").count;
+
+              JSONorder = jQuery.toJSON(contents);
+
+                jQuery.ajax({
+                  url: Pmog.private_url() + '/shoppe/buy.json?authenticity_token=' + Pmog.user.authenticity_token,
+                  type: 'POST',
+                  data: JSONorder,
+                  dataType: 'json',
+                  contentType: "application/json; charset=utf-8",
+                  panel_id: Pmog.tab_observer.selected_tab().panel_id,
+                  success: function(data, statusText) {
+                    Pmog.handleSuccess(data, ovrlay, this.panel_id, null, {close: false})
+                  },
+                  error: function(data, statusText, errorObject) {
+                    ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                  },
+                });
+            ]]>
+          </xbl:body>
+        </xbl:method>
+      </xbl:implementation>
+      <xbl:resources>
+        <xbl:stylesheet src="chrome://pmog/skin/overlays/shoppeform.css"/>
+      </xbl:resources>
+  </xbl:binding>
+
+  <xbl:binding id="shoppeitem">
+    <xbl:content orient="horizontal">
+      <div style="max-width: 300px; border-bottom: 2px solid #CCC; height: 30px;">
+        <span style="width: 100px; display: inline-block; font-size: 12px;">
+          <span style="vertical-align: top;">
+            <img anonid="toolImage" src="chrome://pmog/skin/images/icons/armor-16.png" style="float: left; margin-right: 5px; margin-bottom: 5px;" />
+            <span anonid="title" style="font-weight: bold;">Armor</span>
+            <br />
+            <span style="display: block; margin-left: 17px;">
+              <div anonid="description" style="display: none;">
+              </div>
+              <a anonid="moreLessLink" onclick="document.getBindingParent(this).toggleDescription();" style="font-size: 10px; text-decoration: underline; color: #999;">Learn More</a>
+            </span>
+          </span>
+        </span>
+        <span style="vertical-align: top; display: inline-block; width: 80px; text-align: center;">
+          <span anonid="price">0</span>
+          <img src="chrome://pmog/skin/images/icons/datapoint-16.png" />
+        </span>
+        <span style="vertical-align: top; display: inline-block; width: 100px; text-align: center;">
+          <input type="text" anonid="txtBox" value="0" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) { jQuery('shoppeform')[0].purchase(); }" onkeyup="document.getBindingParent(this).calculateItemTotal();document.getBindingParent(document.getBindingParent(this)).calculateSubTotal();" size="2" style="border: 1px solid #999;" />
+        </span>
+      </div>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="_description">
+        jQuery(this).anonymousByAttr("description");
+      </xbl:field>
+
+      <xbl:field name="_toolImage">
+        jQuery(this).anonymousByAttr("toolImage");
+      </xbl:field>
+
+      <xbl:field name="_title">
+        jQuery(this).anonymousByAttr("title");
+      </xbl:field>
+
+      <xbl:field name="_price">
+        jQuery(this).anonymousByAttr("price");
+      </xbl:field>
+
+      <xbl:field name="_affordable">
+        jQuery(this).anonymousByAttr("affordable");
+      </xbl:field>
+
+      <xbl:field name="_toolAffordIcon">
+        jQuery(this).anonymousByAttr("toolAffordIcon");
+      </xbl:field>
+
+      <xbl:field name="_toolTotalIcon">
+        jQuery(this).anonymousByAttr("toolTotalIcon");
+      </xbl:field>
+
+      <xbl:field name="_totalTextBox">
+        jQuery(this).anonymousByAttr("txtBox");
+      </xbl:field>
+
+      <xbl:field name="_totalOutput">
+        jQuery(this).anonymousByAttr("item_total");
+      </xbl:field>
+
+      <xbl:field name="_moreLessLink">
+        jQuery(this).anonymousByAttr("moreLessLink");
+      </xbl:field>
+
+      <xbl:property name="description" onget="return this._description.textContent;"
+                                       onset="return this._description.textContent = val;" />
+      <xbl:property name="label" onget="return this.getAttribute('label');" onset="return this.setAttribute('label', val);" />
+      <xbl:property name="tool" onget="return this.getAttribute('tool');" onset="return this.setAttribute('tool', val);" />
+      <xbl:property name="price" onget="return this.getAttribute('price');" onset="return this.setAttribute('price', val);" />
+
+      <xbl:property name="count">
+        <xbl:getter>
+          return document.getAnonymousElementByAttribute(this, "anonid", "txtBox").value;
+        </xbl:getter>
+        <xbl:setter>
+          return document.getAnonymousElementByAttribute(this, "anonid", "txtBox").value = val;
+        </xbl:setter>
+      </xbl:property>
+
+      <xbl:constructor>
+        this.update();
+      </xbl:constructor>
+
+      <xbl:method name="toggleDescription">
+        <xbl:body>
+          <![CDATA[
+             var item = this;
+             jQuery(this._description).toggle(100,
+              function() {
+                if (item._description.style.display === 'none')  {
+                  item._moreLessLink.textContent = "Learn more";
+                } else {
+                  item._moreLessLink.textContent = "Learn less";
+                }
+
+              });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+       <xbl:method name="reset">
+         <xbl:body>
+           <![CDATA[
+             this._totalTextBox.value = "0";
+           ]]>
+         </xbl:body>
+       </xbl:method>
+
+      <xbl:method name="update">
+        <xbl:body>
+          <![CDATA[
+            this._toolImage.src = this.getAttribute("image");
+
+            this._title.textContent = this.getAttribute('label');
+
+            this._description.textContent = this.getAttribute('description');
+
+            this._price.textContent = this.getAttribute('price');
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="calculateItemTotal">
+        <xbl:body>
+          <![CDATA[
+            if (this._totalTextBox.value === "") {
+              return 0;
+            }
+            var total = parseInt(this._totalTextBox.value, 10);
+            return total*parseInt(this.getAttribute('price'),10);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+
+</xbl:bindings>

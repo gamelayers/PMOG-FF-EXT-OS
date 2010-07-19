@@ -1,0 +1,276 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="portalBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="portalform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+        <xul:pbox anonid="overlay" title="Draw a Portal" margin="80" header="portalHeader">
+          <div class="greyBox">
+            <div style="margin-left: 5px;">Connect this site:</div>
+            <xul:textbox anonid="thisSite" value="" disabled="true" style="margin-bottom: 10px;" />
+            <br />
+            <xul:radiogroup anonid="urlDirectionGroup">
+              <xul:hbox>
+                <xul:radio label="To here: " selected="true"/>
+                <xul:radio label="From here: " selected="false"/>
+              </xul:hbox>
+            </xul:radiogroup>
+            <br />
+            <xul:textbox anonid="portal_destination" emptytext="http://" />
+            <br />
+            <br />
+            <div style="margin-left: 5px;">Give a Hint of the Destination:</div>
+            <xul:textbox anonid="portal_title" emptytext="Hint" />
+            <br />
+            <xul:checkbox anonid="portal_nsfw" label="NSFW - Not Safe For Work?" />
+            <br />
+            <div style="margin-left: 5px;">
+              <span anonid="portalCount">
+              </span>
+              <img src="chrome://pmog/skin/images/icons/portal-16.png" style="display:inline;"/>
+      remaining.</div>
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="drawPortalButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+            </div>
+            <div class="rightButton">
+              <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+        </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="hint">
+        jQuery(this).anonymousByAttr("portal_title");
+      </xbl:field>
+      <xbl:field name="destination">
+        jQuery(this).anonymousByAttr("portal_destination");
+      </xbl:field>
+      <xbl:field name="nsfw">
+        jQuery(this).anonymousByAttr("portal_nsfw");
+      </xbl:field>
+      <xbl:field name="urlDirectionGroup">
+        jQuery(this).anonymousByAttr("urlDirectionGroup");
+      </xbl:field>
+      <xbl:field name="currentSiteURL">
+        jQuery(this).anonymousByAttr("thisSite");
+      </xbl:field>
+      <xbl:field name="portalCount">
+        jQuery(this).anonymousByAttr("portalCount");
+      </xbl:field>
+      <xbl:field name="drawPortalButton">
+        jQuery(this).anonymousByAttr("drawPortalButton");
+      </xbl:field>
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:method name="show">
+        <xbl:body>
+          <![CDATA[
+            this.currentSiteURL.value = Pmog.get_page().url;
+
+            this.portalCount.textContent = Pmog.user.inventory.portals;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            var contents = {};
+            contents.portal = {};
+
+            contents.portal.title = ovrlay.hint.value;
+            contents.portal.nsfw = ovrlay.nsfw.checked;
+
+            switch(this.urlDirectionGroup.selectedIndex) {
+              case 0:
+                contents.portal.destination = ovrlay.destination.value;
+                contents.portal.origin = ovrlay.currentSiteURL.value;
+                break;
+              case 1:
+                contents.portal.destination = ovrlay.currentSiteURL.value;
+                contents.portal.origin = ovrlay.destination.value;
+                break;
+            }
+
+            jQuery(ovrlay).ajaxStart(function() { this.drawPortalButton.setAttribute("disabled", "true"); })
+                                   .ajaxStop(function() { this.drawPortalButton.setAttribute("disabled", "false"); });
+
+            portalJSON = jQuery.toJSON(contents);
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/portals.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              data: portalJSON,
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              panel_id: Pmog.tab_observer.selected_tab().panel_id,
+              success: function(data, statusText) {
+                Pmog.handleSuccess(data, ovrlay, this.panel_id)
+              },
+              error: function(data, statusText, errorObject) {
+                Pmog.portalHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/portalform.css"/>
+    </xbl:resources>
+  </xbl:binding>
+
+  <xbl:binding id="abundantportalform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Draw an Abundant Portal" margin="80" header="abundantPortalHeader">
+        <div class="greyBox" style="max-width: 300px;">
+          <div>Connect this site:</div>
+          <xul:textbox anonid="thisSite" value="" disabled="true" />
+          <xul:radiogroup anonid="urlDirectionGroup">
+            <div>
+              <xul:radio label="To here" selected="true"/>
+              <xul:radio label="From here" selected="false"/>
+            </div>
+          </xul:radiogroup>
+          <xul:textbox anonid="portal_destination" emptytext="http://" />
+          <div>Give a Hint of the Destination:</div>
+          <xul:textbox anonid="portal_title" emptytext="Hint" />
+          <xul:checkbox anonid="portal_nsfw" label="NSFW - Not Safe For Work?" />
+            <div anonid="abundant_desc">
+              You'll earn 2 datapoints for each player who takes your portal. Each abundant portal has 50 charges.
+            </div>
+          <div>
+            <span anonid="portalCount"></span> <img src="chrome://pmog/skin/images/icons/abundant_portal-16.png" /> remaining.
+          </div>
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="drawPortalButton" class="abundant" oncommand="document.getBindingParent(this)._doSend(event);" />
+          </div>
+          <div class="rightButton">
+            <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+          </div>
+          <div class="button-divider">
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="hint">
+        jQuery(this).anonymousByAttr("portal_title");
+      </xbl:field>
+      <xbl:field name="destination">
+        jQuery(this).anonymousByAttr("portal_destination");
+      </xbl:field>
+      <xbl:field name="nsfw">
+        jQuery(this).anonymousByAttr("portal_nsfw");
+      </xbl:field>
+      <xbl:field name="urlDirectionGroup">
+        jQuery(this).anonymousByAttr("urlDirectionGroup");
+      </xbl:field>
+      <xbl:field name="currentSiteURL">
+        jQuery(this).anonymousByAttr("thisSite");
+      </xbl:field>
+      <xbl:field name="portalCount">
+        jQuery(this).anonymousByAttr("portalCount");
+      </xbl:field>
+      <xbl:field name="drawPortalButton">
+        jQuery(this).anonymousByAttr("drawPortalButton");
+      </xbl:field>
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:method name="show">
+        <xbl:body>
+          <![CDATA[
+            this.currentSiteURL.value = Pmog.get_page().url;
+
+            this.portalCount.textContent = Pmog.user.inventory.abundant_portals;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            var contents = {};
+            contents.portal = {};
+
+            contents.portal.title = ovrlay.hint.value;
+            contents.portal.nsfw = ovrlay.nsfw.checked;
+
+            switch(this.urlDirectionGroup.selectedIndex) {
+              case 0:
+                contents.portal.destination = ovrlay.destination.value;
+                contents.portal.origin = ovrlay.currentSiteURL.value;
+                break;
+              case 1:
+                contents.portal.destination = ovrlay.currentSiteURL.value;
+                contents.portal.origin = ovrlay.destination.value;
+                break;
+            }
+
+            //contents.portal.destination = ovrlay.destination.value;
+
+              contents.upgrade = {};
+              contents.upgrade.give_dp = true;
+
+              jQuery(ovrlay).ajaxStart(function() { this.drawPortalButton.setAttribute("disabled", "true"); })
+                                     .ajaxStop(function() { this.drawPortalButton.setAttribute("disabled", "false"); });
+
+            portalJSON = jQuery.toJSON(contents);
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/portals.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              data: portalJSON,
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              panel_id: Pmog.tab_observer.selected_tab().panel_id,
+              success: function(data, statusText) {
+                Pmog.handleSuccess(data, ovrlay, this.panel_id)
+              },
+              error: function(data, statusText, errorObject) {
+                Pmog.portalHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/portalform.css" />
+    </xbl:resources>
+  </xbl:binding>
+
+</xbl:bindings>

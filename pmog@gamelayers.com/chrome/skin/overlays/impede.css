@@ -1,0 +1,9 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+.impedeHeader {
+  background-image: url("chrome://pmog/skin/images/buffs/impede-header.png");
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  height: 10px;
+}

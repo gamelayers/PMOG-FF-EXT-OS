@@ -1,0 +1,4 @@
+#pmog-toolbar toolbarbutton,
+#pmog-logged-out toolbarbutton {
+  -moz-border-radius: 10px;
+}

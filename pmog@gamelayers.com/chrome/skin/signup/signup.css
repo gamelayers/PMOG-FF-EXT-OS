@@ -1,0 +1,95 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+.required {
+  color: #f00;
+  margin: 0px;
+  padding: 0px;
+}
+
+hbox.rowLabel {
+  -moz-box-pack: end;
+}
+
+hbox.vcenter {
+  -moz-box-align: center;
+}
+
+hbox.doubleRowSpan {
+  -moz-box-pack: end;
+  -moz-box-align: top;
+}
+
+vbox.doubleRow {
+  -moz-box-pack: center;
+  -moz-box-align: stretch;
+}
+
+.formHintText {
+  margin-left: 5px;
+  color: #808080;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.tosLink {
+  color: blue;
+  text-decoration: underline;
+  margin-right: 0;
+  margin-left: 0;
+  padding-left: 0;
+  padding-right: 0;
+  cursor: pointer;
+}
+
+.agree-block {
+  margin-top: 15px;
+}
+
+.throbber {
+  width: 60px;
+  height: 60px;
+  -moz-box-pack: center;
+  -moz-box-align: center;
+  background: url(chrome://pmog/content/macthrob2.png) no-repeat center center;
+}
+
+textbox {
+  -moz-appearance: none;
+  padding: 0px;
+  cursor: text;
+  margin: 4px 4px;
+  /*border: 3px solid #999;
+  padding: 0px;
+  background-color: -moz-Field;
+  color: -moz-FieldText;*/
+  border: 0;
+}
+
+html|*.textbox-input, 
+html|*.textbox-textarea {
+  margin: 0px !important;
+  border: 1px solid #000 !important;
+  padding: 0px !important;
+  color: none !important;
+  font: none !important;
+}
+
+textbox.error {
+  background-color: red;
+  color: #FFF;
+  font-weight: bold;
+}
+
+label.error {
+  color: red;
+  padding-left: 18px;
+  background: url(chrome://pmog/skin/images/icons/error-16.png) no-repeat left center;
+}
+
+.signupHeader {
+  color: #000;
+  font-size: 24px;
+  line-height: 24px;
+  font-weight: bold;
+}

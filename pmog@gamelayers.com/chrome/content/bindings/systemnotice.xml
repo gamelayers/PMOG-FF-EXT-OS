@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE bindings [
+<!ENTITY % pmogDTD SYSTEM "chrome://pmog/locale/pmog.dtd">
+%pmogDTD;
+]>
+
+<xbl:bindings id="baseBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/1999/xhtml">
+  
+  <xbl:binding id="systemnotice">
+    <xbl:content>
+      <body>
+      <div style="width: 300px;">
+        <ul anonid="ticker01"> 
+            <li id="default"></li> 
+        </ul>
+    </div>
+  </body>
+    </xbl:content>
+
+    <xbl:implementation>
+      
+      <xbl:field name="tickerUL" class="newsticker">
+        jQuery(this).anonymousByAttr("ticker01");
+      </xbl:field>
+      
+    </xbl:implementation>
+
+    <xbl:handlers>
+
+    </xbl:handlers>
+
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/pmog_xul_forms.css" />
+    </xbl:resources>
+  </xbl:binding>
+  
+  
+</xbl:bindings>

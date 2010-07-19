@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Overclock Binding
+  Created by Marc Adams on 2009-06-03.
+  Copyright (c) 2009 GameLayers Inc.. All rights reserved.
+-->
+
+<xbl:bindings id="overclockBinding"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xbl:binding id="overclock" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+  <xbl:content>
+    <xul:pbox anonid="overlay" margin="80" header="overclockHeader" context="good">
+      <div class="max-width-250 neg-10-right-margin">
+        <div class="greyBox">
+           For the next <span anonid="charges"></span> moves you make, you'll earn +5 more classpoints <img src="chrome://pmog/skin/images/icons/classpoint-16.png" />!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="addAllyButton" oncommand="document.getBindingParent(this).addAlly();" hidden="true"/>
+            <xul:toolbarbutton anonid="overclockButton" oncommand="Pmog.overclockPlayer(document.getBindingParent(this).player);" hidden="true" />
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Thanks!')" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </div>
+    </xul:pbox>
+  </xbl:content>
+
+  <xbl:implementation>
+    <xbl:field name="overlay">
+      jQuery(this).anonymousByAttr("overlay");
+    </xbl:field>
+
+    <xbl:field name="_charges">
+      jQuery(this).anonymousByAttr("charges");
+    </xbl:field>
+
+    <xbl:field name="allyButton">
+      jQuery(this).anonymousByAttr("addAllyButton");
+    </xbl:field>
+
+    <xbl:field name="overclockButton">
+      jQuery(this).anonymousByAttr("overclockButton");
+    </xbl:field>
+
+    <xbl:property name="charges">
+      <xbl:getter>
+        return this._charges.textContent;
+      </xbl:getter>
+      <xbl:setter>
+        return this._charges.textContent = val;
+      </xbl:setter>
+    </xbl:property>
+
+    <xbl:method name="show">
+      <xbl:parameter name="params"/>
+      <xbl:body>
+        <![CDATA[
+          this.setPlayer(params.body.user);
+
+          jQuery(this.overlay._title).empty().append('You were Overclocked by <a href="' + Pmog.BASE_URL + '/users/' + params.body.user + '">' + params.body.user + '</a>');
+
+          jQuery(this.overlay._title).children().each(function() {
+              if (this.tagName == 'a') {
+                  prepareLink(this);
+              }
+          });
+
+          this.charges = params.body.charges;
+
+          this.overlay.setAvatar(Pmog.BASE_URL + params.body.avatar);
+
+          if (params.relationship === 'ally') {
+            this.allyButton.hidden = true;
+            this.overclockButton.hidden = false;
+          }
+        ]]>
+      </xbl:body>
+    </xbl:method>
+  </xbl:implementation>
+
+
+  <xbl:resources>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/overclock.css"/>
+  </xbl:resources>
+</xbl:binding>
+
+
+</xbl:bindings>

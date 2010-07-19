@@ -1,0 +1,382 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pmog/locale/pmog.dtd">
+
+<overlay id="toverlay"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+   <!-- Duplication of these menus is not ideal.
+        Ideally we'd like to remove the duplication found in these submenus but so far we've been unsuccessful
+        in reusing the xul fragments -->
+   
+   <commandset id="mainCommandSet">
+     <command id="cmd_learn_about_mines"          oncommand="Pmog.hud.learn_about('mines',event);"/>
+     <command id="cmd_learn_about_grenades"       oncommand="Pmog.hud.learn_about('grenades',event);"/>
+     <command id="cmd_learn_about_crates"         oncommand="Pmog.hud.learn_about('crates',event);"/>
+     <command id="cmd_learn_about_portals"        oncommand="Pmog.hud.learn_about('portals',event);"/>
+     <command id="cmd_learn_about_lightposts"     oncommand="Pmog.hud.learn_about('lightposts',event);"/>
+     <command id="cmd_learn_about_armor"          oncommand="Pmog.hud.learn_about('armor',event);"/>
+     <command id="cmd_learn_about_skeleton_keys"  oncommand="Pmog.hud.learn_about('skeleton_keys',event);"/>
+     <command id="cmd_learn_about_st_nicks"       oncommand="Pmog.hud.learn_about('st_nicks',event);"/>
+     <command id="cmd_learn_about_watchdogs"      oncommand="Pmog.hud.learn_about('watchdogs',event);"/>
+     <command id="cmd_learn_about_bedouins"       oncommand="Pmog.hud.learn_about('bedouins',event);"/>
+     <command id="cmd_learn_about_destroyers"     oncommand="Pmog.hud.learn_about('destroyers',event);"/>
+     <command id="cmd_learn_about_pathmakers"     oncommand="Pmog.hud.learn_about('pathmakers',event);"/>
+     <command id="cmd_learn_about_benefactors"    oncommand="Pmog.hud.learn_about('benefactors',event);"/>
+     <command id="cmd_learn_about_seers"          oncommand="Pmog.hud.learn_about('seers',event);"/>
+     <command id="cmd_learn_about_shoats"         oncommand="Pmog.hud.learn_about('shoats',event);"/>
+     <command id="cmd_learn_about_vigilantes"     oncommand="Pmog.hud.learn_about('vigilantes',event);"/>
+     <command id="cmd_learn_about_gameplay"       oncommand="Pmog.hud.learn_about('appendices',event);"/>
+     <command id="cmd_pmog_key_commands"          oncommand="Pmog.hud.learn_about('key_commands',event);"/>
+     <command id="cmd_pmog_verions"               oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/about/versions/')"/>
+   </commandset>   
+   
+   <menu id="pmog_toolbar_help_menu" class="menu-iconic help_icon pmog_menu_item">
+
+       <menupopup id = "pmog_help_menu_popup" class="pmog_menu_popup">
+           <menuitem id = "menu_pmog_toolbar_help"
+                     top_item="true"
+                     class="menuitem-iconic help_icon pmog_menu_item"
+                     label = "&pmog.visit_toolbar_help;" 
+                     command = "cmd_pmog_visit_toolbar_help"/>
+
+           <menu class="menu-iconic appendices_icon pmog_menu_item" id = "codex_pmogeus" label = "&pmog.codex_pmogeus;">
+               <menupopup id = "codex_pmogeus_popup" class="pmog_menu_popup">
+                  <menu  id = "codex_tools_menu" 
+                    top_item="true"
+                    class="menu-iconic bukkit_icon pmog_menu_item" label = "&pmog.tools;">
+                      <menupopup id = "codex_pmogeus_tools_popup" 
+                          class="pmog_menu_popup">
+                              <menuitem class="menuitem-iconic armor_icon pmog_menu_item"
+                                label = "&pmog.armor;"
+                                top_item="true"
+                                command = "cmd_learn_about_armor" />
+                              
+                              <menuitem class="menuitem-iconic crate_icon pmog_menu_item"
+                                label = "&pmog.crates;"
+                                command = "cmd_learn_about_crates" />
+                              
+                              <menuitem class="menuitem-iconic lightpost_icon pmog_menu_item"
+                                label = "&pmog.lightposts;"
+                                command = "cmd_learn_about_lightposts" />
+                              
+                              <menuitem class="menuitem-iconic mine_icon pmog_menu_item"
+                                label = "&pmog.mines;"
+                                command = "cmd_learn_about_mines" />
+
+                              <menuitem class="menuitem-iconic grenade_icon pmog_menu_item"
+                                label = "&pmog.grenades;"
+                                command = "cmd_learn_about_grenades" />
+                              
+                              <menuitem class="menuitem-iconic portal_icon pmog_menu_item"
+                                label = "&pmog.portals;"
+                                command = "cmd_learn_about_portals" />
+                                
+                              <menuitem class="menuitem-iconic skeleton_key_icon pmog_menu_item"
+                                label = "&pmog.skeleton_keys;"
+                                command = "cmd_learn_about_skeleton_keys" />
+                              
+                              <menuitem class="menuitem-iconic st_nick_icon pmog_menu_item"
+                                label = "&pmog.st_nicks;"
+                                command = "cmd_learn_about_st_nicks" />
+
+                              <menuitem class="menuitem-iconic watchdog_icon pmog_menu_item"
+                                label = "&pmog.watchdogs;"
+                                command = "cmd_learn_about_watchdogs" />
+                      </menupopup>
+                  </menu>
+                  
+                  <menu  id = "codex_associations_menu" 
+                      class="menu-iconic associations_icon pmog_menu_item" 
+                      label = "&pmog.associations;">
+                    <menupopup id = "codex_pmogeus_associations_popup" class="pmog_menu_popup">
+                      <menuitem class="menuitem-iconic bedouin_icon pmog_menu_item"
+                        label = "&pmog.Bedouin;"
+                        top_item="true"
+                        command = "cmd_learn_about_bedouins" />
+                     
+                     <menuitem class="menuitem-iconic benefactor_icon pmog_menu_item" 
+                        label = "&pmog.Benefactor;"
+                        command = "cmd_learn_about_benefactors" />
+                     
+                     <menuitem class="menuitem-iconic pathmaker_icon pmog_menu_item" 
+                       label = "&pmog.Pathmaker;"
+                       command = "cmd_learn_about_pathmakers" />
+                     
+                      <menuitem class="menuitem-iconic destroyer_icon pmog_menu_item" 
+                        label = "&pmog.Destroyer;"
+                        command = "cmd_learn_about_destroyers" />
+                      
+                      <menuitem class="menuitem-iconic seer_icon pmog_menu_item" 
+                        label = "&pmog.Seer;"
+                        command = "cmd_learn_about_seers" />
+                      
+                      <menuitem class="menuitem-iconic vigilante_icon pmog_menu_item" 
+                        label = "&pmog.Vigiliante;"
+                        command = "cmd_learn_about_vigilantes" />
+                 
+                      <menuitem class="menuitem-iconic shoat_icon pmog_menu_item" 
+                        label = "&pmog.Shoat;"
+                        command = "cmd_learn_about_shoats" />
+                    </menupopup>
+                  </menu>
+                  <menuitem id="menu_pmog_gameplay"
+                               label="&pmog.gameplay;"
+                               class="menuitem-iconic gameplay_icon pmog_menu_item"
+                               command="cmd_learn_about_gameplay" />
+             </menupopup>
+           </menu>
+           
+           <menuitem id="menu_pmog_key_commands_help"
+             label="&pmog.key_commands;"
+             class="menuitem-iconic gear_icon pmog_menu_item"
+             command="cmd_pmog_key_commands" />
+           
+           <menuitem id="menu_pmog_reset_pmog_help"
+             label="&pmog.reset_pmog;"
+             class="menuitem-iconic refresh_icon pmog_menu_item"
+             command="cmd_pmog_reset" />
+ 
+           <menuitem id="menu_pmog_report_a_bug"
+             label="&pmog.report_a_bug;" 
+             class="menuitem-iconic report_bug_icon pmog_menu_item"
+             command="cmd_report_a_bug" />
+           
+           <menuitem id="menu_pmog_version"
+             label="PMOG Version"
+             class="menuitem-iconic pmog_version pmog_menu_item"
+             command="cmd_pmog_verions" />                     
+       </menupopup>
+   </menu>
+
+   <menu id="pmog_toolbar_help_menu_not_logged_in" class="menu-iconic help_icon pmog_menu_item">
+
+       <menupopup id="pmog_help_menu_popup" class="pmog_menu_popup">
+           <menuitem id="menu_pmog_toolbar_help"
+                    top_item="true"
+                     class="menuitem-iconic help_icon pmog_menu_item"
+                     label="&pmog.visit_toolbar_help;" 
+                     command="cmd_pmog_visit_toolbar_help"/>
+           
+           <menu id = "codex_pmogeus" class="menu-iconic appendices_icon pmog_menu_item" label = "&pmog.codex_pmogeus;">
+             <menupopup id = "codex_pmogeus_popup" class="pmog_menu_popup">
+               <menu  id = "codex_tools_menu" 
+                 top_item="true"
+                 class="menu-iconic bukkit_icon pmog_menu_item" label = "&pmog.tools;">
+                 <menupopup id = "codex_pmogeus_tools_popup" class="pmog_menu_popup">
+                   <menuitem class="menuitem-iconic armor_icon pmog_menu_item"
+                     label = "&pmog.armor;"
+                     top_item="true"
+                     command = "cmd_learn_about_armor" />
+
+                   <menuitem class="menuitem-iconic crate_icon pmog_menu_item"
+                     label = "&pmog.crates;"
+                     command = "cmd_learn_about_crates" />
+
+                   <menuitem class="menuitem-iconic lightpost_icon pmog_menu_item"
+                     label = "&pmog.lightposts;"
+                     command = "cmd_learn_about_lightposts" />
+
+                   <menuitem class="menuitem-iconic mine_icon pmog_menu_item"
+                     label = "&pmog.mines;"
+                     command = "cmd_learn_about_mines" />
+
+                   <menuitem class="menuitem-iconic grenade_icon pmog_menu_item"
+                      label ="&pmog.grenades;"
+                      command = "cmd_learn_about_grenades" />
+                   
+                   <menuitem class="menuitem-iconic portal_icon pmog_menu_item"
+                     label = "&pmog.portals;"
+                     command = "cmd_learn_about_portals" />
+
+                   <menuitem class="menuitem-iconic skeleton_key_icon pmog_menu_item"
+                     label = "&pmog.skeleton_keys;"
+                     command = "cmd_learn_about_skeleton_keys" />
+                   
+                   <menuitem class="menuitem-iconic st_nick_icon pmog_menu_item"
+                     label = "&pmog.st_nicks;"
+                     command = "cmd_learn_about_st_nicks" />
+
+                   <menuitem class="menuitem-iconic watchdog_icon pmog_menu_item"
+                     label = "&pmog.watchdogs;"
+                     command = "cmd_learn_about_watchdogs" />
+                 </menupopup>
+               </menu>
+               
+               <menu  id = "codex_associations_menu" class="menu-iconic associations_icon pmog_menu_item" label = "&pmog.associations;">
+                 <menupopup id = "codex_pmogeus_associations_popup" class="pmog_menu_popup">
+                    <menuitem class="menuitem-iconic bedouin_icon pmog_menu_item" 
+                      label = "&pmog.Bedouin;"
+                      top_item="true"
+                      command = "cmd_learn_about_bedouins" />
+
+                   <menuitem class="menuitem-iconic benefactor_icon pmog_menu_item" 
+                      label = "&pmog.Benefactor;"
+                      command = "cmd_learn_about_benefactors" />
+
+                   <menuitem class="menuitem-iconic pathmaker_icon pmog_menu_item" 
+                     label = "&pmog.Pathmaker;"
+                     command = "cmd_learn_about_pathmakers" />
+
+                    <menuitem class="menuitem-iconic destroyer_icon pmog_menu_item" 
+                      label = "&pmog.Destroyer;"
+                      command = "cmd_learn_about_destroyers" />
+
+                    <menuitem class="menuitem-iconic seer_icon pmog_menu_item" 
+                      label = "&pmog.Seer;"
+                      command = "cmd_learn_about_seers" />
+
+                    <menuitem class="menuitem-iconic vigilante_icon pmog_menu_item" 
+                      label = "&pmog.Vigiliante;"
+                      command = "cmd_learn_about_vigilantes" />
+
+                    <menuitem class="menuitem-iconic shoat_icon pmog_menu_item" 
+                      label = "&pmog.Shoat;"
+                      command = "cmd_learn_about_shoats" />
+                  </menupopup>
+               </menu>
+               <menuitem id="menu_pmog_gameplay"
+                 label="&pmog.gameplay;"
+                 class="menuitem-iconic gameplay_icon pmog_menu_item"
+                 command="cmd_learn_about_gameplay" />
+             </menupopup>
+           </menu>   
+                   
+           <menuitem id="menu_pmog_key_commands_help"
+             label="&pmog.key_commands;"
+             class="menuitem-iconic gear_icon pmog_menu_item"
+             command="cmd_pmog_key_commands" />
+           
+           <menuitem id="menu_pmog_reset_pmog_help"
+             label="&pmog.reset_pmog;"
+             class="menuitem-iconic refresh_icon pmog_menu_item"
+             command="cmd_pmog_reset" />
+                      
+           <menuitem id="menu_pmog_report_a_bug"
+             label="&pmog.report_a_bug;"
+             class="menuitem-iconic report_bug_icon pmog_menu_item"
+             command="cmd_report_a_bug" />
+           
+           <menuitem id="menu_pmog_version"
+             label="PMOG Version: " 
+             class="menuitem-iconic pmog_version pmog_menu_item"
+             command="cmd_pmog_verions" />                     
+             
+       </menupopup>
+   </menu>
+   
+   <menu id="help_menu_pmog" class="pmog_menu">
+
+       <menupopup id="pmog_help_menu_popup" class="pmog_menu_popup">
+       
+           <menuitem id="menu_pmog_toolbar_help" 
+                     top_item="true"
+                     label="&pmog.visit_toolbar_help;"
+                     class="menuitem-iconic help_icon pmog_menu_item"
+                     command="cmd_pmog_visit_toolbar_help"/>
+           
+           <menu id = "codex_pmogeus" class="menu-iconic appendices_icon pmog_menu_item" label = "&pmog.codex_pmogeus;">
+             <menupopup id = "codex_pmogeus_popup" class="pmog_menu_popup">
+               <menu  id = "codex_tools_menu" 
+                 top_item="true"
+                 class="menu-iconic bukkit_icon pmog_menu_item" label = "&pmog.tools;">
+                 <menupopup id = "codex_pmogeus_tools_popup" class="pmog_menu_popup">
+                   <menuitem class="menuitem-iconic armor_icon pmog_menu_item"
+                     top_item="true"
+                     label = "&pmog.armor;"
+                     command = "cmd_learn_about_armor" />
+
+                   <menuitem class="menuitem-iconic crate_icon pmog_menu_item"
+                     label = "&pmog.crates;"
+                     command = "cmd_learn_about_crates" />
+
+                   <menuitem class="menuitem-iconic lightpost_icon pmog_menu_item"
+                     label = "&pmog.lightposts;"
+                     command = "cmd_learn_about_lightposts" />
+
+                   <menuitem class="menuitem-iconic mine_icon pmog_menu_item"
+                     label = "&pmog.mines;"
+                     command = "cmd_learn_about_mines" />
+
+                   <menuitem class="menuitem-iconic grenade_icon pmog_menu_item"
+                     label = "&pmog.grenades;"
+                     command = "cmd_learn_about_grenades" />
+                   
+                   <menuitem class="menuitem-iconic portal_icon pmog_menu_item"
+                     label = "&pmog.portals;"
+                     command = "cmd_learn_about_portals" />
+
+                   <menuitem class="menuitem-iconic skeleton_key_icon pmog_menu_item"
+                     label = "&pmog.skeleton_keys;"
+                     command = "cmd_learn_about_skeleton_keys" />
+                   
+                   <menuitem class="menuitem-iconic st_nick_icon pmog_menu_item"
+                     label = "&pmog.st_nicks;"
+                     command = "cmd_learn_about_st_nicks" />
+
+                   <menuitem class="menuitem-iconic watchdog_icon pmog_menu_item"
+                     label = "&pmog.watchdogs;"
+                     command = "cmd_learn_about_watchdogs" />
+                 </menupopup>
+               </menu>
+               
+               <menu  id = "codex_associations_menu" class="menu-iconic associations_icon pmog_menu_item" label = "&pmog.associations;">
+                 <menupopup id = "codex_pmogeus_associations_popup" class="pmog_menu_popup">
+                    <menuitem class="menuitem-iconic bedouin_icon pmog_menu_item" 
+                      top_item="true"
+                      label = "&pmog.Bedouin;"
+                      command = "cmd_learn_about_bedouins" />
+
+                   <menuitem class="menuitem-iconic benefactor_icon pmog_menu_item" 
+                      label = "&pmog.Benefactor;"
+                      command = "cmd_learn_about_benefactors" />
+
+                   <menuitem class="menuitem-iconic pathmaker_icon pmog_menu_item" 
+                     label = "&pmog.Pathmaker;"
+                     command = "cmd_learn_about_pathmakers" />
+
+                    <menuitem class="menuitem-iconic destroyer_icon pmog_menu_item" 
+                      label = "&pmog.Destroyer;"
+                      command = "cmd_learn_about_destroyers" />
+
+                    <menuitem class="menuitem-iconic seer_icon pmog_menu_item" 
+                      label = "&pmog.Seer;"
+                      command = "cmd_learn_about_seers" />
+
+                    <menuitem class="menuitem-iconic vigilante_icon pmog_menu_item" 
+                      label = "&pmog.Vigiliante;"
+                      command = "cmd_learn_about_vigilantes" />
+
+                    <menuitem class="menuitem-iconic shoat_icon pmog_menu_item" 
+                      label = "&pmog.Shoat;"
+                      command = "cmd_learn_about_shoats" />
+                 </menupopup>
+               </menu>
+               <menuitem id="menu_pmog_gameplay"
+                            label="&pmog.gameplay;"
+                            class="menuitem-iconic gameplay_icon pmog_menu_item"
+                            command="cmd_learn_about_gameplay" />
+             </menupopup>
+           </menu>
+           
+           <menuitem id="menu_pmog_key_commands_help"
+             label="&pmog.key_commands;"
+             class="menuitem-iconic gear_icon pmog_menu_item"
+             command="cmd_pmog_key_commands" />
+           
+           <menuitem id="menu_pmog_reset_pmog_help"
+             label="&pmog.reset_pmog;"
+             class="menuitem-iconic refresh_icon pmog_menu_item"
+             command="cmd_pmog_reset" />
+                      
+           <menuitem id="menu_pmog_report_a_bug"
+             label="&pmog.report_a_bug;" 
+             class="menuitem-iconic report_bug_icon pmog_menu_item"
+             command="cmd_report_a_bug" />
+           
+           <menuitem id="menu_pmog_version"
+             label="PMOG Version: " 
+             class="menuitem-iconic pmog_version pmog_menu_item"
+             command="cmd_pmog_verions" />
+       </menupopup>
+   </menu>
+</overlay>

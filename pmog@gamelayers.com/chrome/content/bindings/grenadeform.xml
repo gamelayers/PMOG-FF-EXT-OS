@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="grenadeBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="grenadeform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Throw a Grenade" margin="80" header="grenadeHeader">
+        <div class="greyBox">
+        <div>Spite another player:</div>
+        <xul:textbox anonid="messageTo" emptytext="playername" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) { document.getBindingParent(this)._doSend(); }" />
+        <div><span anonid="grenadeCount"></span><img src="chrome://pmog/skin/images/icons/grenade-16.png" style="display:inline;"/> remaining</div>
+      </div>
+      <div anonid="buttonContainer" class="buttonBox">
+        <div class="leftButton">
+          <xul:toolbarbutton anonid="grenadeButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+        </div>
+        <div class="rightButton">
+          <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();" />
+        </div>
+        <div class="button-divider"></div>
+      </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="_toField">
+        jQuery(this).anonymousByAttr("messageTo");
+      </xbl:field>
+
+      <xbl:field name="grenadeCount">
+        jQuery(this).anonymousByAttr("grenadeCount");
+      </xbl:field>
+
+      <xbl:property name="volatile" readonly="true" onget="return false;" />
+
+      <xbl:property name="recipient" onget="return this._toField.value;"
+                                     onset="return this.setRecipient(val);" />
+
+      <xbl:method name="show">
+        <xbl:body>
+           <![CDATA[
+            this.grenadeCount.textContent = Pmog.user.inventory.grenades;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setRecipient">
+        <xbl:parameter name="playername" />
+        <xbl:body>
+          <![CDATA[
+            this._toField.value = '@' + playername;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+            var user;
+
+            if(this._toField.value.search(/@/) > -1) {
+                user = strip(this._toField.value).split('@')[1];
+            } else {
+                user = strip(this._toField.value);
+            }
+
+            if(user === '') {
+              ovrlay.overlay.clearErrors();
+              ovrlay.overlay.addError("You must specify at least one player");
+              return false;
+            }
+
+            Pmog.tossGrenade(user);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

@@ -1,0 +1,636 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE bindings [
+<!ENTITY % pmogDTD SYSTEM "chrome://pmog/locale/pmog.dtd">
+%pmogDTD;
+]>
+
+<xbl:bindings id="baseBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="baseOverlay">
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/pmog_xul_forms.css"/>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/base-overlay.css"/>
+    </xbl:resources>
+    <xbl:implementation>
+
+      <xbl:field name="spinner">
+        jQuery(this).anonymousByAttr("spinner");
+      </xbl:field>
+
+      <xbl:field name="stack">
+        jQuery(this).anonymousNodes()[0];
+      </xbl:field>
+
+      <xbl:field name="mainMessageDiv">
+        jQuery(this).anonymousByAttr("overlayTextContent", "class");
+      </xbl:field>
+
+      <xbl:field name="_player" />
+
+      <xbl:property name="singular" readonly="true" onget="return true;" />
+
+      <xbl:property name="isVolatile" readonly="true" onget="return true;" />
+
+      <xbl:property name="player"
+                onget="return this._player;"
+                onset="this.setPlayer(val);" />
+
+      <xbl:method name="close">
+        <xbl:body>
+          <![CDATA[
+            // Optional onClose method try/catch incase it doesn't exist and ignore the error.
+            try {
+              this.onClose();
+            } catch (e) {
+              Components.utils.reportError(e);
+            }
+
+            // Most overlays should consist of a pbox so this should work for all of them
+            // but we'll protect it anyhow.
+            try {
+              this.overlay.clearErrors();
+            } catch(e) {
+              Components.utils.reportError(e);
+            }
+
+            if (this.parentNode.getAttribute("type") === "event") {
+              Pmog.hud.removeEventOverlay(this);
+            } else {
+              Pmog.hud.fadeOverlay(this.tagName);
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="openProfile">
+        <xbl:body>
+        <![CDATA[
+          if (this.player) {
+            Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/users/' + this.player);
+          }
+        ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setPlayer">
+        <xbl:parameter name="player" />
+        <xbl:body>
+          <![CDATA[
+            var nPlayer = player;
+            this._player = nPlayer;
+            var playerContent = document.getAnonymousElementByAttribute(this, "anonid", "player");
+            if (playerContent) {
+              playerContent.textContent = nPlayer;
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_appendRelationshipText">
+        <xbl:body>
+          <![CDATA[
+            var text = "";
+            switch (this.relationship) {
+            //case 'none':
+            //  text = "You have no association with " + this.player;
+            //  break;
+            case 'contact':
+            case 'ally':
+            case 'rival':
+              text = this.player + " is your "+ this.relationship + ".";
+              break;
+            }
+
+            jQuery(this.mainMessageDiv).append('<div>' + text + '</div>');
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="onClose">
+        <xbl:body>
+          <![CDATA[
+            // This is a place holder method to be overridden by an extending object
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="addRival">
+        <xbl:body>
+          <![CDATA[
+            this.buildContactRequest("rival");
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="addAlly">
+        <xbl:body>
+          <![CDATA[
+            this.buildContactRequest("ally");
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="addContact">
+        <xbl:body>
+          <![CDATA[
+            this.buildContactRequest("acquaintance");
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="buildContactRequest">
+        <xbl:parameter name="type" />
+        <xbl:body>
+          <![CDATA[
+             var opts = {};
+             opts.user = this.player;
+             opts.contactType = type;
+             opts.overlay = this;
+             Pmog.makeContactRequest(opts);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+    <xbl:handlers>
+
+      <xbl:handler event="focus" phase="capturing">
+        <xbl:action>
+          <![CDATA[
+            this.style.opacity = 1.0;
+          ]]>
+        </xbl:action>
+      </xbl:handler>
+
+      <xbl:handler event="blur" phase="capturing">
+        <xbl:action>
+          <![CDATA[
+            this.style.opacity = 0.8;
+          ]]>
+        </xbl:action>
+      </xbl:handler>
+
+      <xbl:handler event="keypress">
+        <![CDATA[
+          if (event.keyCode == event.DOM_VK_ESCAPE) {
+            event.target.close();
+          }
+        ]]>
+      </xbl:handler>
+
+    </xbl:handlers>
+  </xbl:binding>
+
+  <xbl:binding id="inventory">
+    <xbl:content xbl:inherits="hidden">
+      <xul:vbox>
+        <xul:label hidden="true" anonid="player_datapoints" class="datapoint" value="Datapoints" />
+        <xul:grid flex="1" class="inventory">
+          <xul:columns>
+            <xul:column flex="1" />
+            <xul:column flex="1" />
+          </xul:columns>
+          <xul:rows>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_mines" class="inventory_button mine" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_grenades" class="inventory_button grenade" label="0" orient="horizontal" />
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_st_nicks" class="inventory_button st_nick" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_watchdogs" class="inventory_button watchdog" label="0" orient="horizontal" />
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_lightposts" class="inventory_button lightpost" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_crates" class="inventory_button crate" label="0" orient="horizontal" />
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_portals" class="inventory_button portal" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_abundant_portals" class="inventory_button abundant_portal_icon" label="0" orient="horizontal" />
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_skeleton_keys" class="inventory_button skeleton_key" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_st_swatters" class="inventory_button st_swatter" label="0" orient="horizontal" />
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_overweight_canaries" class="inventory_button overweight_canary" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_dodge" class="inventory_button dodge_icon" label="0" orient="horizontal" />
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_disarm" class="inventory_button disarm_icon" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_vengeance" class="inventory_button vengeance_icon" label="0" orient="horizontal"/>
+            </xul:row>
+            <xul:row flex="1">
+              <xul:toolbarbutton anonid="player_puzzle_posts" class="inventory_button puzzle_post_icon" label="0" orient="horizontal" style="padding-left:4px;" />
+              <xul:toolbarbutton anonid="player_armor" class="inventory_button armor" label="0" onclick="document.getBindingParent(this).toggleArmor();" value="Armor" orient="horizontal" />
+            </xul:row>
+          </xul:rows>
+        </xul:grid>
+      </xul:vbox>
+    </xbl:content>
+
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/pmog_xul_forms.css"/>
+    </xbl:resources>
+
+    <xbl:implementation>
+
+      <xbl:field name="playerData" />
+      <xbl:field name="userName" />
+
+      <xbl:method name="getInventory">
+        <xbl:parameter name="playerName" />
+        <xbl:body>
+          <![CDATA[
+            var pd = jQuery.ajax({
+            url: Pmog.private_url() + '/users/' + playerName + '/inventory.json?authenticity_token=' + Pmog.user.authenticity_token + '&version=' + Pmog.version,
+            type: 'GET',
+            data: '',
+            dataType: 'json',
+            async:false,
+            contentType: "application/json; charset=utf-8",
+            }).responseText;
+
+            this.playerData = jQuery.evalJSON(pd);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="showInventory">
+        <xbl:parameter name="user" />
+        <xbl:parameter name="tools" />
+        <xbl:body>
+            <![CDATA[
+              this.userName = user;
+              this.getInventory(user);
+
+              // Tool Inventory
+              //for( var x in tools) {
+              //    var tool = document.getAnonymousElementByAttribute(this, "anonid", "player_"+tools[x]);
+              //    tool.value = this.playerData[tools[x]];
+              //}
+
+              // i unrolled this loop because i am a bad human being.  also to make the name both pretty and persistent.
+
+              jQuery(this).anonymousByAttr("player_armor").label = "Armor "+this.playerData['armor'];
+              jQuery(this).anonymousByAttr("player_crates").label = "Crates "+this.playerData['crates'];
+              jQuery(this).anonymousByAttr("player_lightposts").label = "Lightposts "+this.playerData["lightposts"];
+              jQuery(this).anonymousByAttr("player_mines").label = "Mines "+this.playerData["mines"];
+              jQuery(this).anonymousByAttr("player_portals").label = "Portals "+this.playerData["portals"];
+              jQuery(this).anonymousByAttr("player_skeleton_keys").label = "Skeleton Keys "+this.playerData["skeleton_keys"];
+              jQuery(this).anonymousByAttr("player_st_nicks").label = "St. Nicks "+this.playerData["st_nicks"];
+              jQuery(this).anonymousByAttr("player_watchdogs").label = "Watchdogs "+this.playerData["watchdogs"];
+              jQuery(this).anonymousByAttr("player_grenades").label = "Grenades "+this.playerData["grenades"];
+              jQuery(this).anonymousByAttr("player_st_swatters").label = "St. Swatters "+this.playerData["st_swatters"];
+              jQuery(this).anonymousByAttr("player_overweight_canaries").label = "Overweight Canaries "+this.playerData["overweight_canaries"];
+              jQuery(this).anonymousByAttr("player_dodge").label = "Dodge "+this.playerData["dodge"];
+              jQuery(this).anonymousByAttr("player_disarm").label = "Disarm "+this.playerData["disarm"];
+              jQuery(this).anonymousByAttr("player_vengeance").label = "Vengeance "+this.playerData["vengeance"];
+              jQuery(this).anonymousByAttr("player_puzzle_posts").label = "Puzzle Posts "+this.playerData["puzzle_posts"];
+              jQuery(this).anonymousByAttr("player_abundant_portals").label = "Abundant Portals "+this.playerData["abundant_portals"];
+
+              if (user === Pmog.user.login) {
+                var armor = document.getAnonymousElementByAttribute(this, "anonid", "player_armor");
+                armor.label = armor.label + " (" + (Pmog.user.armored ? "On" : "Off") + ")";
+              }
+            ]]>
+          </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="toggleArmor">
+        <xbl:body>
+          <![CDATA[
+            if (this.userName == Pmog.user.login) {
+            Pmog.hud.toolbarThrobber.collapsed = false;
+            var armor_element = document.getAnonymousElementByAttribute(this, "anonid", "player_armor");
+            jQuery.ajax({
+                url: Pmog.private_url() + '/users/' + Pmog.user.login + '/ability_status/toggle_armor.json?' + Pmog.user_verification_params(),
+                type: 'PUT',
+                data: '',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                panel_id: Pmog.tab_observer.selected_tab().panel_id,
+                success: function(response_obj) {
+                  Pmog.handle_server_response(response_obj, this.panel_id);
+                  Pmog.hud.updateToolbarTxt(response_obj.flash.notice);
+                  armor_element.label = Pmog.user.armor_label();
+                },
+                error: function(data) {
+                    Pmog.armorHandleError(data.status, data.responseText);
+                },
+                complete: function() {
+                  Pmog.hud.toolbarThrobber.collapsed = true;
+                }
+            });
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="throbber">
+    <xbl:content mousethrough="always" xbl:inherits="hidden=hidden">
+      <xul:vbox anonid="spinner" flex="1" pack="center" align="center">
+        <xul:image src="chrome://pmog/skin/images/shared/throbber-56.png" />
+      </xul:vbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:method name="hide">
+        <xbl:body>
+          <![CDATA[
+            this.setAttribute("hidden", true);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="show">
+        <xbl:body>
+          <![CDATA[
+            this.setAttribute("hidden", false);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="pbox">
+    <xbl:content pack="center" align="center">
+      <xul:stack anonid="boxStack" flex="1">
+        <div class="outerOverlayBox">
+          <div anonid="closeButton" class="closeButton" onclick="document.getBindingParent(this).onCloseButtonClicked();"></div>
+          <div anonid="boxContainer" class="normal-overlay" xbl:inherits="left=margin,class=type">
+            <div anonid="titleBox" class="three-corner-box greenBox">
+              <img anonid="overlayAvatar" class="avatar" style="display:none;" />
+              <div anonid="title" class="overlayTitle"></div>
+              <ul anonid="errorList" style="display: none;" />
+              <div class="clear"></div>
+            </div>
+            <span class="pboxContent" anonid="innerContent">
+              <xbl:children />
+            </span>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <xul:throbber anonid="spinner" hidden="true" />
+        <xul:vbox anonid="headerField" xbl:inherits="class=header" mousethrough="always"/>
+      </xul:stack>
+    </xbl:content>
+
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/base-overlay.css"/>
+    </xbl:resources>
+
+    <xbl:implementation>
+      <xbl:field name="errorList">
+        jQuery(this).anonymousByAttr("errorList");
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        jQuery(this).anonymousByAttr("spinner");
+      </xbl:field>
+
+      <xbl:field name="_title">
+        jQuery(this).anonymousByAttr("title");
+      </xbl:field>
+
+      <xbl:field name="headerElement">
+         jQuery(this).anonymousByAttr("headerField");
+      </xbl:field>
+
+      <xbl:field name="_avatarImage">
+         jQuery(this).anonymousByAttr("overlayAvatar");
+      </xbl:field>
+
+      <xbl:field name="_closeButton">
+         jQuery(this).anonymousByAttr("closeButton");
+      </xbl:field>
+
+      <xbl:field name="linkableContent">
+         jQuery(this).anonymousByAttr("linkableContent");
+      </xbl:field>
+
+      <xbl:field name="rightTitleBar">
+         jQuery(this).anonymousByAttr("rightTitleBar");
+      </xbl:field>
+
+      <xbl:field name="overlayBox">
+         jQuery(this).anonymousByAttr("boxContainer");
+      </xbl:field>
+
+      <xbl:field name="titleBox">
+        jQuery(this).anonymousByAttr("titleBox");
+      </xbl:field>
+
+      <xbl:field name="innerContent">
+        jQuery(this).anonymousByAttr('innerContent');
+      </xbl:field>
+
+      <xbl:property name="titleAvatar"
+                    onget="return this._avatarImage.src;"
+                    onset="this.setAvatar(val);" />
+
+      <xbl:property name="title"
+                    onget="return this._title.textContent;"
+                    onset="this.setTitleText(val);" />
+
+      <xbl:constructor>
+        <![CDATA[
+          if (this.hasAttribute('title')) {
+            this.setTitleText(this.getAttribute("title"));
+          }
+
+          if (this.hasAttribute('context')) {
+            this.setEventType(this.getAttribute("context"));
+          }
+
+          if (this.hasAttribute('margin')) {
+            this.overlayBox.style.marginLeft = this.getAttribute('margin') + "px";
+          }
+
+          var pbox = this;
+
+          jQuery(this.titleBox).dblclick(function() {
+            pbox.toggleContent();
+          })
+        ]]>
+      </xbl:constructor>
+
+      <xbl:method name="toggleContent">
+        <xbl:body>
+          <![CDATA[
+             jQuery(this.innerContent).toggle("fast", function() { Pmog.hud.repositionEventOverlays(); });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setEventType">
+        <xbl:parameter name="type" />
+        <xbl:body>
+          <![CDATA[
+             switch(type) {
+              case "good":
+                jQuery(this.titleBox).addClass("greenBox").removeClass("redBox");
+                break;
+              case "bad":
+                jQuery(this.titleBox).addClass("redBox").removeClass("greenBox");
+                break;
+             }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="addError">
+        <xbl:parameter name="error" />
+        <xbl:body>
+          <![CDATA[
+            var errorItem = document.createElementNS(HTMLNS, "li");
+            errorItem.textContent = error;
+
+            this.errorList.appendChild(errorItem);
+
+            if (this.errorList.style.display === "none") {
+              jQuery(this.errorList).show();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setTitleText">
+        <xbl:parameter name="txt" />
+        <xbl:body>
+          <![CDATA[
+            this._title.textContent = txt;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="clearErrors">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this.errorList).empty();
+
+            if (this.errorList.style.display !== "none") {
+              jQuery(this.errorList).hide();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setAvatar">
+        <xbl:parameter name="avatar" />
+        <xbl:body>
+          <![CDATA[
+            this._avatarImage.src = avatar;
+            jQuery(this._avatarImage).fadeIn('normal');
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="onCloseButtonClicked">
+        <xbl:parameter name="callback" />
+        <xbl:body>
+          <![CDATA[
+            try {
+              this.parentNode.userClickedClose();
+            } catch (e) {
+              this.parentNode.close();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="makeLink">
+        <xbl:parameter name="url" />
+        <xbl:body>
+          <![CDATA[
+            jQuery([this._avatarImage]).click( function() {
+              Pmog.hud.openAndReuseOneTabPerURL(url);
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+<xbl:binding id="scrim">
+  <xbl:content>
+    <div anonid="scrimContent" xbl:inherits="class=type"></div>
+  </xbl:content>
+
+  <xbl:implementation>
+    <xbl:field name="scrimContent">
+      jQuery(this).anonymousByAttr("scrimContent");
+    </xbl:field>
+
+    <xbl:method name="onPanelOpen">
+      <xbl:body>
+        <![CDATA[
+          this.scrimContent.style.height = screen.height + "px";
+          this.scrimContent.style.width = screen.width + "px";
+          this.close();
+        ]]>
+      </xbl:body>
+    </xbl:method>
+    <xbl:method name="open">
+      <xbl:body>
+        <![CDATA[
+          this.parentNode.openPopupAtScreen(0, 0);
+        ]]>
+      </xbl:body>
+    </xbl:method>
+    <xbl:method name="close">
+      <xbl:body>
+        <![CDATA[
+          var scrim = this;
+          jQuery(scrim.scrimContent).fadeTo("normal", 0.1, function() {
+            scrim.parentNode.hidePopup();
+            jQuery(scrim.scrimContent).css("opacity", 1.0);
+          });
+        ]]>
+      </xbl:body>
+    </xbl:method>
+  </xbl:implementation>
+
+  <xbl:resources>
+    <xbl:stylesheet src="chrome://pmog/skin/scrim.css"/>
+  </xbl:resources>
+</xbl:binding>
+
+  <xbl:binding id="tabbrowser-tab" extends="chrome://browser/content/tabbrowser.xml#tabbrowser-tab">
+    <xbl:content>
+      <xul:hbox class="tab-image-left" xbl:inherits="selected"/>
+      <xul:hbox class="tab-image-middle" flex="1" align="center" xbl:inherits="selected">
+        <xul:stack class="tab-icon">
+          <xul:image xbl:inherits="validate,src=image" class="tab-icon-image"/>
+          <xul:image class="tab-extra-status"/>
+        </xul:stack>
+        <xul:label xbl:inherits="value=count" />
+        <xul:stack class="tab-text-stack" flex="1">
+            <xul:label flex="1" xbl:inherits="value=label,crop,accesskey" crop="right" class="tab-text"/>
+        </xul:stack>
+      </xul:hbox>
+      <xul:toolbarbutton anonid="close-button" tabindex="-1" class="tab-close-button"/>
+      <xul:hbox class="tab-image-right" xbl:inherits="selected"/>
+    </xbl:content>
+    </xbl:binding>
+
+    <xbl:binding id="xuldiv">
+      <xbl:content>
+        <div xbl:inherits="class">
+          <xbl:children />
+        </div>
+      </xbl:content>
+    </xbl:binding>
+
+</xbl:bindings>

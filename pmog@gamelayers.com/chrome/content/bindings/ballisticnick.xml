@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="ballisticNickBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="base-ballistic-nick" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:implementation>
+      <xbl:field name="damage">
+        jQuery(this).anonymousByAttr("damage");
+      </xbl:field>
+
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("revengeButton");
+      </xbl:field>
+
+      <xbl:field name="dismissButton">
+        jQuery(this).anonymousByAttr("dismissButton");
+      </xbl:field>
+
+      <xbl:field name="contactButton">
+        jQuery(this).anonymousByAttr("addContactButton");
+      </xbl:field>
+
+      <xbl:field name="rivalButton">
+        jQuery(this).anonymousByAttr("addRivalButton");
+      </xbl:field>
+
+      <xbl:field name="commentButton">
+        jQuery(this).anonymousByAttr("commentButton");
+      </xbl:field>
+
+      <xbl:field name="retaliateButton">
+        jQuery(this).anonymousByAttr("retaliateButton");
+      </xbl:field>
+
+      <xbl:method name="attach">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/users/' + this.storedParams.body.user + '/st_nicks/attach.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'PUT',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.st_nick_notice(data.flash.notice);
+              },
+              error: function(data) {
+                Pmog.stNickHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="retaliate">
+        <xbl:body>
+          <![CDATA[
+            Pmog.tossGrenade(this.storedParams.body.user);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_determineVisibleButtons">
+        <xbl:body>
+          <![CDATA[
+            switch (this.relationship) {
+            case 'self':
+                this.revengeButton.hidden = true;
+                this.dismissButton.hidden = true;
+                break;
+            case 'none':
+            case 'contact':
+            case 'ally':
+                this.rivalButton.hidden = false;
+                this.dismissButton.hidden = true;
+                break;
+            case 'rival':
+              this.commentButton.hidden = false;
+              this.dismissButton.hidden = true;
+              break;
+            default:
+                this.revengeButton.hidden = false;
+                break;
+            }
+
+            if (Pmog.user.inventory.grenades > 0) {
+              this.revengeButton.hidden = true;
+              this.retaliateButton.hidden = false;
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="ballisticnickdamage" extends="chrome://pmog/content/bindings/ballisticnick.xml#base-ballistic-nick">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Ballistic St Nick" margin="80" header="ballisticNickHeader">
+          <div class="max-width-220">
+             <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span> sent a Ballistic St Nick after you!  -<span anonid="damage"></span> DP!
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).attach();" />
+              <xul:toolbarbutton anonid="retaliateButton" oncommand="document.getBindingParent(this).retaliate();" hidden="true" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            // Pmog.logger.debug(toJSONString(params));
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+
+            this.damage.textContent = params.body.damage;
+
+            this.relationship = params.relationship;
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+
+            SpecialEffect.prototype.take_damage();
+            Pmog.play_sound(NICK_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+
+  </xbl:binding>
+
+  <xbl:binding id="ballisticnickarmor" extends="chrome://pmog/content/bindings/ballisticnick.xml#base-ballistic-nick">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Ballistic St Nick" margin="60" header="mineArmorHeaderStage3">
+          <div class="max-width-220">
+             <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span> shattered your armor with a Ballistic Nick!
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).attach();" />
+              <xul:toolbarbutton anonid="retaliateButton" oncommand="document.getBindingParent(this).retaliate();" hidden="true" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+      </xul:pbox>
+      </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            // Pmog.logger.debug(toJSONString(params));
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+
+            this.relationship = params.relationship;
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+            Pmog.play_sound(NICK_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+  <xbl:binding id="ballisticnickdodge" extends="chrome://pmog/content/bindings/ballisticnick.xml#base-ballistic-nick">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="" margin="80" header="ballisticNickHeader">
+        <div class="max-width-220">
+          You dodged <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span>'s Ballistic Nick!  -<span anonid="damage"></span> DP!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="vexButton" oncommand="document.getBindingParent(this).attach();" />
+            <xul:toolbarbutton anonid="retaliateButton" oncommand="document.getBindingParent(this).retaliate();" hidden="true" />
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+            <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+            <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+            <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("vexButton");
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            // Pmog.logger.debug(toJSONString(params));
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            this.overlay.setAttribute("margin", 130);
+            this.damage.textContent = params.body.damage;
+
+            this.relationship = params.relationship;
+            this._appendRelationshipText();
+            this._determineVisibleButtons();
+
+            Pmog.play_sound(NICK_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+  <xbl:binding id="ballisticnickdisarm" extends="chrome://pmog/content/bindings/ballisticnick.xml#base-ballistic-nick">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="" margin="85" header="ballisticNickHeader">
+        <div class="max-width-220">
+          You caught and defused <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span>'s Ballistic Nick!  -<span anonid="damage"></span> DP! +1<img src="chrome://pmog/skin/images/icons/st_nick-16.png" />!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="vexButton" oncommand="document.getBindingParent(this).attach();" />
+            <xul:toolbarbutton anonid="retaliateButton" oncommand="document.getBindingParent(this).retaliate();" hidden="true" />
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+            <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+            <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+            <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("vexButton");
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            // Pmog.logger.debug(toJSONString(params));
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            this.overlay.setAttribute("margin", 130);
+
+            this.damage.textContent = params.body.damage;
+
+            this.relationship = params.relationship;
+            this._appendRelationshipText();
+            this._determineVisibleButtons();
+
+            Pmog.play_sound(NICK_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+</xbl:bindings>

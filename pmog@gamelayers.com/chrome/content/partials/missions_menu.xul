@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pmog/locale/pmog.dtd">
+
+<overlay id="missions_overlay"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <commandset id="mainCommandSet">
+    <command id="cmd_visit_queued_missions" oncommand="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/missions/user_missions/queued');"/>
+  </commandset>
+   
+  <menu id="pmog_toolbar_missions_menu" class="menu-iconic missions_icon pmog_menu_item" label="&pmog.missions;">
+     <menupopup id = "pmog_missions_menu_popup" class="pmog_menu_popup"> 
+       <menuitem label = "&pmog.missions_queued;"       
+         id = "pmog_missions"         
+         class="menuitem-iconic missions_icon pmog_menu_item"
+         command = "cmd_visit_queued_missions" />
+         <menuseparator id="pmog_action_menu_separator" />
+      </menupopup>
+  </menu>
+</overlay>

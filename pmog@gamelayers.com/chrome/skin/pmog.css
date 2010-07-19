@@ -1,0 +1,722 @@
+@import "chrome://global/skin/";
+@import "chrome://global/content/";
+
+/*
+ Used by the external website to determin what versio of PMOG is installed.
+ Each attribute of the margin corresponds to one of the numerals in the build version.
+ A margin of 0 410 0 0 would correspond to version 0.410. The last two margin values are ignored.
+ This number should be automatically incremented each time the extension is built.
+ NOTE: Use px because document.defaultView.getComputedStyle(div, '').getPropertyValue("margin-bottom")
+ converts ems to px, which will invalidate your version number.
+
+ It is also important we hide the item assigned this ID because it may produce a strange
+ visual effect on the page otherwise.
+
+ The list-style-image attribute is added as a check for the html page to ensure the class is not being
+ overridden by another stylesheet. If this attribute doesn't appear then don't trust the margin settings.
+*/
+
+#pmog_version {
+  list-style-image: url("chrome://pmog/skin/images/icons/n-12.png");
+  margin: 0px 410px 0px 0px !important;
+  display: none !important;
+}
+
+#pmog_main_toolbar_button {
+  list-style-image: url("chrome://pmog/skin/images/navbar/pmog-large-ongoing.png");
+  cursor: pointer;
+  -moz-box-orient: vertical;
+}
+
+#pmog_main_toolbar_button[event=true] {
+  list-style-image: url("chrome://pmog/skin/images/navbar/pmog-large-event.png");
+}
+
+#pmog_main_toolbar_button:hover {
+  list-style-image: url("chrome://pmog/skin/images/navbar/pmog-large-hover.png");
+}
+
+toolbar[iconsize="small"] #pmog_main_toolbar_button > .toolbarbutton-icon {
+  list-style-image: url("chrome://pmog/skin/images/navbar/pmog-large-ongoing.png");
+  width: 16px;
+  height: 16px;
+}
+
+toolbar[iconsize="small"] #pmog_main_toolbar_button:hover > .toolbarbutton-icon {
+  list-style-image: url("chrome://pmog/skin/images/navbar/pmog-large-hover.png");
+  width: 16px;
+  height: 16px;
+}
+
+#pmog_grid, #pmog_grid rows, #pmog_grid row, #pmog_grid columns, #pmog_grid column {
+  margin: 0;
+  padding: 0;
+}
+
+#pmog_game_notice, #pmog_game_status_text {
+  display: block;
+  width: 215px;
+}
+
+#pmog_avatar_border {
+  padding-top: 5px;
+  padding-bottom: 3px;
+}
+
+#pmog_avatar image {
+  border: 1px solid #000;
+  padding: 0;
+  margin: 0;
+}
+
+#pmog_avatar {
+  padding: 0;
+  margin: 0;
+}
+
+#pmog_toolbar[mode="full"] toolbarbutton, #pmog_login_toolbar[mode="full"] toolbarbutton {
+  -moz-box-orient: vertical;
+  -moz-appearance: none !important;
+}
+
+#pmog_login_toolbar .inline_when_text, #pmog_toolbar[mode="text"] .inline_when_text {
+  -moz-box-orient: horizontal;
+}
+
+#pmog_toolbar #pmog_pause_button,
+#pmog_toolbar #pmog_close_button,
+#pmog_login_toolbar #pmog_play_button,
+#pmog_login_toolbar #pmog_close_button {
+  -moz-box-orient: horizontal;
+}
+
+#pmog-toolbar-throbber,
+#logged_out_throbber {
+  list-style-image: url("chrome://pmog/skin/images/shared/throbber-16.png");
+}
+
+/*#logged_out_message {
+  margin-top: 7px;
+}*/
+
+#pmog_toolbar[mode="icons"] #pmog_profile_label {
+  display: none;
+}
+
+#pmog_profile_label {
+  color: #333 !important;
+}
+
+#pmog_level_progress_background {
+  width: 80px !important;
+}
+
+#pmog_level_progressmeter_wrapper {
+  width: 50px !important;
+}
+
+#missions {
+  list-style-image: url("chrome://pmog/skin/images/icons/explore-16.png");
+}
+
+#acquaintances {
+  list-style-image: url("chrome://pmog/skin/images/icons/skull-16.png");
+}
+
+#pmog_preferences {
+  list-style-image: url("chrome://pmog/skin/images/icons/gear-16.png");
+}
+
+#tool_menu_pmog, #help_menu_pmog, #view_menu_pmog {
+  list-style-image: url("chrome://pmog/skin/images/icons/n-16.png");
+}
+
+#pmog_status_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/n-12.png");
+}
+
+#pmog_dp_total {
+  color: #000 !important;
+}
+
+#pmog_dp_container {
+  border: 1px solid #888;
+  font-weight: normal !important;
+  -moz-border-radius: 2px !important;
+  padding: 2px;
+  background-color: #fff;
+}
+
+#pmog_dp_container .icon {
+  background: url("chrome://pmog/skin/images/icons/datapoint_shadow-19.png");
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  width: 19px;
+  height: 19px;
+}
+
+#pmog_whitelist {
+  background: url("chrome://pmog/skin/images/shared/private.png");
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 50% 50%;
+}
+
+#pmog_whitelist treechildren::-moz-tree-row(odd) {
+  background: url("chrome://pmog/skin/images/shared/unselected_row.png");
+}
+
+#pmog_whitelist treechildren::-moz-tree-row(even) {
+  background: url("chrome://pmog/skin/images/shared/unselected_row.png");
+}
+
+#pmog_whitelist treechildren::-moz-tree-row(odd, selected) {
+  background: url("chrome://pmog/skin/images/shared/selected_row.png");
+}
+
+#pmog_whitelist treechildren::-moz-tree-row(even, selected) {
+  background: url("chrome://pmog/skin/images/shared/selected_row.png");
+}
+
+#pmog_play_menu {
+  list-style-image: url("chrome://pmog/skin/images/icons/play-24.png");
+}
+
+#pmog_pmail {
+  list-style-image: url("chrome://pmog/skin/images/icons/pmail-24.png");
+}
+
+#pmog_contacts {
+  list-style-image: url("chrome://pmog/skin/images/icons/contacts-24.png");
+}
+
+#pmog_act_menu, #pmog_create_menu {
+  list-style-image: url("chrome://pmog/skin/images/icons/create-25.png");
+}
+
+#pmog_explore_menu {
+  list-style-image: url("chrome://pmog/skin/images/icons/explore-25.png");
+}
+
+#pmog_invite {
+  list-style-image: url("chrome://pmog/skin/images/icons/invite-24.png");
+}
+
+#pmog_lightpost {
+  list-style-image: url("chrome://pmog/skin/images/icons/new_lightpost.png");
+}
+
+#pmog_summon {
+  list-style-image: url("chrome://pmog/skin/images/icons/summon-24.png");
+}
+
+.n_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/n-16.png");
+}
+
+.appendices_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/codex-16.png");
+}
+
+.armor_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/armor-16.png");
+}
+
+.dodge_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/dodge-16.png");
+}
+
+.disarm_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/disarm-16.png");
+}
+
+.arrow_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/arrow-16.png");
+}
+
+.associations_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations-16.png");
+}
+
+.bacon_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/bacon-16.png");
+}
+
+.bedouin_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/bedouin-16.png");
+}
+
+.benefactor_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/benefactor-16.png");
+}
+
+.bukkit_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/bukkit-16.png");
+}
+
+.crate_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/crate-16.png");
+}
+
+.destroyer_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/destroyer-16.png");
+}
+
+.missions_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/missions-16.png");
+}
+
+.skeleton_key_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/skeleton_key-16.png");
+}
+
+.eraser_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/erase-16.png");
+}
+
+.gameplay_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/gameplay-16.png");
+}
+
+.gear_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/gear-16.png");
+}
+
+.giftcard_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/giftcard-16.png");
+}
+
+.globe_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/globe-16.png");
+}
+
+.help_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/help-16.png");
+}
+
+.lightpost_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/lightpost-16.png");
+}
+
+.login_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/login-16.png");
+}
+
+.logout_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/logout-16.png");
+}
+
+.mail_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/pmail-16.png");
+}
+
+.mine_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/mine-16.png");
+}
+
+.grenade_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/grenade-16.png");
+}
+
+.pathmaker_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/pathmaker-16.png");
+}
+
+.portal_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/portal-16.png");
+}
+
+.refresh_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/refresh-16.png");
+}
+
+.report_bug_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/report_bug-16.png");
+}
+
+.seer_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/seer-16.png");
+}
+
+.shoat_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/shoat-16.png");
+}
+
+.skull_icon {
+  list-style-image: url("chrome://pmog/skin/plain/icons/skull_bug.png");
+}
+
+.skeleton_key_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/skeleton_key-16.png");
+}
+
+.st_nick_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/st_nick-16.png");
+}
+
+.summon_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/summon-16.png");
+}
+
+.vigilante_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/associations/vigilante-16.png");
+}
+
+.watchdog_icon {
+  list-style-image: url("chrome://pmog/skin/images/icons/watchdog-16.png");
+}
+
+#notepanel, #contactsPanel {
+  background-image: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  -moz-appearance: none !important;
+}
+
+#notebox notification {
+  background-image: none !important;
+}
+
+.pmog-panel {
+  background-color: transparent !important;
+  background-image: none !important;
+  padding: 0 !important;
+  border: none !important;
+  -moz-appearance: none !important;
+}
+
+.buff-panel {
+  width: 125px;
+}
+
+badges {
+  -moz-binding: url("chrome://pmog/content/bindings/profile.xml#badges");
+}
+
+otherprofile {
+  -moz-binding: url("chrome://pmog/content/bindings/profile.xml#otherprofile");
+}
+
+profile {
+  -moz-binding: url("chrome://pmog/content/bindings/profile.xml#otherprofile");
+  height: auto;
+}
+
+inventory {
+  -moz-binding: url("chrome://pmog/content/bindings/base.xml#inventory");
+}
+
+scrim {
+  -moz-binding: url("chrome://pmog/content/bindings/base.xml#scrim");
+}
+
+messageform {
+  -moz-binding: url("chrome://pmog/content/bindings/messageform.xml#messageform");
+}
+
+shoppeform {
+  -moz-binding: url("chrome://pmog/content/bindings/shoppeform.xml#shoppeform");
+}
+
+shoppeitem {
+  -moz-binding: url("chrome://pmog/content/bindings/shoppeform.xml#shoppeitem");
+}
+
+stnickform {
+  -moz-binding: url("chrome://pmog/content/bindings/stnickform.xml#stnickform");
+}
+
+ballisticstnickform {
+  -moz-binding: url("chrome://pmog/content/bindings/stnickform.xml#ballisticstnickform");
+}
+
+stswatterform {
+  -moz-binding: url("chrome://pmog/content/bindings/stswatterform.xml#stswatterform");
+}
+
+overweightcanaryform {
+  -moz-binding: url("chrome://pmog/content/bindings/overweightcanary.xml#overweightcanaryform");
+}
+
+grenadeform {
+  -moz-binding: url("chrome://pmog/content/bindings/grenadeform.xml#grenadeform");
+}
+
+summonform {
+  -moz-binding: url("chrome://pmog/content/bindings/summonform.xml#summonform");
+}
+
+inviteform {
+  -moz-binding: url("chrome://pmog/content/bindings/inviteform.xml#inviteform");
+}
+
+crateform {
+  -moz-binding: url("chrome://pmog/content/bindings/crateform.xml#crateform");
+}
+
+contactsform {
+  -moz-binding: url("chrome://pmog/content/bindings/contactsform.xml#contactsform");
+}
+
+contactitem {
+  -moz-binding: url("chrome://pmog/content/bindings/contactsform.xml#contactitem");
+  height: 70px;
+  max-height: 70px;
+  background-color: #fff;
+  color: #000;
+  border-bottom: 2px solid #ccc;
+}
+
+portalform {
+  -moz-binding: url("chrome://pmog/content/bindings/portalform.xml#portalform");
+}
+
+abundantportalform {
+  -moz-binding: url("chrome://pmog/content/bindings/portalform.xml#abundantportalform");
+}
+
+lightpostform {
+  -moz-binding: url("chrome://pmog/content/bindings/lightpostform.xml#lightpostform");
+}
+
+puzzlepostform {
+  -moz-binding: url("chrome://pmog/content/bindings/lightpostform.xml#puzzlepostform");
+}
+
+message {
+  -moz-binding: url("chrome://pmog/content/bindings/message.xml#message");
+}
+
+summon {
+  -moz-binding: url("chrome://pmog/content/bindings/message.xml#summon");
+}
+
+error {
+  -moz-binding: url("chrome://pmog/content/bindings/message.xml#error");
+}
+
+minedamage {
+  -moz-binding: url("chrome://pmog/content/bindings/mine.xml#minedamage");
+  height: auto;
+  min-height: 100px;
+}
+
+minearmor {
+  -moz-binding: url("chrome://pmog/content/bindings/mine.xml#minearmor");
+  height: auto;
+  min-height: 100px;
+}
+
+minedodge {
+  -moz-binding: url("chrome://pmog/content/bindings/mine.xml#minedodge");
+  height: auto;
+  min-height: 100px;
+}
+
+minedisarm {
+  -moz-binding: url("chrome://pmog/content/bindings/mine.xml#minedisarm");
+  height: auto;
+  min-height: 100px;
+}
+
+minevengeance {
+  -moz-binding: url("chrome://pmog/content/bindings/mine.xml#minevengeance");
+  height: auto;
+  min-height: 100px;
+}
+
+grenadedamage {
+  -moz-binding: url("chrome://pmog/content/bindings/grenade.xml#grenadedamage");
+  height: auto;
+  min-height: 120px;
+}
+
+grenadearmor {
+  -moz-binding: url("chrome://pmog/content/bindings/grenade.xml#grenadearmor");
+  height: auto;
+  min-height: 120px;
+}
+
+grenadedodge {
+  -moz-binding: url("chrome://pmog/content/bindings/grenade.xml#grenadedodge");
+  height: auto;
+  min-height: 120px;
+}
+
+grenadedisarm {
+  -moz-binding: url("chrome://pmog/content/bindings/grenade.xml#grenadedisarm");
+  height: auto;
+  min-height: 120px;
+}
+
+grenadevengeance {
+  -moz-binding: url("chrome://pmog/content/bindings/grenade.xml#grenadevengeance");
+  height: auto;
+  min-height: 120px;
+}
+
+ballisticnickdamage {
+  -moz-binding: url("chrome://pmog/content/bindings/ballisticnick.xml#ballisticnickdamage");
+  height: auto;
+  min-height: 120px;
+}
+
+ballisticnickarmor {
+  -moz-binding: url("chrome://pmog/content/bindings/ballisticnick.xml#ballisticnickarmor");
+  height: auto;
+  min-height: 120px;
+}
+
+ballisticnickdodge {
+  -moz-binding: url("chrome://pmog/content/bindings/ballisticnick.xml#ballisticnickdodge");
+  height: auto;
+  min-height: 120px;
+}
+
+ballisticnickdisarm {
+  -moz-binding: url("chrome://pmog/content/bindings/ballisticnick.xml#ballisticnickdisarm");
+  height: auto;
+  min-height: 120px;
+}
+
+
+portal {
+  -moz-binding: url("chrome://pmog/content/bindings/portal.xml#portal");
+  height: auto;
+  min-height: 120px;
+}
+
+portalrating {
+  -moz-binding: url("chrome://pmog/content/bindings/portal.xml#portalrating");
+  height: auto;
+  min-height: 120px;
+}
+
+missionfound {
+  -moz-binding: url("chrome://pmog/content/bindings/mission.xml#missionfound");
+}
+
+branch {
+  -moz-binding: url("chrome://pmog/content/bindings/mission.xml#branch");
+}
+
+crate {
+  -moz-binding: url("chrome://pmog/content/bindings/crate.xml#crate");
+  height: auto;
+  min-height: 120px;
+}
+
+giftcard {
+  -moz-binding: url("chrome://pmog/content/bindings/giftcard.xml#giftcard");
+  height: auto;
+  min-height: 100px;
+}
+
+puzzle {
+  -moz-binding: url("chrome://pmog/content/bindings/crate.xml#puzzle");
+  height: auto;
+  min-height: 120px;
+}
+
+toolspinner {
+  -moz-binding: url("chrome://pmog/content/bindings/crateform.xml#toolspinner");
+}
+
+dpspinner {
+  -moz-binding: url("chrome://pmog/content/bindings/crateform.xml#dpspinner");
+}
+
+scrolltext {
+  -moz-binding: url("chrome://pmog/content/bindings/scrolltext.xml#scrolltext");
+}
+
+throbber {
+  -moz-binding: url("chrome://pmog/content/bindings/base.xml#throbber");
+}
+
+pbox {
+  -moz-binding: url("chrome://pmog/content/bindings/base.xml#pbox");
+  -moz-box-orient: vertical;
+}
+
+systemnotice {
+  -moz-binding: url("chrome://pmog/content/bindings/systemnotice.xml#systemnotice");
+  -moz-box-orient: vertical;
+}
+
+cevent {
+  -moz-binding: url("chrome://pmog/content/bindings/events.xml#carouselEvent");
+  -moz-box-orient: vertical;
+}
+
+carousel {
+  -moz-binding: url("chrome://pmog/content/bindings/events.xml#eventCarousel");
+  -moz-box-orient: vertical;
+}
+
+xuldiv {
+  -moz-binding: url("chrome://pmog/content/bindings/base.xml#xuldiv");
+}
+
+buff {
+  -moz-binding: url("chrome://pmog/content/bindings/buff.xml#buff");
+}
+
+buff-detail {
+  -moz-binding: url("chrome://pmog/content/bindings/buff.xml#extendedBuff");
+}
+
+overclock {
+  -moz-binding: url("chrome://pmog/content/bindings/overclock.xml#overclock");
+}
+
+impede {
+  -moz-binding: url("chrome://pmog/content/bindings/impede.xml#impede");
+}
+
+overclockform {
+  -moz-binding: url("chrome://pmog/content/bindings/overclockform.xml#overclockform");
+}
+
+impedeform {
+  -moz-binding: url("chrome://pmog/content/bindings/impedeform.xml#impedeform");
+}
+
+/*.tabbrowser-tab {
+  -moz-binding: url("chrome://pmog/content/bindings/base.xml#tabbrowser-tab") !important;
+}*/
+
+/* @group Toolbar Error Style */
+
+.errorStatus {
+  background: #FB7070;
+  border-top: 2px solid #D43C3C;
+  border-bottom: 2px solid #D43C3C;
+  color: #FFF;
+}
+
+/* @end */
+
+/* @group Tooltip */
+
+#pmogTooltip {
+  -moz-appearance: none !important;
+  -moz-border-radius: 1em;
+  border: 2px solid black !important;
+  background-color: rgba(0,0,0,0.85) !important;
+}
+
+#pmogTooltip label,
+#pmogTooltip description {
+  color: #fff;
+  font-size: 10px;
+}
+
+/* @end */
+
+.logged-out-error {
+  font-weight: bold;
+  color: white;
+  background-color: #f00;
+}

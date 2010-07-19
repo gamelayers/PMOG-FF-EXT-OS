@@ -1,0 +1,9 @@
+# Please note that the extra pmog folder is added to the path to compensate
+# for the mac os adding an extra folder as part of the command line zip process.
+content pmog chrome/content/ contentaccessible=yes
+skin    pmog classic/1.0 chrome/skin/ 
+locale  pmog en-US chrome/locale/en-US/
+overlay chrome://browser/content/browser.xul chrome://pmog/content/overlay.xul
+style chrome://global/content/customizeToolbar.xul chrome://pmog/skin/toolbar.css
+
+resource pmog modules/

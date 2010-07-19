@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<xbl:bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns="http://www.w3.org/1999/xhtml" id="scrollBindings">
+  <xbl:binding id="scrolltext">
+    <xbl:content orient="vertical">
+        <xul:vbox anonid="scrollContainer">
+          <xul:hbox anonid="scrollUpButtonArea" class="topScrollButton scrollButtonContainer" collapsed="true">
+            <xul:toolbarbutton class="scrollbutton-up" anonid="scrollbutton-up" />
+          </xul:hbox>
+          <xul:scrollbox anonid="scrollbox" xbl:inherits="orient,align,pack,dir">
+            <div anonid="content"/>
+          </xul:scrollbox>
+          <xul:hbox anonid="scrollDownButtonArea" class="bottomScrollButton scrollButtonContainer" collapsed="true">
+            <xul:toolbarbutton class="scrollbutton-down" anonid="scrollbutton-down" />
+          </xul:hbox>
+        </xul:vbox>
+    </xbl:content>
+
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/scrolltext.css"/>
+    </xbl:resources>
+
+    <xbl:implementation>
+      <xbl:field name="_scrollbox">
+        document.getAnonymousElementByAttribute(this, "anonid", "scrollbox");
+      </xbl:field>
+
+      <xbl:field name="_scrollButtonUp">
+        document.getAnonymousElementByAttribute(this, "anonid", "scrollbutton-up");
+      </xbl:field>
+
+      <xbl:field name="_scrollButtonDown">
+        document.getAnonymousElementByAttribute(this, "anonid", "scrollbutton-down");
+      </xbl:field>
+
+      <xbl:field name="_scrollButtonUpArea">
+        document.getAnonymousElementByAttribute(this, "anonid", "scrollUpButtonArea");
+      </xbl:field>
+
+      <xbl:field name="_scrollButtonDownArea">
+        document.getAnonymousElementByAttribute(this, "anonid", "scrollDownButtonArea");
+      </xbl:field>
+
+      <xbl:field name="_scrollContainer">
+        document.getAnonymousElementByAttribute(this, "anonid", "scrollContainer");
+      </xbl:field>
+
+      <xbl:field name="_content">
+        document.getAnonymousElementByAttribute(this, "anonid", "content");
+      </xbl:field>
+
+      <xbl:field name="_scrollBoxObject">null</xbl:field>
+
+      <xbl:property name="scrollBoxObject" readonly="true">
+        <xbl:getter>
+          <![CDATA[
+            if (!this._scrollBoxObject) {
+              this._scrollBoxObject =
+                this._scrollbox.boxObject
+                             .QueryInterface(Components.interfaces.nsIScrollBoxObject);
+            }
+            return this._scrollBoxObject;
+          ]]>
+        </xbl:getter>
+      </xbl:property>
+
+      <xbl:constructor>
+        <![CDATA[
+          var that = this;
+
+          jQuery(this._scrollbox).bind('overflow', function() {
+            that._scrollButtonDownArea.collapsed = false;
+            that._scrollButtonUpArea.collapsed = false;
+          });
+
+          jQuery(this._scrollbox).bind('underflow', function() {
+            that._scrollButtonDownArea.collapsed = true;
+            that._scrollButtonUpArea.collapsed = true;
+          });
+
+          jQuery(this._scrollButtonUpArea).mousehold(100, function(event) {
+            that.scroll(-1);
+          });
+
+          jQuery(this._scrollButtonDownArea).mousehold(100, function(event) {
+            that.scroll(1);
+          });
+
+          jQuery(this._scrollContainer).wheel(function(event) {
+            that.scroll(event.delta > 0 ? -1 : 1);
+            event.stopPropagation();
+          });
+
+        ]]>
+      </xbl:constructor>
+
+      <xbl:method name="scroll">
+        <xbl:parameter name="line" />
+        <xbl:body>
+          <![CDATA[
+            this.scrollBoxObject.scrollByLine(line);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setContent">
+        <xbl:parameter name="content" />
+        <xbl:body>
+          <![CDATA[
+            jQuery(this._content).append( escapeSpecial(content) );
+
+            jQuery(this._content).autolink();
+
+            jQuery(this._content).children().each( function() {
+              if (this.tagName == 'a') {
+                prepareLink(this);
+              }
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="clear">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this._content).empty();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

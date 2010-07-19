@@ -1,0 +1,13 @@
+11AUG2008 marc@gamelayers.com
+----------------------------------------------------------------------------------------------------------
+The injectables in this folder are designed for triggering the display of an overlay without having to 
+add a button to the HUD or make it show by default.
+
+They require the Extension Developer Extension: https://addons.mozilla.org/en-US/firefox/addon/7434
+
+Once firefox is launched:
+
+	1. open up the Javascript Injector that comes with the above extension
+	2. Browse for the desired injectable file from this directory
+	3. Ensure that the browser.xul context is chosen
+	4. Execute! The overlay should be showing.

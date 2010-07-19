@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://pmog/skin/signup/signup.css" type="text/css"?>
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    buttons="cancel, extra1"
+    ondialogextra1="tnnSignup()"
+    buttonlabelextra1="Signup"
+    buttonlabelcancel="Cancel"
+    buttonlabelaccept="Start playing"
+    ondialogaccept="tnnSignup()"
+    ondialogcancel="close()"
+    defaultButton="extra1"
+    onload="loadSignupForm()"
+    title="Signup on The Nethernet">
+  <script type= "application/x-javascript" src= "chrome://pmog/content/signup/signup.js"/>
+  <vbox align="center">
+    <vbox>
+      <label class="signupHeader" value="Signup for The Nethernet!" />
+    </vbox>
+    <stack>
+      <vbox>
+        <grid>
+          <rows>
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label class="required" value="*" />
+                <label control="login" value="Player Name:" />
+              </hbox>
+              <vbox>
+                <textbox id="login" emptytext="Player Login" maxlength="20" />
+                <label id="login_error" class="error error_label" hidden="true" />
+              </vbox>
+            </row>
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label class="required" value="*" />
+                <label control="password" value="Password:" />
+              </hbox>
+              <vbox>
+                <textbox id="password" type="password" maxlength="10" />
+                <label id="password_error" class="error error_label" hidden="true" />
+              </vbox>
+            </row>
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label class="required" value="*" />
+                <label control="secret_question_id" value="Secret Question:" />
+              </hbox>
+              <menulist id="secret_question_id">
+                <menupopup>
+                  <menuitem label="" />
+                </menupopup>
+              </menulist>
+            </row>
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label class="required" value="*" />
+                <label control="answer" value="Secret Answer:" />
+              </hbox>
+              <textbox id="answer" />
+            </row>
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label control="email" value="Email:" />
+              </hbox>
+              <vbox>
+                <textbox id="email" emptytext="you@domain.com" />
+                <label id="email_error" class="error error_label" hidden="true" />
+              </vbox>
+            </row>
+            <textbox id="captcha_id" hidden="true" />
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label class="required" value="*" />
+                <label value="Question:" />
+              </hbox>
+              <description id="captcha_question" />
+            </row>
+            <row>
+              <hbox class="rowLabel vcenter">
+                <label class="required" value="*" />
+                <label value="Answer:" />
+              </hbox>
+              <vbox>
+                <textbox id="captcha_answer" />
+                <label id="captcha_answer_error" class="error error_label" hidden="true" />
+              </vbox>
+            </row>
+          </rows>
+          <columns>
+            <column>
+            </column>
+            <column flex="1">
+            </column>
+          </columns>
+        </grid>
+        <hbox class="vcenter agree-block" pack="center">
+          <label value="*" class="required" />
+          <checkbox id="tosChkbx" oncommand="tosCheckboxListener()" />
+          <label value="You agree to our" />
+          <label class="text-link tosLink" id="tosLink" value="terms of service" href="" />
+          <label value="and are over 13 years old." />
+        </hbox>
+        <menuseparator style="margin-top: 20px; margin-bottom: 20px;" />
+        <vbox align="center">
+            <label value="Or..." style="margin-bottom: 10px;" />
+            <image src="chrome://pmog/skin/images/icons/twitter_logo_header.png" style="cursor: pointer;" onclick="twitterLogin();" />
+            <label value="Signup using your Twitter account" />
+        </vbox>
+      </vbox>
+      <hbox id="throbber" class="throbber" mousethrough="always" hidden="true">
+      </hbox>
+    </stack>
+  </vbox>
+</dialog>
+

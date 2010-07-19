@@ -1,0 +1,54 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.lightpostCount {
+  position: relative;
+  z-index: 10;
+  float: right;
+  margin-right: 10px;
+  color: #4c4c4c;
+  font-size: 10px;
+}
+
+.greyBox,
+html|*.greyBox {
+  padding: 0;
+  position: relative;
+}
+
+.topScrollButton {
+  height: 16px;
+  background-color: transparent;
+  border: 0;
+}
+
+.bottomScrollButton {
+  height: 16px;
+  background-color: transparent;
+  border: 0;
+}
+
+html|*.minimizedBar {
+  color: #4c4c4c;
+  font-size: 12px;
+  background-color: #DBDBDB;
+  -moz-border-radius-topright: 10px;
+  -moz-border-radius-topleft: 10px;
+  margin-left: 5px;
+  padding: 5px;
+  margin-bottom: -5px;
+  border-top: 1px solid #C4C4C4;
+  border-right: 1px solid #C4C4C4;
+  border-left: 1px solid #C4C4C4;
+  font-weight: bold;
+}
+
+html|div.growShrinkContainer {
+  position: relative;
+  float: right;
+  z-index: 2;
+  margin-top: -15px;
+  margin-left: -15px;
+  font-size: 14px;
+  font-weight: bold;
+}

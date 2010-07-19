@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
+<?xml-stylesheet href="chrome://pmog/skin/pmog.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/console/console.css" type="text/css"?> 
+<?xml-stylesheet href="chrome://global/content/console.css" type="text/css"?> 
+<?xul-overlay href="chrome://global/content/editMenuOverlay.xul"?>
+
+<!DOCTYPE window [
+  <!ENTITY % pmogDTD SYSTEM "chrome://pmog/locale/pmog.dtd">
+]>
+<window title="Sites The Nethernet Will Ignore" id="pmog_ignore_list"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+   windowtype="global:console_pmog"
+   width="640" height="480"
+   screenX="10" screenY="10"
+   persist="screenX screenY width height sizemode"
+   onload="init();"
+   onunload="on_unload();">
+   <script type= "application/x-javascript" src= "chrome://pmog/content/ignore/ignore.js"/>  
+   
+   <keyset>
+     <key id="close_ignore_window" modifiers="meta" key="w" oncommand="window.close();"/>
+   </keyset>
+   
+     <toolbox id="console-toolbox">
+         <toolbar class="chromeclass-toolbar" id="ToolbarEval" align="center">
+           <label value="URL:" control="TextboxUrl"/>
+           <textbox id="TextboxUrl" class="toolbar" value="" onkeypress="" flex="1"/>
+           <toolbarbutton id="ButtonEval" label="Submit" oncommand="submit()"/>
+           <checkbox id="block_sub_pages" label="The Nethernet will ignore all pages of this domain" checked="true"/>
+         </toolbar>
+     </toolbox>
+     
+     <tree id="pmog_whitelist" seltype="single" onclick="on_tree_selected(event);" enableColumnDrag="true" flex="1">
+       <treecols>
+         <treecol id="id"     label="Id"/>
+         <splitter class="tree-splitter" />
+         <treecol id="name"   label="URL" flex="1"/>
+         <splitter class="tree-splitter" />
+         <treecol id="date"   label="Date" flex="1"/>
+         <splitter class="tree-splitter" />
+         <treecol id="block_all_pages"   label="block all pages"/>
+         <splitter class="tree-splitter" />
+         <treecol id="action" label="Action"/>
+       </treecols>
+       <treechildren/>
+     </tree>
+     <toolbox>
+       <toolbar class="chromeclass-toolbar" id="ignore_caption" align="center">
+         <caption label='Note: "www.domain.com" and "domain.com" are considered to be different sites.' style="margin:auto;"/>
+       </toolbar>
+     </toolbox>
+     <script type= "application/x-javascript">
+      <![CDATA[
+        function on_unload() {
+          try{opener.Pmog.white_list = this.pmog_ignore_list.records}catch(e){}
+        }
+        
+        function init() {
+          this.pmog_ignore_list = new IgnoreList(opener.Pmog);
+          window.onkeypress = function(event) {
+            this.pmog_ignore_list.on_key_pressed(event)
+          }
+        }
+
+        function on_tree_selected(event) {
+          this.pmog_ignore_list.onclick(event);
+        }
+
+        function submit(){
+          this.pmog_ignore_list.add(document.getElementById('TextboxUrl').value, document.getElementById('block_sub_pages').checked)
+          document.getElementById('TextboxUrl').value = ''
+        }
+        ]]>
+      </script>
+</window>

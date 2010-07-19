@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  ondialogaccept="return onOK();"
+  onload="onLoad();"
+  title="Manage your Toolbar"
+  id="pmog_manage_profiles"
+  buttonlabelcancel="Cancel"
+  buttonlabelaccept="Submit">
+  <script type= "application/x-javascript" src= "chrome://pmog/content/profiles/manage.js"/>  
+  <grid flex="1">
+    <columns>
+      <column/>
+    </columns>
+    <rows>
+      <row>
+          <label value="Manage Your Toolbar" style="padding-bottom:1.0em;font-size:2.0em;font-weight:bolder;"/>
+      </row>
+      <row>
+        <label>Either of these options can help with technical issues, or use both</label>
+      </row>
+      <row>
+        <label style="margin-bottom:2.0em;">if you want to clear out your identity on The Nethernet from this particular browser.</label>
+      </row>
+      <row>
+        <hbox style="background-image: url('chrome://pmog/skin/images/icons/erase-16.png');background-repeat: no-repeat;padding-left:20px;">
+          <checkbox id="clear_passwords" label="Clear all stored passwords for The Nethernet" />
+        </hbox>
+      </row>
+      <row>
+        <hbox style="background-image: url('chrome://pmog/skin/images/icons/erase-16.png');background-repeat: no-repeat;padding-left:20px;">
+          <checkbox id="clear_preferences" label="Reset local preferences for The Nethernet" />
+        </hbox>
+      </row>
+      <row>
+          <label>Please note that these functions only affect the toolbar,</label>
+      </row>
+      <row>
+        <label>not your profile on thenethernet.com. You can continue playing on The Nethernet</label>
+      </row>
+      <row>
+        <label>by logging in again here or elsewhere.</label>
+      </row>
+    </rows>
+  </grid>
+</dialog>

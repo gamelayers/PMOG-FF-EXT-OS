@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<xbl:bindings xmlns:xbl="http://www.mozilla.org/xbl" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns="http://www.w3.org/1999/xhtml" id="giftcardBindings">
+  <xbl:binding id="giftcard" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" margin="60" title="You found a DP Card!" header="giftcardHeader">
+        <div anonid="giftcardMessageWrapper" class="greyBox">
+          <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link" style="display: inline;"/> left a DP Card here!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="thanksButton" onclick="document.getBindingParent(this).thanks();" hidden="true"/>
+            <xul:toolbarbutton anonid="takeDPButton" onclick="document.getBindingParent(this).loot();"/>
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="dismissButton" onclick="document.getBindingParent(this).dismiss();"/>
+            <xul:toolbarbutton anonid="addAllyButton" oncommand="document.getBindingParent(this).addAlly();" hidden="true"/>
+            <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="fId"/>
+      <xbl:field name="fLocationId"/>
+      <xbl:field name="fFrom"/>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="messageWrapper">
+        jQuery(this).anonymousByAttr("giftcardMessageWrapper");
+      </xbl:field>
+      <xbl:field name="buttonSpacer">
+        jQuery(this).anonymousByAttr("btnSpacer");
+      </xbl:field>
+      <xbl:field name="dismissButton">
+        jQuery(this).anonymousByAttr("dismissButton");
+      </xbl:field>
+      <xbl:field name="lootButton">
+        jQuery(this).anonymousByAttr("takeDPButton");
+      </xbl:field>
+      <xbl:field name="thanksButton">
+        jQuery(this).anonymousByAttr("thanksButton");
+      </xbl:field>
+      <xbl:field name="allyButton">
+        jQuery(this).anonymousByAttr("addAllyButton");
+      </xbl:field>
+      <xbl:field name="contactButton">
+        jQuery(this).anonymousByAttr("addContactButton");
+      </xbl:field>
+      <xbl:method name="show">
+        <xbl:parameter name="params"/>
+        <xbl:body><![CDATA[
+            this.setPlayer(params.body.user);
+            this.fId = params.body.id;
+            this.fLocationId = params.body.location_id;
+            this.overlay.makeLink(Pmog.BASE_URL + "/users/" + this.player);
+
+            this.relationship = params.relationship;
+            this._appendRelationshipText();
+
+            return this;
+          ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="dismiss">
+        <xbl:body><![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/giftcards/' + this.fId + '/dismiss.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.giftcard_notice(data.flash.notice);
+                ovrlay.close();
+              },
+              error: function(data) {
+                ovrlay.spinner.hide();
+                Pmog.giftcardHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="loot">
+        <xbl:parameter name="params"/>
+        <xbl:body><![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+                url: Pmog.private_url() + '/locations/' + this.fLocationId + '/giftcards/' + this.fId + '/loot.json?authenticity_token=' + Pmog.user.authenticity_token,
+                type: 'PUT',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: params || '',
+                success: function(data) {
+                    ovrlay.lootButton.hidden = true;
+                    ovrlay.dismissButton.hidden = true;
+
+                    ovrlay.fromPlayer = data.gift_giver;
+                    ovrlay.thanksButton.hidden = false;
+
+                    ovrlay.overlay.title = "You looted the gift card!";
+
+                    // i wont even pretend this works FHDJSFHJKDSFHJKDSG
+                    ovrlay.messageWrapper.textContent = "You gain 10dp!";
+
+                    switch (ovrlay.relationship) {
+                    case 'self':
+                        ovrlay.thanksButton.hidden = true;
+                        break;
+                    case 'ally':
+                      ovrlay.allyButton.hidden = true;
+                      break;
+                    case 'none':
+                    case 'contact':
+                        ovrlay.allyButton.hidden = false;
+                        ovrlay.thanksButton.hidden = false;
+                        break;
+                    case 'rival':
+                      ovrlay.allyButton.hidden = false;
+                      break;
+                    default:
+                        ovrlay.thanksButton.hidden = false;
+                        break;
+                    }
+                },
+                error: function(data, statusText, errorObject) {
+                    ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                },
+            });
+          ]]></xbl:body>
+      </xbl:method>
+      <xbl:method name="thanks">
+        <xbl:body><![CDATA[
+            Pmog.hud.openReply(this.player, "Thanks!");
+            this.close();
+          ]]></xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

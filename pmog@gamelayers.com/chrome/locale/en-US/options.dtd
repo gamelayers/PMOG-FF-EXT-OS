@@ -1,0 +1,5 @@
+<!ENTITY pmog.options.title "Nethernet Options">
+<!ENTITY pmog.options.general.label "General Settings">
+<!ENTITY pmog.options.game.label "Gameplay Settings">
+<!ENTITY pmog.options.general.url "http://thenethernet.com">
+<!ENTITY pmog.options.game.url "http://www.cnn.com">

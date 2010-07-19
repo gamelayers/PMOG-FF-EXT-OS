@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Impede Binding
+  Created by Marc Adams on 2009-06-05.
+  Copyright (c) 2009 GameLayers Inc.. All rights reserved.
+-->
+
+<xbl:bindings id="impedeBinding"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xbl:binding id="impede" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+  <xbl:content>
+    <xul:pbox anonid="overlay" margin="80" header="impedeHeader" context="bad">
+      <div class="max-width-250 neg-10-right-margin">
+        <div class="greyBox">
+           For the next <span anonid="charges"></span> moves you make, you'll earn -5 fewer classpoints <img src="chrome://pmog/skin/images/icons/classpoint-16.png" />!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+            <xul:toolbarbutton anonid="impedeButton" oncommand="Pmog.impedePlayer(document.getBindingParent(this).player);" hidden="true" />
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </div>
+    </xul:pbox>
+  </xbl:content>
+
+  <xbl:implementation>
+    <xbl:field name="overlay">
+      jQuery(this).anonymousByAttr("overlay");
+    </xbl:field>
+
+    <xbl:field name="_charges">
+      jQuery(this).anonymousByAttr("charges");
+    </xbl:field>
+
+    <xbl:field name="rivalButton">
+      jQuery(this).anonymousByAttr("addRivalButton");
+    </xbl:field>
+
+    <xbl:field name="impedeButton">
+      jQuery(this).anonymousByAttr("impedeButton");
+    </xbl:field>
+
+    <xbl:property name="charges">
+      <xbl:getter>
+        return this._charges.textContent;
+      </xbl:getter>
+      <xbl:setter>
+        return this._charges.textContent = val;
+      </xbl:setter>
+    </xbl:property>
+
+    <xbl:method name="show">
+      <xbl:parameter name="params"/>
+      <xbl:body>
+        <![CDATA[
+          this.setPlayer(params.body.user);
+
+          jQuery(this.overlay._title).empty().append('You were impeded by <a href="' + Pmog.BASE_URL + '/users/' + params.body.user + '">' + params.body.user + '</a>');
+
+          jQuery(this.overlay._title).children().each(function() {
+              if (this.tagName == 'a') {
+                  prepareLink(this);
+              }
+          });
+
+          this.charges = params.body.charges;
+
+          this.overlay.setAvatar(Pmog.BASE_URL + params.body.avatar);
+
+          if (params.relationship === 'rival') {
+            this.rivalButton.hidden = true;
+            this.impedeButton.hidden = false;
+          }
+        ]]>
+      </xbl:body>
+    </xbl:method>
+  </xbl:implementation>
+
+
+  <xbl:resources>
+    <xbl:stylesheet src="chrome://pmog/skin/overlays/impede.css"/>
+  </xbl:resources>
+</xbl:binding>
+
+
+</xbl:bindings>

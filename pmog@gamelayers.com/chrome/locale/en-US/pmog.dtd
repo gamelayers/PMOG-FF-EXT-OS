@@ -1,0 +1,220 @@
+<!ENTITY pmog.browser_toolbar_palette_playlabel       "The Nethernet">
+<!ENTITY pmog.browser_toolbar_palette_showlabel       "Show me">
+<!ENTITY pmog.browser_toolbar_palette_tooltip     "Show or Hide the The Nethernet toolbar">
+<!ENTITY pmog.find_player                         "Find Player">
+<!ENTITY pmog.find_player_tooltip                  "Find people who have wronged you; Find allies you never knew you had.">
+<!ENTITY pmog.shoppe                              "Shoppe">
+<!ENTITY pmog.shoppe_tooltip                      "Shoppe - spend datapoints to buy tools">
+<!ENTITY pmog.pmog_menu                           "The Nethernet">
+<!ENTITY pmog.pmog_menu_tooltip                   "Preferences and Settings">
+<!ENTITY pmog.dp_container_tooltip                "These Are Your Datapoints">
+<!ENTITY pmog.play                                "Play">
+<!ENTITY pmog.play_tooltip                        "PLAY on websites">
+<!ENTITY pmog.gift                                "Gift">
+<!ENTITY pmog.gift_tooltip                        "Leave a gift">
+<!ENTITY pmog.crate                               "Stash a crate here">
+<!ENTITY pmog.crate_tooltip                       "Leave a Crate here for a future player to find and loot - your present!">
+<!ENTITY pmog.giftcard                            "Leave a DP Card here">
+<!ENTITY pmog.giftcard_tooltip                    "Leave a card worth 10dp for another player to find.">
+<!ENTITY pmog.attack                              "attack!">
+<!ENTITY pmog.attack_tooltip                      "Reach out and hurt someone - leave a Mine here">
+<!ENTITY pmog.awesome                             "awsm!">
+<!ENTITY pmog.awesome_tooltip                      "Play a DP Card and the next visitor will get 10 DP from you">
+<!ENTITY pmog.watchdog                            "Leave a Watchdog here">
+<!ENTITY pmog.watchdog_tooltip                    "A Watchdog will protect this page from the next Destroyer to visit.">
+<!ENTITY pmog.st_nick                             "St. Nick another player">
+<!ENTITY pmog.st_nick_tooltip                     "St. Nicks stop other players from using grenades and mines">
+<!ENTITY pmog.mine                                "Lay a mine here">
+<!ENTITY pmog.mine_tooltip                        "If you lay a mine on this page, the next player to visit here will lose datapoints.">
+<!ENTITY pmog.stealth_mine                        "Lay Stealth Mines">
+<!ENTITY pmog.stealth_mine_tooltip                "Keep the location of your Mines out of the event stream">
+<!ENTITY pmog.abundant_mine                       "Lay Abundant Mines">
+<!ENTITY pmog.abundant_mine_tooltip               "Collect the lost DP from players who trip your Mines">
+<!ENTITY pmog.grenade                             "Throw a Grenade at another player">
+<!ENTITY pmog.grenade_tooltip                     "Grenades do direct damage to another player's datapoints">
+<!ENTITY pmog.contacts                            "Contacts">
+<!ENTITY pmog.contacts_tooltip                    "Contacts, Rivals, and Allies">
+<!ENTITY pmog.quest                               "Explore">
+<!ENTITY pmog.quest_tooltip                       "">
+<!ENTITY pmog.jaunt                               "Jaunt">
+<!ENTITY pmog.jaunt_tooltip                       "Jaunt across the web using Portals">
+<!ENTITY pmog.find_mission                        "Find A Mission">
+<!ENTITY pmog.find_mission_tooltip                "Follow the path left by another player through a series of websites">
+<!ENTITY pmog.profile                             "Profile">
+<!ENTITY pmog.profile_tooltip                     "View your Profile">
+<!ENTITY pmog.venture                             "Venture Forth">
+<!ENTITY pmog.venture_tooltip                     "Start on one of your queued Missions">
+<!ENTITY pmog.events                              "View">
+<!ENTITY pmog.events_tooltip                      "Events - see what's happening in the game.">
+<!ENTITY pmog.awsmattack                          "awsm! attack!">
+<!ENTITY pmog.awsmattack_tooltip                  "See where the love and the hate is on the internets">
+<!ENTITY pmog.summon                              "Summon">
+<!ENTITY pmog.summon_tooltip                      "Summon a player to join you here.">
+<!ENTITY pmog.pmail                               "Pmail">
+<!ENTITY pmog.pmail_tooltip                       "PMail Inbox">
+<!ENTITY pmog.forums                              "Forums">
+<!ENTITY pmog.forums_tooltip                      "Forums - Connect with the The Nethernet Community">
+<!ENTITY pmog.invite                              "Invite Your Friends">
+<!ENTITY pmog.invite_tooltip                      "INVITE people to play on The Nethernet">
+<!ENTITY pmog.create                              "Create">
+<!ENTITY pmog.create_tooltip                      "">
+<!ENTITY pmog.mission                             "Make A Mission">
+<!ENTITY pmog.mission_tooltip                     "Make a tour of websites for other players.">
+<!ENTITY pmog.lightpost                           "Light a Lightpost">
+<!ENTITY pmog.lightpost_tooltip                   "Save this URL and append your message for a future Mission.">
+<!ENTITY pmog.skeleton_key                        "Unlock a Puzzle Crate">
+<!ENTITY pmog.create_skeleton_key                 "Create a Skeleton Key">
+<!ENTITY pmog.create_skeleton_key_tooltip         "Create a Key to open any Puzzle Crate.">
+<!ENTITY pmog.portal                              "Draw A Portal">
+<!ENTITY pmog.portal_tooltip                      "Connect a webpage with another.">
+<!ENTITY pmog.key_commands                        "Keyboard Shortcuts">
+<!ENTITY pmog.defend_yourself                     "Defend Yourself">
+<!ENTITY pmog.armor_tooltip                       "Toggle your Armor on or off - protection from Mines!">
+<!ENTITY pmog.enable_dodge                        "Dodge">
+<!ENTITY pmog.enable_vengeance                    "Vengeance">
+<!ENTITY pmog.enable_vengeance_tooltip            "Damage your enemies when they try to attack you for 20 pings each - Level 15 Bedouin ">
+<!ENTITY pmog.use_armor_tooltip                   "Put on your Armor.">
+<!ENTITY pmog.remove_your_armor                   "Go Defenseless">
+<!ENTITY pmog.remove_armor_tooltip                "Take off your Armor.">
+<!ENTITY pmog.pmail                               "Pmail">
+<!ENTITY pmog.visit_pmog                          "Visit TheNethernet.com">
+<!ENTITY pmog.new_message                         "New Message">
+<!ENTITY pmog.your_mailbox                        "Your Mailbox">
+<!ENTITY pmog.help                                "Help">
+<!ENTITY pmog.help_tooltip                        "Help">
+<!ENTITY pmog.blog                                "Community News Blog">
+<!ENTITY pmog.blog_tooltip                        "Community News Blog">
+<!ENTITY pmog.codex                               "The Nethernet Guide">
+<!ENTITY pmog.codex_tooltip                       "Deeper Knowledge of The Nethernet">
+<!ENTITY pmog.datapoints_tooltip                  "Your Datapoints - earn these by surfing and taking Missions">
+<!ENTITY pmog.bacon_tooltip                       "Your Bacon - Use Bacon to upgrade standard tools">
+<!ENTITY pmog.open_event_window                   "Open events window">
+<!ENTITY pmog.pings_tooltip                       "Your Pings - earn these from playing with other players">
+<!ENTITY pmog.open_event_window                   "See Events Live">
+
+
+<!-- version 0.5 and below -->
+<!ENTITY pmog.view_profile                        "View Profile">
+<!ENTITY pmog.visit_your_profile_on_pmog_com      "PROFILE View your The Nethernet profile">
+<!ENTITY pmog.deploy_lightpost                    "Deploy Lightpost">
+<!ENTITY pmog.buy_lightpost                       "Buy Additional Lightposts">
+<!ENTITY pmog.edit_lightpost                      "Edit Your Lightposts">
+<!ENTITY pmog.deploy_portal                       "Deploy Portal">
+<!ENTITY pmog.buy_portal                          "Buy Additional Portals">
+<!ENTITY pmog.deploy_watchdog                     "Deploy Watchdog">
+<!ENTITY pmog.buy_watchdog                        "Buy Additional Watchdogs">
+<!ENTITY pmog.deploy_mine                         "Deploy Mine">
+<!ENTITY pmog.buy_mine                            "Buy Additional Mines">
+<!ENTITY pmog.throw_grenade                       "Throw Grenade">
+<!ENTITY pmog.buy_grenade                         "Buy Additional Grenades">
+<!ENTITY pmog.deploy_crate                        "Deploy Crate">
+<!ENTITY pmog.buy_crate                           "Buy Additional Crates">
+<!ENTITY pmog.deploy_giftcard                     "Play a DP Card">
+<!ENTITY pmog.st_nicks                            "St Nicks">
+<!ENTITY pmog.deploy_st_nick                      "Deploy St Nick">
+<!ENTITY pmog.buy_st_nick                         "Buy Additional St Nicks">
+<!ENTITY pmog.take_armor_off                      "Take Off Armor">
+<!ENTITY pmog.put_armor_on                        "Put On Armor">
+<!ENTITY pmog.buy_armor                           "Buy Additional Armor">
+<!ENTITY pmog.armor_deploy_key                    "A">
+<!ENTITY pmog.crate_deploy_key                    "C">
+<!ENTITY pmog.giftcard_deploy_key                 "D">
+<!ENTITY pmog.toggle_hud_key                      "H">
+<!ENTITY pmog.lightpost_deploy_key                "L">
+<!ENTITY pmog.mine_deploy_key                     "M">
+<!ENTITY pmog.grenade_throw_key                   "G">
+<!ENTITY pmog.watchdog_deploy_key                 "W">
+<!ENTITY pmog.portal_deploy_key                   "P">
+<!ENTITY pmog.im_deploy_key                       "S">
+<!ENTITY pmog.st_nick_deploy_key                  "N">
+<!ENTITY pmog.cycle_toolbar_mode_key              "T">
+<!ENTITY pmog.jaunt_key                           "J">
+<!ENTITY pmog.venture_key                         "V">
+<!ENTITY pmog.profile_key                         "I">
+<!ENTITY pmog.pmog                                "The Nethernet">
+<!ENTITY pmog.close                               "Close">
+<!ENTITY pmog.pmog_sign_in                        "Log In">
+<!ENTITY pmog.pmog_forgot_password                "Forgot Password?">
+<!ENTITY pmog.pmog_sign_in                        "Log In">
+<!ENTITY pmog.visit_pmog                          "Visit The Nethernet">
+<!ENTITY pmog.reset_pmog                          "Refresh toolbar">
+<!ENTITY pmog.report_a_bug                        "Report a Toolbar Bug">
+<!ENTITY pmog.register_for_pmog                   "Register for The Nethernet">
+<!ENTITY pmog.sign_up                             "Sign Up">
+<!ENTITY pmog.switch_users                        "Switch Users">
+<!ENTITY pmog.login                               "Login">
+<!ENTITY pmog.manage_profiles                     "Reset Toolbar">
+<!ENTITY pmog.new_login                           "New Login">
+<!ENTITY pmog.sign_in                             "Sign in">
+<!ENTITY pmog.resume_your_game                    "Resume Your Game">
+<!ENTITY pmog.instant_message_player              "Instant Message Player">
+<!ENTITY pmog.chat                                "Chat">
+<!ENTITY pmog.tag                                 "Tag">
+<!ENTITY pmog.learn_about                         "Learn About">
+<!ENTITY pmog.tools                               "Tools">
+<!ENTITY pmog.acquaintances                       "Acquaintances">
+<!ENTITY pmog.missions                            "Queued Missions">
+<!ENTITY pmog.missions_central                    "Find Missions">
+<!ENTITY pmog.missions_central_tooltip            "Find Missions on The Nethernet">
+<!ENTITY pmog.codex_pmogeus                       "The Nethernet Details">
+<!ENTITY pmog.appendices                          "Rules">
+<!ENTITY pmog.gameplay                            "Gameplay">
+<!ENTITY pmog.preferences                         "Preferences">
+<!ENTITY pmog.in_game_preferences                 "In Game Preferences">
+<!ENTITY pmog.ignored_sites                       "Ignored Sites">
+<!ENTITY pmog.sign_out                            "Sign Out">
+<!ENTITY pmog.you                                 "You">
+<!ENTITY pmog.classpoints                         "Classpoints">
+<!ENTITY pmog.your_association                    "Your Association">
+<!ENTITY pmog.primary_class                       "Primary Class">
+<!ENTITY pmog.secondary_class                     "Secondary Class">
+<!ENTITY pmog.tertiary_class                      "Tertiary Class">
+<!ENTITY pmog.associations                        "Classes">
+<!ENTITY pmog.Bedouin                             "Bedouin">
+<!ENTITY pmog.Destroyer                           "Destroyer">
+<!ENTITY pmog.Pathmaker                           "Pathmaker">
+<!ENTITY pmog.Vigiliante                          "Vigilante">
+<!ENTITY pmog.Benefactor                          "Benefactor">
+<!ENTITY pmog.Shoat                               "Shoat">
+<!ENTITY pmog.Seer                                "Seer">
+<!ENTITY pmog.lightposts                          "Lightposts">
+<!ENTITY pmog.portals                             "Portals">
+<!ENTITY pmog.crates                              "Crates">
+<!ENTITY pmog.watchdogs                           "Watchdogs">
+<!ENTITY pmog.mines                               "Mines">
+<!ENTITY pmog.st_nicks                            "St. Nicks">
+<!ENTITY pmog.skeleton_keys                       "Skeleton Keys">
+<!ENTITY pmog.grenades                            "Grenades">
+<!ENTITY pmog.armor_state                         "Armor (off)">
+<!ENTITY pmog.armor                               "Armor">
+<!ENTITY pmog.im                                  "IM">
+<!ENTITY pmog.send_message_to_another_pmog_player "Send a message to another The Nethernet player">
+<!ENTITY pmog.hide_the_pmog_toolbar               "Hide the The Nethernet toolbar">
+<!ENTITY pmog.hide                                "Hide">
+<!ENTITY pmog.hide_tooltop                        "You will not see the toolbar but you will see events.">
+<!ENTITY pmog.show_the_pmog_toolbar               "Show the The Nethernet toolbar">
+<!ENTITY pmog.show_hide_the_pmog_toolbar          "Show / Hide the The Nethernet toolbar">
+<!ENTITY pmog.pause                               "Pause The Nethernet">
+<!ENTITY pmog.pause_tooltip                       "You will not see events from The Nethernet while the game is paused.">
+<!ENTITY pmog.unpause                             "Unpause The Nethernet">
+<!ENTITY pmog.unpause_tooltip                     "Resume The Nethernet events.">
+<!ENTITY pmog.pause_your_game                     "Pause Your Game">
+<!ENTITY pmog.guide_levels                        "Levelling Up">
+<!ENTITY pmog.visit_toolbar_help                  "Learn the Toolbar">
+<!ENTITY prefwindow.title                         "The Nethernet preferences">
+<!ENTITY pmog.title                               "The Nethernet preferences">
+<!ENTITY allow_sounds.label                       "Allow Sounds">
+<!ENTITY prevent_sounds.label                     "Disable Sounds">
+
+<!ENTITY pmog.explore                             "Explore">
+<!ENTITY pmog.explore_tooltip                     "EXPLORE the web and find new sites">
+<!ENTITY pmog.act                                 "Act">
+<!ENTITY pmog.act_tooltip                         "ACT Make a game out of the web">
+<!ENTITY pmog.latest_message                      "Read latest message">
+<!ENTITY pmog.auto_pmail_poll                     "Auto-poll for New PMail">
+<!ENTITY pmog.auto_pmail_poll_tooltip             "Do you want New PMail to arrive when it comes, or stack up for later reading?">
+<!ENTITY pmog.switchUser                          "Switch Users">
+<!ENTITY pmog.view_events                         "View Events">
+<!ENTITY pmog.missions_queued                     "Queued Missions">
+<!ENTITY pmog.overclock_tooltip                   "Overclock another player">
+<!ENTITY pmog.impede_tooltip                      "Impede another player">

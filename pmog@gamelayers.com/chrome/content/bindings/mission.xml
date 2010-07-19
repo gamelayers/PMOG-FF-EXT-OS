@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="missionBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <xbl:binding id="missionfound" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" margin="120" header="missionHeader">
+        <div class="max-width-300">
+          <div class="greyBox center">
+            <div anonid="description"></div>
+            <div anonid="nsfw" class="nsfw-portal" style="display: none;">
+              <img src="chrome://pmog/skin/images/shared/flag_red.png" /> Not Safe For Work
+            </div>
+            <div>
+              <xul:image anonid="ratingImage" class="itemRating" xbl:inherits="rating" />
+            </div>
+          </div>
+          <div anonid="takeButtonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="takeButton" oncommand="document.getBindingParent(this).take();" />
+            </div>
+            <div class="rightButton">
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="queueButton" oncommand="document.getBindingParent(this).queue();" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).dismiss();" />
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="content">
+        jQuery(this).anonymousByAttr("description");
+      </xbl:field>
+
+      <xbl:field name="_nsfwNotice">
+        jQuery(this).anonymousByAttr("nsfw");
+      </xbl:field>
+
+      <xbl:property name="description"
+        onget="return this.content.textContent"
+        onset="return this.setDescription(val);" />
+
+        <xbl:method name="setNsfw">
+          <xbl:parameter name="nsfw" />
+          <xbl:body>
+            <![CDATA[
+              if (nsfw) {
+                jQuery(this._nsfwNotice).show();
+              } else {
+                jQuery(this._nsfwNotice).hide();
+              }
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+      <xbl:method name="setDescription">
+        <xbl:parameter name="description" />
+        <xbl:parameter name="url" />
+        <xbl:parameter name="user" />
+        <xbl:body>
+          <![CDATA[
+            this.overlay.title = "You found " + user + "'s Mission!";
+            this.content.textContent = description;
+
+            jQuery(this.overlay._title).children().each(function() {
+              if (this.tagName == 'a') {
+                prepareLink(this);
+              }
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            try {
+              this.fId = params.body.id;
+              this.fUrlName = params.body.url_name;
+              this.setPlayer(params.body.user);
+              this.setNsfw(params.body.nsfw);
+
+              this.setDescription(params.body.name, params.body.url_name, this.player);
+              this.overlay.makeLink(Pmog.BASE_URL + "/users/" + this.player);
+              this.overlay.setAvatar(Pmog.BASE_URL + '/'+'/'+ params.body.avatar);
+
+              var avgRating = parseInt(params.body.average_rating)
+
+              this.setAttribute("rating", avgRating);
+            } catch(e) {
+              // Pmog.logger.error("Error displaying a found mission: " + e);
+              Components.utils.reportError(e);
+            }
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="dismiss">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/missions/' + this.fId + '/dismiss.json?stumble=true&authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.lightpost_notice(data.notice);
+                ovrlay.close();
+              },
+              error: function(data) {
+                ovrlay.overlay.addError(jQuery.evalJSON(data.responseText));
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="take">
+        <xbl:body>
+          <![CDATA[
+              this.close();
+              gBrowser.contentDocument.location = Pmog.private_url() + '/missions/' + this.fUrlName + '/take?stumble=true';
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="queue">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/queued_mission/create/' + this.fUrlName + '.json?stumble=true&authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'PUT',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.lightpost_notice(data.notice);
+                ovrlay.close();
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="branch" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" margin="120" header="missionHeader">
+        <div class="max-width-300">
+          <div class="greyBox">
+            <xul:scrolltext anonid="description" class="scrollTextArea" />
+          </div>
+          <div anonid="puzzle_form" class="greyBox" style="display: none; padding: 5px;">
+            <div>
+              <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="player_name link">The Nethernet</span> asks:
+            </div>
+            <div anonid="puzzle_question" class="tabbed_html_form" style="margin-bottom: 10px;">I has a question</div>
+            <xul:textbox anonid="puzzle_answer" style="width: 97%; margin: 0;" emptytext="Your Answer" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) { document.getBindingParent(this).guess(); }"/>
+            <div anonid="skeleton_key_form" style="display: none;">
+              <xul:checkbox anonid="skeleton_key_checkbox" label="Use a Skeleton Key" />
+            </div>
+          </div>
+          <div anonid="puzzle_complete" style="text-align: center; margin: 5px; display: none;">
+            <span class="puzzle_complete_box">Puzzle Solved!</span>
+          </div>
+          <div class="lightpostCount">
+            <span anonid="current_position"></span> of <span anonid="total_branches"></span>
+          </div>
+          <div class="clear">
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="backButton" oncommand="document.getBindingParent(this).back();" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="nextButton" oncommand="document.getBindingParent(this).next();" />
+              <xul:toolbarbutton anonid="completeButton" oncommand="document.getBindingParent(this).complete();" hidden="true" />
+              <xul:toolbarbutton anonid="guessButton" oncommand="document.getBindingParent(this).guess();" hidden="true" />
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+          <div anonid="minimizedBar" class="minimizedBar">
+            <span anonid="maximize-button" onclick="document.getBindingParent(this).maximize()" style="display: none;">Maximize</span>
+            <span anonid="minimize-button" onclick="document.getBindingParent(this).minimize()">Minimize</span>
+            <div anonid="growShrinkContainer" class="growShrinkContainer">
+              <span anonid="grow-button" value="+" onclick="document.getBindingParent(this).grow()" style="display: none;">+</span>
+              <span anonid="shrink-button" onclick="document.getBindingParent(this).shrink()" style="display: none;">-</span>
+            </div>
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+
+      <xbl:field name="branchId">
+        null
+      </xbl:field>
+
+      <xbl:field name="urlName">
+        null
+      </xbl:field>
+
+      <xbl:field name="previousUrl">
+        null
+      </xbl:field>
+
+      <xbl:field name="nextUrl">
+        null
+      </xbl:field>
+
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="current_position">
+        jQuery(this).anonymousByAttr("current_position");
+      </xbl:field>
+
+      <xbl:field name="total_branches">
+        jQuery(this).anonymousByAttr("total_branches");
+      </xbl:field>
+
+      <xbl:field name="minimizedBar">
+        jQuery(this).anonymousByAttr("minimizedBar");
+      </xbl:field>
+
+      <xbl:field name="minimizeButton">
+        jQuery(this).anonymousByAttr("minimize-button");
+      </xbl:field>
+
+      <xbl:field name="maximizeButton">
+        jQuery(this).anonymousByAttr("maximize-button");
+      </xbl:field>
+
+      <xbl:field name="shrinkButton">
+        jQuery(this).anonymousByAttr("shrink-button");
+      </xbl:field>
+
+      <xbl:field name="growButton">
+        jQuery(this).anonymousByAttr("grow-button");
+      </xbl:field>
+
+      <xbl:field name="completeButton">
+        jQuery(this).anonymousByAttr("completeButton");
+      </xbl:field>
+
+      <xbl:field name="nextButton">
+        jQuery(this).anonymousByAttr("nextButton");
+      </xbl:field>
+
+      <xbl:field name="backButton">
+        jQuery(this).anonymousByAttr("backButton");
+      </xbl:field>
+
+      <xbl:field name="spacer">
+        jQuery(this).anonymousByAttr("btnSpacer");
+      </xbl:field>
+
+      <xbl:field name="content">
+        jQuery(this).anonymousByAttr("description");
+      </xbl:field>
+
+      <xbl:field name="skeletonKeyCheckbox">
+        jQuery(this).anonymousByAttr("skeleton_key_checkbox");
+      </xbl:field>
+
+      <xbl:field name="skeletonKeyForm">
+        jQuery(this).anonymousByAttr("skeleton_key_form");
+      </xbl:field>
+
+      <xbl:field name="puzzleQuestion">
+        jQuery(this).anonymousByAttr("puzzle_question");
+      </xbl:field>
+
+      <xbl:field name="puzzleAnswer">
+        jQuery(this).anonymousByAttr("puzzle_answer");
+      </xbl:field>
+
+      <xbl:field name="puzzleForm">
+        jQuery(this).anonymousByAttr("puzzle_form");
+      </xbl:field>
+
+      <xbl:field name="puzzleComplete">
+        jQuery(this).anonymousByAttr("puzzle_complete");
+      </xbl:field>
+
+      <xbl:field name="guessButton">
+        jQuery(this).anonymousByAttr("guessButton");
+      </xbl:field>
+
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:method name="maximize">
+        <xbl:body>
+          <![CDATA[
+            var branch = this;
+            jQuery(this).animate({marginTop: '0px'}, 'slow');
+            jQuery(this.maximizeButton).hide();
+            jQuery(this.minimizeButton).show();
+            if (this.content._scrollbox.boxObject.height >= this.originalContentHeight) {
+              jQuery(this.shrinkButton).hide();
+              jQuery(this.growButton).show();
+            } else {
+              jQuery(this.shrinkButton).show();
+              jQuery(this.growButton).hide();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="minimize">
+        <xbl:body>
+          <![CDATA[
+            var h = this.overlay.boxObject.height - 25;
+            jQuery(this).animate({marginTop: -h + 'px'}, 'slow');
+            jQuery(this.maximizeButton).show();
+            jQuery(this.minimizeButton).hide();
+            jQuery(this.shrinkButton).hide();
+            jQuery(this.growButton).hide();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="grow">
+        <xbl:body>
+          <![CDATA[
+            var cHeight = this.content._scrollbox.boxObject.height;
+            var iHeight = jQuery(this.content._content).height();
+            if (iHeight < 156) {
+              jQuery(this.content._scrollbox).effect("size", { to: {height: iHeight + 10}, scale: "box" }, 1000);
+            } else {
+              jQuery(this.content._scrollbox).effect("size", { to: {height: 166}, scale: "box" }, 1000);
+            }
+
+            jQuery(this.shrinkButton).show();
+            jQuery(this.growButton).hide();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="shrink">
+        <xbl:body>
+          <![CDATA[
+            var cHeight = this.content._scrollbox.boxObject.height;
+            if (cHeight > this.originalContentHeight) {
+              jQuery(this.content._scrollbox).effect("size", { to: {height: this.originalContentHeight}, scale: "box" }, 1000);
+              jQuery(this.shrinkButton).hide();
+              jQuery(this.growButton).show();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="userClickedClose">
+        <xbl:body>
+          <![CDATA[
+            this.abandon();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="openMissionPage">
+        <xbl:body>
+          <![CDATA[
+            Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + "/missions/" + this.urlName);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="abandon">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/missions/' + this.urlName+ '/abandon.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              panel_id: Pmog.tab_observer.selected_tab().panel_id,
+              success: function(data, statusText) {
+                Pmog.handleSuccess(data, ovrlay, this.panel_id);
+              },
+              error: function(data, statusText, errorObject) {
+                Pmog.lightpostHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            var ovrlay = this;
+                this.setPlayer(params.body.author);
+                this.current_position.textContent = params.body.current_branch;
+                this.total_branches.textContent = params.body.total_branches;
+                this.urlName = params.body.url_name;
+                this.branchId = params.body.branch_id;
+                this.content.setContent(params.body.description);
+                jQuery(this.overlay._title).append('<a href="' + Pmog.BASE_URL + '/users/' + ovrlay.player + '">' + ovrlay.player + '\'s</a> Mission: <br /><a href="' + Pmog.BASE_URL + '/missions/' + params.body.url_name + '">' + params.body.name + '</a>');
+
+                jQuery(this.overlay._title).children().each(function() {
+                    if (this.tagName == 'a') {
+                        prepareLink(this);
+                    }
+                });
+
+                this.overlay.setAvatar(Pmog.BASE_URL + params.body.avatar);
+
+                if(Pmog.user.inventory.skeleton_keys > 0) {
+                  jQuery(this.skeletonKeyForm).show();
+                }
+
+                if (params.body.previous !== undefined && params.body.previous !== null) {
+                  this.previousUrl = params.body.previous;
+                } else {
+                  this.backButton.hidden = true;
+                }
+
+                // if we know the next value, draw the next button
+                if (params.body.next !== undefined && params.body.next !== null) {
+                  this.nextUrl = params.body.next;
+                // otherwise, this might be a puzzle post
+                } else if (params.body.question !== undefined && params.body.question !== null) {
+                  this.puzzleQuestion.textContent = params.body.question; //FIXME display puzzle field here
+                  jQuery(this.puzzleForm).show();
+                  this.nextButton.hidden = true;
+                  this.guessButton.hidden = false;
+                // if we're here, this must be the last stop
+                } else {
+                  this.nextButton.hidden = true;
+                  this.completeButton.hidden = false;
+                }
+
+                this.originalContentHeight = this.content._scrollbox.boxObject.height;
+
+                if (this.originalContentHeight >= jQuery(this.content._content).height()) {
+                  jQuery(this.growButton).hide();
+                } else {
+                  jQuery(this.growButton).show();
+                }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="back">
+        <xbl:body>
+          <![CDATA[
+            //setTimeout( Pmog.openURL, 1500, this.previousUrl, false);
+            Pmog.openURL(this.previousUrl);
+            this.close();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="guess">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            params = jQuery.toJSON({ answer : this.puzzleAnswer.value, branch_id : this.branchId, skeleton_key : this.skeletonKeyCheckbox.checked })
+
+            /* Check the player's guess by POSTing and then fix the overlay if they got it right */
+            jQuery.ajax({
+              url: Pmog.private_url() + '/missions/' + this.urlName+ '/guess.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: params,
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                jQuery(ovrlay.puzzleForm).hide();
+                jQuery(ovrlay.puzzleComplete).show();
+                ovrlay.guessButton.hidden = true;
+
+                if(data.next_url !== undefined && data.next_url !== null) {
+                  ovrlay.nextUrl = data.next_url;
+                  ovrlay.nextButton.hidden = false;
+                } else {
+                  ovrlay.completeButton.hidden = false;
+                }
+              },
+              error: function(data) {
+                ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="next">
+        <xbl:body>
+          <![CDATA[
+            Pmog.openURL(this.nextUrl);
+            this.close();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="complete">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            /* Complete the mission by POSTing and then redirecting */
+            jQuery.ajax({
+              url: Pmog.private_url() + '/missions/' + this.urlName+ '/complete.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                gBrowser.contentDocument.location = Pmog.BASE_URL + '/missions/' + ovrlay.urlName;
+                ovrlay.close();
+              },
+              error: function(data) {
+                ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/mission.css"/>
+    </xbl:resources>
+  </xbl:binding>
+</xbl:bindings>

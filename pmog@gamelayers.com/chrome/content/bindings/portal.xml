@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<xbl:bindings id="portalBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <xbl:binding id="portal" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" margin="80" header="portalHeader">
+        <div class="max-width-300">
+          <div class="greyBox center">
+            <div anonid="hint"></div>
+            <div anonid="nsfw" class="nsfw-portal" style="display: none;">
+              <img src="chrome://pmog/skin/images/shared/flag_red.png" /> Not Safe For Work
+            </div>
+            <div>
+              <xul:image anonid="ratingImage" class="itemRating" xbl:inherits="rating" />
+            </div>
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="openPortalButton" oncommand="document.getBindingParent(this).open();" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).dismiss();" />
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="portalID">
+      </xbl:field>
+      <xbl:field name="portalDestination">
+      </xbl:field>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="ratingImage">
+        jQuery(this).anonymousByAttr("ratingImage");
+      </xbl:field>
+      <xbl:field name="_hint">
+        jQuery(this).anonymousByAttr("hint");
+      </xbl:field>
+      <xbl:field name="openButton">
+        jQuery(this).anonymousByAttr("openPortalButton");
+      </xbl:field>
+      <xbl:field name="_nsfwNotice">
+        jQuery(this).anonymousByAttr("nsfw");
+      </xbl:field>
+      <xbl:property name="hint"
+                    onget="return this._hint.textContent"
+                    onset="return this.setHint(val);" />
+      <xbl:method name="setHint">
+        <xbl:parameter name="hint" />
+        <xbl:body>
+          <![CDATA[
+            this._hint.textContent = hint;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setNsfw">
+        <xbl:parameter name="nsfw" />
+        <xbl:body>
+          <![CDATA[
+            if (nsfw) {
+              jQuery(this._nsfwNotice).show();
+            } else {
+              jQuery(this._nsfwNotice).hide();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setHeader">
+        <xbl:parameter name="give_dp" />
+        <xbl:body>
+          <![CDATA[
+            if (give_dp) {
+              this.overlay.setAttribute("header","abundantPortalHeader");
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            this.portalID = params.body.id;
+            this.portalDestination = params.body.destination_url;
+
+            this.setHint(params.body.title);
+            this.setNsfw(params.body.nsfw);
+            this.setPlayer(params.body.user);
+            this.setHeader(params.body.give_dp);
+
+            this.overlay.title = "You found " + this.player + "'s Portal!";
+            this.overlay.makeLink(Pmog.BASE_URL + "/users/" + this.player);
+
+            this.overlay.titleAvatar = Pmog.BASE_URL + params.body.avatar;
+
+            var avgRating = parseInt(params.body.average_rating)
+
+            this.setAttribute("rating", avgRating);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="dismiss">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/portals/' + this.portalID + '/dismiss.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.portal_notice(data.flash.notice);
+                ovrlay.close();
+              },
+              error: function(data) {
+                Pmog.portalHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="open">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery(ovrlay).ajaxStart(function() { this.openButton.disabled = true; });
+
+            var that = this;
+            /* Take the portal by sending a GET to the server and then redirecting locally after some effects */
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/portals/' + ovrlay.portalID + '/take.json',
+              type: 'GET',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data, textStatus) {
+                Pmog.play_sound(PORT_SOUND);
+                jQuery(Application.activeWindow.activeTab.document.body).effect("pulsate", { times: 1 }, 700)
+                                                                        .effect("pulsate", { times: 2 }, 350)
+                                                                        .effect("pulsate", { times: 3 }, 125, function() {
+                  Pmog.openURL(that.portalDestination);
+                  that.close();
+                });
+              },
+              error: function(data) {
+                //Pmog.logger.debug("Portal Error: " + toJSONString(jQuery.evalJSON(data.responseText)));
+              }
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+  <xbl:binding id="portalrating" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" margin="80" header="portalHeader">
+        <div class="greyBox max-width-300">
+          <div anonid="writeableRating" style="text-align: center; margin-top:15px; height: 50px;">
+            <div anonid="portalRating" style="-moz-border-radius: 6px; background-color: white;"/>
+          </div>
+          <xul:hbox anonid="readOnlyRating" align="center" pack="center" hidden="true">
+            <xul:image anonid="ratingImage" class="itemRating" xbl:inherits="rating" />
+          </xul:hbox>
+          <div anonid="nsfwFlag">
+            <a onclick="document.getBindingParent(this).vote();">
+              <img src="chrome://pmog/skin/images/shared/flag_red.png" /> flag this as NSFW
+            </a>
+          </div>
+          <br />
+          <div>Then, send a comment:</div>
+        </div>
+        <div anonid="buttonContainer" class="buttonBox max-width-300">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="commentButton" oncommand="document.getBindingParent(this).comment();" />
+          </div>
+          <div class="rightButton">
+            <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();" />
+          </div>
+          <div class="button-divider">
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="portalID">null</xbl:field>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="rating">
+        jQuery(this).anonymousByAttr("portalRating");
+      </xbl:field>
+      <xbl:field name="readOnlyRating">
+        jQuery(this).anonymousByAttr("readOnlyRating");
+      </xbl:field>
+      <xbl:field name="writeableRating">
+        jQuery(this).anonymousByAttr("writeableRating");
+      </xbl:field>
+      <xbl:field name="nsfwFlag">
+        jQuery(this).anonymousByAttr("nsfwFlag");
+      </xbl:field>
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            var portal = this;
+            portal.portalID = params.body.id;
+            portal.setPlayer(params.body.user);
+            portal.setHeader(params.body.give_dp);
+
+            portal.overlay.title = "Rate " + portal.player + "'s Portal:";
+            portal.overlay.makeLink(Pmog.BASE_URL + "/users/" + portal.player);
+
+            jQuery(portal.rating).rater('sup', {style:'basic', maxvalue:5, curvalue:0});
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="comment">
+        <xbl:body>
+          <![CDATA[
+            Pmog.hud.openReply(this.player, "What a Portal!");
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setHeader">
+        <xbl:parameter name="give_dp" />
+        <xbl:body>
+          <![CDATA[
+            if (give_dp) {
+              this.overlay.setAttribute("header","abundantPortalHeader");
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="rate">
+        <xbl:parameter name="rating" />
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            ovrlay.setAttribute("rating", rating);
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/portals/' + this.portalID + '/rate.json?authenticity_token=' + Pmog.user.authenticity_token + '&portal[rating]=' + rating,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                jQuery(ovrlay.writeableRating).remove();
+                ovrlay.readOnlyRating.hidden = false;
+                ovrlay.overlay.title = ovrlay.overlay.title.replace("Rate", "You rated");
+                Pmog.portal_notice(data.flash.notice);
+              },
+              error: function(data) {
+                ovrlay.overlay.addError(jQuery.evalJSON(data).flash.error);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="vote">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/portals/' + this.portalID + '/vote.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                ovrlay.nsfwFlag.textContent = "NSFW vote received. Thanks!";
+              },
+              error: function(data) {
+                ovrlay.overlay.addError(jQuery.evalJSON(data).flash.error);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>
+

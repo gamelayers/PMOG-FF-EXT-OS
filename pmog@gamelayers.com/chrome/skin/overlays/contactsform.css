@@ -1,0 +1,92 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|div.normal {
+  color: #000;
+  font-size: 12px;
+  line-height: 14px;
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+html|div.normal html|span {
+  color: #1f00ff;
+  text-decoration: none;
+}
+
+html|div.normal html|span:hover {
+  cursor: pointer;
+}
+
+html|div.normal html|span[selected=true] {
+  color: #000;
+}
+
+/* Contacts */
+
+.searchBox {
+  -moz-appearance: none;
+  border: 3px solid;
+  -moz-border-top-colors: #5F5F5F #CFCFCF -moz-Field;
+  -moz-border-bottom-colors: #9F9F9F #EEE -moz-Field;
+  -moz-border-right-colors: #7F7F7F #EEE -moz-Field;
+  -moz-border-left-colors: #7F7F7F #EFEFEF -moz-Field;
+  -moz-border-radius: 11.5px;
+  background: url("chrome://global/skin/icons/search-textbox.png") -moz-Field no-repeat 1px center;
+  -moz-background-clip: border !important;
+  padding: 0 8px;
+  -moz-padding-start: 17px;
+  width: 150px;
+  margin-bottom: 10px;
+}
+
+html|div[anonid=resultHeader] {
+  font-weight: bold;
+  font-size: 14px;
+  color: #4c4c4c;
+}
+
+html|*.contactitem html|img[type=ally] {
+  background-image: url("chrome://pmog/skin/images/icons/ally-32.png");
+  height: 32px;
+  width: 32px;
+}
+
+html|*.contactitem html|img[type=rival] {
+  background-image: url("chrome://pmog/skin/images/icons/rival-32.png");
+  height: 32px;
+  width: 32px;
+}
+
+html|*.contactitem html|img[type=contact] {
+  background-image: url("chrome://pmog/skin/images/icons/contacts-32.png");
+  height: 32px;
+  width: 32px;
+}
+
+html|*.contactitem toolbar {
+  background: transparent !important;
+  border: none !important;
+}
+
+html|*.contactitem {
+  padding: 0px;
+  margin: 0px;
+  vertical-align: top;
+  width: 270px;
+  max-width: 270px;
+}
+
+html|*.contactitem html|div {
+  margin: 0;
+  padding: 0;
+}
+
+html|*.contactitem:focus {
+  background-color: blue;
+}
+
+html|*.contact_action {
+  padding: 0 5px;
+  cursor: pointer;
+}

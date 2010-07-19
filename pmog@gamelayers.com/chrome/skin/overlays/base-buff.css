@@ -1,0 +1,117 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.buff-overlay {
+  padding: 10px;
+  border: 3px solid #B3B3B3;
+  -moz-box-sizing: border-box;
+  -moz-border-radius: 10px;
+}
+
+html|*.extended-buff-overlay {
+  border: 3px solid #B3B3B3;
+  -moz-box-sizing: border-box;
+  -moz-border-radius: 10px;
+  cursor: pointer;
+}
+
+html|*.good {
+  background-color: rgba(82,255,0,0.8);
+}
+
+html|*.bad {
+  background-color: rgba(255,0,0,0.8) ;
+}
+
+
+html|*.overclock {
+  background: rgba(82,255,0,0.8) url(chrome://pmog/skin/images/icons/alarmclock_32.png) no-repeat 5px center;
+}
+
+html|*.impede {
+  background: rgba(255,0,0,0.8) url(chrome://pmog/skin/images/icons/ballandchain_32.png) no-repeat 5px center;
+}
+
+html|*.count {
+  width: 20px;
+  -moz-border-radius: 10px;
+  background-color: #ccc;
+  color: #333;
+  border: 2px solid #999;
+  display: block;
+  font: bold 14px/14px "Lucida Grande", Lucida, Verdana, sans-serif;
+  position: relative;
+  z-index: 8;
+  text-align: center;
+  vertical-align: baseline;
+  margin: 0 0 0 32px;
+  padding: 5px 5px 2px;
+}
+
+html|*.buff-extended-info {
+  margin: 5px;
+  -moz-border-radius: 10px;
+  color: #333;
+  border: 2px solid #999;
+  position: relative;
+  z-index: 8;
+  min-height: 50px;
+}
+
+html|*.impede-detail {
+  background: #ccc url(chrome://pmog/skin/images/icons/ballandchain_48.png) no-repeat 5px center;
+}
+
+html|*.overclock-detail {
+  background: #ccc url(chrome://pmog/skin/images/icons/alarmclock_48.png) no-repeat 5px center;
+}
+
+html|*.buff-extended-detail-good {
+  -moz-border-radius-topright: 16px;
+  -moz-border-radius-bottomleft: 16px;
+  -moz-border-radius-bottomright: 16px;
+  border: 2px solid #6AC226;
+  margin: 0 5px 5px;
+  min-height: 50px;
+  background: rgba(255,255,255,0.85) url(http://assets1.thenethernet.com/images/shared/elements/user_default_small.jpg) no-repeat 5px center;
+}
+
+html|*.buff-extended-detail-bad {
+  -moz-border-radius-topright: 16px;
+  -moz-border-radius-bottomleft: 16px;
+  -moz-border-radius-bottomright: 16px;
+  border: 2px solid #ff2700;
+  margin: 0 5px 5px;
+  min-height: 50px;
+  background: rgba(255,255,255,0.85) url(http://assets1.thenethernet.com/images/shared/elements/user_default_small.jpg) no-repeat 5px center;
+}
+
+html|*.extended-info-inner-text {
+  margin-left: 54px;
+  color: #424242;
+  font-size: 12px;
+  display: block;
+  font-weight: bold;
+  padding: 5px;
+}
+
+html|*.compact {
+  padding: 0;
+  margin: 0;
+}
+
+html|*.buff-extended-detail-text {
+  color: #424242;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 42px;
+  padding: 5px;
+  vertical-align: middle;
+  display: block;
+}
+
+html|span.link {
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+}

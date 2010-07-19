@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://pmog/locale/pmog.dtd">
+
+<overlay id="lightpost_overlay"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+   <!-- <commandset id="mainCommandSet">
+     <command id="cmd_deploy_lightpost" command="Pmog.dockManager().openItem('lightpostform');"/>
+   </commandset> -->
+   
+  <toolbarbutton 
+    label = "&pmog.lightposts;" 
+    id = "pmog_lightposts" 
+    tooltiptext = "&pmog.lightposts;" 
+    context = "pmog_lightpost_menu" 
+    key = "lightpost_key"
+    type = "menu"
+    class="pmog_menu_item"
+    oncommand = "">
+      <menupopup id = "pmog_lightpost_menu_popup"
+        class="pmog_menu_popup">
+            <menuitem id = "menu_pmog_deploy_lightpost"
+                class="menuitem-iconic lightpost_icon pmog_menu_item"
+                label = "&pmog.deploy_lightpost;"
+                command = "cmd_toggle_lightpostform"/>
+      </menupopup>
+  </toolbarbutton>
+</overlay>

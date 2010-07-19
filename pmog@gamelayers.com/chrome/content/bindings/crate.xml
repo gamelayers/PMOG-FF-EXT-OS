@@ -1,0 +1,611 @@
+<?xml version="1.0"?>
+<xbl:bindings xmlns:xbl="http://www.mozilla.org/xbl"
+              xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+              xmlns="http://www.w3.org/1999/xhtml" id="crateBindings">
+  <xbl:binding id="crate" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" margin="88" header="crateHeader" title="You found a crate!" context="good">
+        <div class="max-width-300">
+          <div anonid="titleContainerMessage" class="greyBox">
+            <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link" style="display: inline;">
+            </span>
+            <span>stashed a crate here!</span>
+          </div>
+          <div class="display_form greyBox" anonid="lootDisplay" style="display: none;">
+            <xul:grid flex="1">
+              <xul:columns>
+                <xul:column flex="1"/>
+                <xul:column flex="1"/>
+              </xul:columns>
+              <xul:rows>
+                <xul:row flex="1">
+                  <xul:toolbarbutton anonid="profile_datapoints" class="datapoint" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_lightposts" class="lightpost" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_crates" class="crate" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_mines" class="mine" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_grenades" class="grenade" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_skeleton_keys" class="skeleton_key" label="0" hidden="true" orient="horizontal"/>
+                </xul:row>
+                <xul:row flex="1">
+                  <xul:toolbarbutton anonid="profile_portals" class="portal" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_armor" class="armor" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_st_nicks" class="st_nick" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_watchdogs" class="watchdog" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_st_swatters" class="st_swatter" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_overweight_canaries" class="overweight_canary" label="0" hidden="true" orient="horizontal"/>
+                </xul:row>
+              </xul:rows>
+            </xul:grid>
+          </div>
+
+          <div anonid="crateFlavorWrapper" style="display: none;" class="greyBox" />
+          <div anonid="crateMessageWrapper" style="display: none;" class="greyBox" />
+
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="huzzahButton" oncommand="document.getBindingParent(this).close();" hidden="true"/>
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).revenge();" hidden="true"/>
+              <xul:toolbarbutton anonid="thanksButton" oncommand="document.getBindingParent(this).thanks();" hidden="true"/>
+              <xul:toolbarbutton anonid="lootButton" oncommand="document.getBindingParent(this).loot();"/>
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).dismiss();"/>
+              <xul:toolbarbutton anonid="addAllyButton" oncommand="document.getBindingParent(this).addAlly();" hidden="true"/>
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="fId"/>
+      <xbl:field name="fLocationId"/>
+      <xbl:field name="fFrom"/>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="profilePortals">
+        jQuery(this).anonymousByAttr("profile_portals");
+      </xbl:field>
+      <xbl:field name="profileCrates">
+        jQuery(this).anonymousByAttr("profile_crates");
+      </xbl:field>
+      <xbl:field name="profileStNicks">
+        jQuery(this).anonymousByAttr("profile_st_nicks");
+      </xbl:field>
+      <xbl:field name="profileLightposts">
+        jQuery(this).anonymousByAttr("profile_lightposts");
+      </xbl:field>
+      <xbl:field name="profileSkeletonKeys">
+        jQuery(this).anonymousByAttr("profile_skeleton_keys");
+      </xbl:field>
+      <xbl:field name="profileArmor">
+        jQuery(this).anonymousByAttr("profile_armor");
+      </xbl:field>
+      <xbl:field name="profileMines">
+        jQuery(this).anonymousByAttr("profile_mines");
+      </xbl:field>
+      <xbl:field name="profileGrenades">
+        jQuery(this).anonymousByAttr("profile_grenades");
+      </xbl:field>
+      <xbl:field name="profileWatchdogs">
+        jQuery(this).anonymousByAttr("profile_watchdogs");
+      </xbl:field>
+      <xbl:field name="profileDP">
+        jQuery(this).anonymousByAttr("profile_datapoints");
+      </xbl:field>
+      <xbl:field name="messageWrapper">
+        jQuery(this).anonymousByAttr("crateMessageWrapper");
+      </xbl:field>
+      <xbl:field name="flavorWrapper">
+        jQuery(this).anonymousByAttr("crateFlavorWrapper");
+      </xbl:field>
+      <xbl:field name="lootContainer">
+        jQuery(this).anonymousByAttr("lootDisplay");
+      </xbl:field>
+      <xbl:field name="containerMessage">
+        jQuery(this).anonymousByAttr("titleContainerMessage");
+      </xbl:field>
+      <xbl:field name="buttonSpacer">
+        jQuery(this).anonymousByAttr("btnSpacer");
+      </xbl:field>
+      <xbl:field name="dismissButton">
+        jQuery(this).anonymousByAttr("dismissButton");
+      </xbl:field>
+      <xbl:field name="lootButton">
+        jQuery(this).anonymousByAttr("lootButton");
+      </xbl:field>
+      <xbl:field name="thanksButton">
+        jQuery(this).anonymousByAttr("thanksButton");
+      </xbl:field>
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("revengeButton");
+      </xbl:field>
+      <xbl:field name="huzzahButton">
+        jQuery(this).anonymousByAttr("huzzahButton");
+      </xbl:field>
+      <xbl:field name="allyButton">
+        jQuery(this).anonymousByAttr("addAllyButton");
+      </xbl:field>
+      <xbl:field name="contactButton">
+        jQuery(this).anonymousByAttr("addContactButton");
+      </xbl:field>
+      <xbl:field name="rivalButton">
+        jQuery(this).anonymousByAttr("addRivalButton");
+      </xbl:field>
+      <xbl:field name="buttonContainer">
+        jQuery(this).anonymousByAttr("buttonContainer");
+      </xbl:field>
+      <xbl:field name="messageButton">
+        jQuery(this).anonymousByAttr("commentButton");
+      </xbl:field>
+      <xbl:field name="profileStSwatters">
+        jQuery(this).anonymousByAttr('profile_st_swatters');
+      </xbl:field>
+      <xbl:field name="profileOverweightCanaries">
+        jQuery(this).anonymousByAttr('profile_overweight_canaries');
+      </xbl:field>
+      <xbl:method name="show">
+        <xbl:parameter name="params"/>
+        <xbl:body>
+          <![CDATA[
+            //Pmog.logger.debug(toJSONString(params));
+            this.setPlayer(params.body.user);
+            this.fId = params.body.id;
+            this.fLocationId = params.body.location_id;
+            this.overlay.makeLink(Pmog.BASE_URL + "/users/" + this.player);
+            this.relationship = params.relationship;
+            this._appendRelationshipText();
+            this.setHeader(params.body.context);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="dismiss">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/locations/' + Pmog.get_page().id + '/crates/' + this.fId + '/dismiss.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'POST',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.crate_notice(data.flash.notice);
+                ovrlay.close();
+              },
+              error: function(data) {
+                Pmog.crateHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setHeader">
+        <xbl:parameter name="context" />
+        <xbl:body>
+          <![CDATA[
+            if (context == 'ever') {
+              this.overlay.title = "You found an Ever Crate";  this.overlay.setAttribute("header","everCrateHeader");
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="lootURL">
+        <xbl:body>
+          <![CDATA[
+            return Pmog.private_url() + '/locations/' + this.fLocationId + '/crates/' + this.fId + '/loot.json?authenticity_token=' + Pmog.user.authenticity_token;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="loot">
+        <xbl:parameter name="params"/>
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery(ovrlay).ajaxStart(function() { this.lootButton.setAttribute("disabled", "true"); })
+                                   .ajaxStop(function() { this.lootButton.setAttribute("disabled", "false"); });
+
+            jQuery.ajax({
+                url: ovrlay.lootURL(),
+                type: 'PUT',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: params || '',
+                success: function(data) {
+                    //Pmog.logger.debug(toJSONString(data));
+                    Pmog.user.update(data.user);
+                    ovrlay.fromPlayer = data.crate_contents.user;
+
+                    if (data.crate_contents.comment != "") {
+                        var userNameLink = jQuery('<a href="' + Pmog.BASE_URL + '/users/' + ovrlay.fromPlayer + '">' + ovrlay.fromPlayer + '</a>').wrap('<span></span>').append(" says: <br />");
+                        var playerContent = jQuery(ovrlay.messageWrapper).append(userNameLink);
+                        var commentContent = jQuery(ovrlay.messageWrapper).append(data.crate_contents.comment);
+
+                        jQuery(commentContent).autolink();
+
+                        jQuery(commentContent).children().each(function() {
+                            if (this.tagName == 'a') {
+                                prepareLink(this);
+                            }
+                        });
+
+                        jQuery(ovrlay.messageWrapper).show();
+                    }
+
+                    if (ovrlay.unlockButton) {
+                        ovrlay.unlockButton.hidden = true;
+                    }
+
+                    if (ovrlay.lootButton) {
+                        ovrlay.lootButton.hidden = true;
+                    }
+
+                    ovrlay.dismissButton.hidden = true;
+
+                    // Hide the player name and "left a crate here blah blah blah"
+                    if (ovrlay.containerMessage) {
+                        jQuery(ovrlay.containerMessage).hide();
+                    }
+
+                    if (ovrlay.questionDisplay) {
+                        jQuery(ovrlay.questionDisplay).hide();
+                    }
+
+                    if (data.crate_contents.icon === "explosion") {
+                        ovrlay.overlay.title = "It's a trap!";
+                        ovrlay.overlay.setEventType("bad");
+                        jQuery(ovrlay.flavorWrapper).append("<span>" + ovrlay.player + " rigged the crate to explode with a mine! -" + data.crate_contents.damage + " DP!</span>").show();
+
+                        ovrlay.overlay.setAttribute("header", "explodedCrateHeader");
+
+                        SpecialEffect.prototype.window_quake(2);
+
+                    } else if (data.crate_contents.icon === "armor") {
+
+                        var mineArmorHeaderClass;
+                        var headerBgPosition;
+
+                        switch (Pmog.user.armor_charges) {
+                        case 2:
+                            mineArmorHeaderClass = "mineArmorHeaderStage1";
+                            headerBgPosition = "7px 0px";
+                            break;
+                        case 1:
+                            mineArmorHeaderClass = "mineArmorHeaderStage2";
+                            headerBgPosition = "7px 0px";
+                            break;
+                        case 0:
+                            mineArmorHeaderClass = "mineArmorHeaderStage3";
+                            headerBgPosition = "7px 0px";
+                            break;
+                        }
+
+                        ovrlay.overlay.setAttribute("header", mineArmorHeaderClass);
+                        ovrlay.overlay.headerElement.style.backgroundPosition = headerBgPosition;
+
+                        ovrlay.overlay.title = "Oh my! The crate exploded!";
+
+                        jQuery(ovrlay.flavorWrapper).append("<span>Good thing you had your armor equipped!</span>").show();
+
+                    } else {
+
+                        ovrlay.overlay.title = "You looted the crate!";
+
+                        if (data.crate_contents.datapoints) {
+                            ovrlay.profileDP.label = data.crate_contents.datapoints;
+                            ovrlay.profileDP.hidden = false;
+                        }
+
+                        if (data.crate_contents.mines) {
+                            ovrlay.profileMines.label = data.crate_contents.mines;
+                            ovrlay.profileMines.hidden = false;
+                        }
+
+                        if (data.crate_contents.crates) {
+                            ovrlay.profileCrates.label = data.crate_contents.crates;
+                            ovrlay.profileCrates.hidden = false;
+                        }
+
+                        if (data.crate_contents.portals) {
+                            ovrlay.profilePortals.label = data.crate_contents.portals;
+                            ovrlay.profilePortals.hidden = false;
+                        }
+
+                        if (data.crate_contents.armor) {
+                            ovrlay.profileArmor.label = data.crate_contents.armor;
+                            ovrlay.profileArmor.hidden = false;
+                        }
+
+                        if (data.crate_contents.skeleton_keys) {
+                            ovrlay.profileSkeletonKeys.label = data.crate_contents.skeleton_keys;
+                            ovrlay.profileSkeletonKeys.hidden = false;
+                        }
+
+                        if (data.crate_contents.st_nicks) {
+                            ovrlay.profileStNicks.label = data.crate_contents.st_nicks;
+                            ovrlay.profileStNicks.hidden = false;
+                        }
+
+                        if (data.crate_contents.st_swatters) {
+                            ovrlay.profileStSwatters.label = data.crate_contents.st_swatters;
+                            ovrlay.profileStSwatters.hidden = false;
+                        }
+
+                        if (data.crate_contents.overweight_canaries) {
+                            ovrlay.profileOverweightCanaries.label = data.crate_contents.overweight_canaries;
+                            ovrlay.profileOverweightCanaries.hidden = false;
+                        }
+
+                        if (data.crate_contents.lightposts) {
+                            ovrlay.profileLightposts.label = data.crate_contents.lightposts;
+                            ovrlay.profileLightposts.hidden = false;
+                        }
+
+                        if (data.crate_contents.watchdogs) {
+                            ovrlay.profileWatchdogs.label = data.crate_contents.watchdogs;
+                            ovrlay.profileWatchdogs.hidden = false;
+                        }
+
+                        if (data.crate_contents.grenades) {
+                            ovrlay.profileGrenades.label = data.crate_contents.grenades;
+                            ovrlay.profileGrenades.hidden = false;
+                        }
+
+                        if (data.crate_contents.answer) {
+                            ovrlay.answerDisplay.textContent = data.crate_contents.answer;
+                            jQuery(ovrlay.answerDisplay).show();
+                            jQuery(ovrlay.answerWrapper).show();
+                        }
+
+                        jQuery(ovrlay.lootContainer).show();
+                    }
+
+                     switch (ovrlay.relationship) {
+                      case 'self':
+                          jQuery(ovrlay.buttonContainer).hide();
+                          break;
+                      case 'none':
+                      case 'contact':
+                         if (data.crate_contents.icon === 'armor' || data.crate_contents.icon === "explosion") {
+                            ovrlay.rivalButton.hidden = false;
+                            ovrlay.revengeButton.hidden = false;
+                          } else {
+                            ovrlay.allyButton.hidden = false;
+                            ovrlay.thanksButton.hidden = false;
+                          }
+                          break;
+                      case 'ally':
+                          if (data.crate_contents.icon === 'armor' || data.crate_contents.icon === "explosion") {
+                            ovrlay.rivalButton.hidden = false;
+                            ovrlay.revengeButton.hidden = false;
+                          } else {
+                            ovrlay.allyButton.hidden = true;
+                            ovrlay.thanksButton.hidden = false;
+                          }
+                          break;
+                      case 'rival':
+                          if (data.crate_contents.icon === 'armor' || data.crate_contents.icon === "explosion") {
+                            ovrlay.allyButton.hidden = true;
+                            ovrlay.thanksButton.hidden = true;
+                            ovrlay.revengeButton.hidden = false;
+                            ovrlay.messageButton.hidden = false;
+                          } else {
+                            ovrlay.allyButton.hidden = false;
+                            ovrlay.thanksButton.hidden = false;
+                          }
+                          break;
+                      default:
+                          ovrlay.thanksButton.hidden = false;
+                          break;
+                      }
+
+                },
+                error: function(data, statusText, errorObject) {
+                    ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="thanks">
+        <xbl:body>
+          <![CDATA[
+            Pmog.hud.openReply(this.player, "Thank You!");
+            this.close();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="revenge">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/users/' + ovrlay.fromPlayer + '/st_nicks/attach.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'PUT',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.st_nick_notice(data.flash.notice);
+                ovrlay.close();
+              },
+              error: function(data) {
+                ovrlay.overlay.addError(jQuery.evalJSON(data.responseText).flash.error);
+                setTimeout("jQuery('crate')[0].close()", 3000);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="puzzle" extends="chrome://pmog/content/bindings/crate.xml#crate">
+    <xbl:content>
+        <xul:pbox anonid="overlay" title="You found a Puzzle Crate!" margin="70" header="puzzleCrateHeader">
+          <div style="max-width: 300px;">
+          <div anonid="questionDisplay" class="greyBox">
+            <div>
+              <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="player_name link">The Nethernet</span>
+      asks:</div>
+            <div anonid="content" class="tabbed_html_form" style="margin-bottom: 10px;">I has a question</div>
+            <div>
+              <xul:textbox anonid="answerBody" style="width: 97%; margin: 0;" emptytext="Your Answer" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) { document.getBindingParent(this).answerAttempt(); }" />
+            </div>
+            <div anonid="skeleton_key_form" style="display: none;">
+              <xul:checkbox anonid="skeleton_key_checkbox" label="Use a Skeleton Key" />
+            </div>
+          </div>
+          <div class="display_form greyBox" anonid="lootDisplay" style="display: none;">
+            <div anonid="answer_wrapper" style="display: none;">
+              <div>
+                <span anonid="player2" onclick="document.getBindingParent(this).openProfile();" class="player_name link-dark">The crate</span>'s answer was: <span anonid="answer_display"></span>
+              </div>
+            </div>
+            <xul:grid flex="1">
+              <xul:columns>
+                <xul:column flex="1"/>
+                <xul:column flex="1"/>
+              </xul:columns>
+              <xul:rows>
+                <xul:row flex="1">
+                  <xul:toolbarbutton anonid="profile_datapoints" class="datapoint" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_lightposts" class="lightpost" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_crates" class="crate" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_mines" class="mine" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_grenades" class="grenade" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_skeleton_keys" class="skeleton_key" label="0" hidden="true" orient="horizontal"/>
+                </xul:row>
+                <xul:row flex="1">
+                  <xul:toolbarbutton anonid="profile_portals" class="portal" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_armor" class="armor" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_st_nicks" class="st_nick" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_watchdogs" class="watchdog" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_st_swatters" class="st_swatter" label="0" hidden="true" orient="horizontal"/>
+                  <xul:toolbarbutton anonid="profile_overweight_canaries" class="overweight_canary" label="0" hidden="true" orient="horizontal"/>
+                </xul:row>
+              </xul:rows>
+            </xul:grid>
+          </div>
+          <div anonid="crateFlavorWrapper" style="display: none;" class="greyBox" />
+          <div anonid="crateMessageWrapper" style="display: none;" class="greyBox" />
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).revenge();" hidden="true"/>
+              <xul:toolbarbutton anonid="thanksButton" oncommand="document.getBindingParent(this).thanks();" hidden="true"/>
+              <xul:toolbarbutton anonid="unlockButton" oncommand="document.getBindingParent(this).answerAttempt();"/>
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).dismiss();"/>
+              <xul:toolbarbutton anonid="addAllyButton" oncommand="document.getBindingParent(this).addAlly();" hidden="true"/>
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+        </div>
+        </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="skeletonKeyCheckbox">
+        jQuery(this).anonymousByAttr("skeleton_key_checkbox");
+      </xbl:field>
+      <xbl:field name="skeletonKeyForm">
+        jQuery(this).anonymousByAttr("skeleton_key_form");
+      </xbl:field>
+      <xbl:field name="answerDisplay">
+        jQuery(this).anonymousByAttr("answer_display");
+      </xbl:field>
+      <xbl:field name="answerWrapper">
+        jQuery(this).anonymousByAttr("answer_wrapper");
+      </xbl:field>
+      <xbl:field name="content">
+        jQuery(this).anonymousByAttr("content");
+      </xbl:field>
+      <xbl:field name="questionDisplay">
+        jQuery(this).anonymousByAttr("questionDisplay");
+      </xbl:field>
+      <xbl:field name="_answerField">
+        jQuery(this).anonymousByAttr("answerBody");
+      </xbl:field>
+      <xbl:field name="unlockButton">
+        jQuery(this).anonymousByAttr("unlockButton");
+      </xbl:field>
+      <xbl:field name="lootButton">
+        jQuery(this).anonymousByAttr("unlockButton");
+      </xbl:field>
+      <xbl:property name="answer" onget="return this._answerField.value;" onset="return this.setAnswer(val);"/>
+      <xbl:method name="setAnswer">
+        <xbl:parameter name="text"/>
+        <xbl:body>
+          <![CDATA[
+            this._answerField.value = text;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setQuestion">
+        <xbl:parameter name="question"/>
+        <xbl:body>
+          <![CDATA[
+            this.content.textContent = question;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="answerAttempt">
+        <xbl:body>
+          <![CDATA[
+            this.overlay.clearErrors();
+            this.loot(jQuery.toJSON({ answer : this.answer, skeleton_key : this.skeletonKeyCheckbox.checked }));
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setPlayer">
+        <xbl:parameter name="player"/>
+        <xbl:body>
+          <![CDATA[
+            var nPlayer = player;
+            this._player = nPlayer;
+            var items = jQuery(this).anonymousNodes();
+            jQuery(items).find(".player_name").text(nPlayer);
+            //jQuery(this.answerWrapper).show();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="show">
+        <xbl:parameter name="params"/>
+        <xbl:body>
+          <![CDATA[
+            this.fId = params.body.id;
+            this.fLocationId = params.body.location_id;
+            this.setPlayer(params.body.user);
+            this.overlay.makeLink(Pmog.BASE_URL + "/users/" + this.player);
+            this.setQuestion(params.body.question);
+            this.setHeader(params.body.context);
+
+            this.relationship = params.relationship;
+            this._appendRelationshipText();
+
+            if(Pmog.user.inventory.skeleton_keys > 0) {
+              jQuery(this.skeletonKeyForm).show();
+            }
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

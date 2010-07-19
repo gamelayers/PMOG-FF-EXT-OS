@@ -1,0 +1,4 @@
+#throbber {
+  position: absolute;
+  background: rgba(0,0,0,0.61) url(macthrob2.png) no-repeat 50% 50%;
+}

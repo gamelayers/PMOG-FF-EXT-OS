@@ -1,0 +1,6 @@
+#pmog-toolbar toolbarbutton,
+#pmog-logged-out toolbarbutton {
+  height: 18px;
+  -moz-border-radius: 10px;
+  border: 1px solid transparent;
+}

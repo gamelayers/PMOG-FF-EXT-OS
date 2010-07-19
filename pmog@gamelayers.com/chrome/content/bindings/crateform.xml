@@ -1,0 +1,645 @@
+<?xml version="1.0"?>
+<xbl:bindings id="crateformBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <xbl:binding id="crateform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+
+        <xul:pbox anonid="overlay" type="wide-overlay" title="Stash a crate" margin="84" header="crateHeader">
+          <div class="entry_form greyBox">
+            <div onclick="document.getBindingParent(this)._toggleManifest();" class="stash_crate_label">
+              <img src="chrome://pmog/skin/images/icons/crate-16.png"/>
+              <span>Limit 10 tools, 1000 DP</span>
+              <span anonid="toolFormToggleLabel" class="smallLabel">hide</span>
+            </div>
+            <div anonid="crate_tool_form" class="tool-spinner-container" style="display: block;">
+              <div class="toolSpinnerRow">
+                <xul:dpspinner image="chrome://pmog/skin/images/icons/datapoint-16.png"
+                                   tool="datapoints" property="datapoints" label="Datapoints" value="0" increment="10" class="spinner" />
+              </div>
+              <div class="toolSpinnerRow">
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/portal-16.png"
+                                              property="portals" tool="portal" label="Portals" class="spinner" />
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/lightpost-16.png"
+                                              property="lightposts" tool="lightpost" label="Lightposts" class="spinner" />
+              </div>
+              <div class="toolSpinnerRow">
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/crate-16.png"
+                                              tool="crate" property="crates" label="Crates" class="spinner" />
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/armor-16.png"
+                                              tool="armor" property="armor" label="Armor" class="spinner" />
+              </div>
+              <div class="toolSpinnerRow">
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/st_nick-16.png"
+                                              tool="st_nick" property="st_nicks" label="St. Nicks" class="spinner" />
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/watchdog-16.png"
+                                              tool="watchdog" property="watchdogs" label="Watchdogs" class="spinner" />
+              </div>
+              <div class="toolSpinnerRow">
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/mine-16.png"
+                                              tool="mine" property="mines" label="Mines" class="spinner" />
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/grenade-16.png"
+                                              tool="grenade" property="grenades" label="Grenades" class="spinner" />
+              </div>
+              <div class="toolSpinnerRow">
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/skeleton_key-16.png"
+                                              tool="skeleton_key" property="skeleton_keys" label="Skeleton Keys" class="spinner" />
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/st_swatter-16.png"
+                                              tool="st_swatter" property="st_swatters" label="St. Swatter" class="spinner" />
+              </div>
+              <div class="toolSpinnerRow">
+                <xul:toolspinner flex="1" image="chrome://pmog/skin/images/icons/overweight_canary-16.png"
+                                              tool="overweight_canary" property="overweight_canaries" label="Overweight Canaries" class="spinner" />
+              </div>
+            </div>
+          </div>
+          <div class="greyBox">
+            <div onclick="document.getBindingParent(this)._toggleMessage();" class="stash_crate_label">
+              <img src="chrome://pmog/skin/images/icons/pmail-16.png" />
+              <span>Message</span>
+              <span anonid="messageToggleLabel" class="smallLabel">show</span>
+            </div>
+            <div anonid="messageForm" style="display: none;">
+              <xul:textbox anonid="crate_msg" multiline="true" spellcheck="true" maxlength="500" emptytext="Leave a note with your stash" style="width: 95%; margin: 5;" />
+            </div>
+          </div>
+          <div class="greyBox">
+            <div onclick="document.getBindingParent(this)._toggleUpgrades();" class="stash_crate_label">
+              <span>Crate Upgrades</span>
+              <span anonid="upgradeToggleLabel" class="smallLabel">show</span>
+            </div>
+            <div anonid="upgradeForm" style="display: none;" class="crate_tool_form">
+              <div anonid="crate_lock_form" style="display: none;">
+                <xul:checkbox anonid="crate_lock" label="Lock This Crate" oncommand="document.getBindingParent(this)._toggleLockForm();" />
+              </div>
+              <div anonid="crate_lock_desc" class="entry_form" style="display: none;">
+                <img src="chrome://pmog/skin/images/icons/puzzle_crate-16.png" />
+      Puzzle Crate:
+                <br />
+      Only the right answer can unlock this crate for looting.
+                  <div class="lock_crate_form">
+                  <div class="form-field">Question:</div>
+                  <xul:textbox anonid="crateQuestion" />
+                  <br />
+                  <div class="form-field">Answer:</div>
+                  <xul:textbox anonid="crateAnswer" />
+                </div>
+              </div>
+              <div anonid="crate_ever_form" style="display: none;">
+                <xul:checkbox anonid="crate_ever" label="Ever Crate" oncommand="document.getBindingParent(this)._toggleEverForm();" checked="false"/>
+              </div>
+              <div class="entry_form" anonid="crate_ever_desc" style="display: none;">
+                <img src="chrome://pmog/skin/images/icons/ever_crate-16.png" />
+      Ever Crate:
+      , Additional Stuffs<br />
+      You pay up front to fill an Ever Crate with tools and currency.<br />
+      Each player can only loot your Ever Crate once.<br />
+      Select the number of charges equal to the number<br />
+      of players you want to find your Ever Crate!<br />
+                <div class="crate_form_form">
+                  <div class="form-field">Charges:</div>
+                  <xul:textbox anonid="everCharges" type="number" hidespinbuttons="true" size="2" xbl:inherits="value" />
+      (Max:<span anonid="everMax">0</span>
+      )
+                  </div>
+              </div>
+              <div anonid="crate_stealth_form" style="display: none;">
+                <xul:checkbox anonid="crate_stealth" label="Hide This Crate" oncommand="document.getBindingParent(this)._toggleStealthForm();" checked="false"/>
+              </div>
+              <div class="entry_form" anonid="crate_stealth_desc" style="display: none;">
+                <img src="chrome://pmog/skin/images/icons/stealth_crate-16.png" />
+      Stealth Crate:
+                <br />
+      Hide your crate from the events stream.
+                </div>
+              <div anonid="crate_trap_form" style="display: none;">
+                <xul:checkbox anonid="crate_trap" label="Trap This Crate" oncommand="document.getBindingParent(this)._toggleTrapForm();" checked="false"/>
+              </div>
+              <div class="entry_form" anonid="crate_trap_desc" style="display: none;">
+                <img src="chrome://pmog/skin/images/icons/exploding_crate-16.png" />
+      Exploding Crate:
+      , 1<img src="chrome://pmog/skin/images/icons/mine-16.png"/>
+                <br />
+      Trap your crate by putting a mine inside!<br />
+      It will damage whoever tries to loot it!
+                </div>
+            </div>
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="stashButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+            </div>
+            <div class="rightButton">
+              <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();"/>
+            </div>
+            <div class="button-divider">
+            </div>
+          </div>
+        </xul:pbox>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="stashButton">
+        jQuery(this).anonymousByAttr("stashButton");
+      </xbl:field>
+      <xbl:field name="lockCheckbox">
+        jQuery(this).anonymousByAttr("crate_lock");
+      </xbl:field>
+      <xbl:field name="everCheckbox">
+        jQuery(this).anonymousByAttr("crate_ever");
+      </xbl:field>
+      <xbl:field name="trapCheckbox">
+        jQuery(this).anonymousByAttr("crate_trap");
+      </xbl:field>
+      <xbl:field name="stealthCheckbox">
+        jQuery(this).anonymousByAttr("crate_stealth");
+      </xbl:field>
+      <xbl:field name="lockForm">
+        jQuery(this).anonymousByAttr("crate_lock_form");
+      </xbl:field>
+      <xbl:field name="everForm">
+        jQuery(this).anonymousByAttr("crate_ever_form");
+      </xbl:field>
+      <xbl:field name="trapForm">
+        jQuery(this).anonymousByAttr("crate_trap_form");
+      </xbl:field>
+      <xbl:field name="stealthForm">
+        jQuery(this).anonymousByAttr("crate_stealth_form");
+      </xbl:field>
+      <xbl:field name="lockDesc">
+        jQuery(this).anonymousByAttr("crate_lock_desc");
+      </xbl:field>
+      <xbl:field name="everDesc">
+        jQuery(this).anonymousByAttr("crate_ever_desc");
+      </xbl:field>
+      <xbl:field name="trapDesc">
+        jQuery(this).anonymousByAttr("crate_trap_desc");
+      </xbl:field>
+      <xbl:field name="stealthDesc">
+        jQuery(this).anonymousByAttr("crate_stealth_desc");
+      </xbl:field>
+      <xbl:field name="toolForm">
+        jQuery(this).anonymousByAttr("crate_tool_form");
+      </xbl:field>
+      <xbl:field name="messageInput">
+        jQuery(this).anonymousByAttr("crate_msg");
+      </xbl:field>
+      <xbl:field name="toolFormToggleLabel">
+        jQuery(this).anonymousByAttr("toolFormToggleLabel");
+      </xbl:field>
+      <xbl:field name="messageToggleLabel">
+        jQuery(this).anonymousByAttr("messageToggleLabel");
+      </xbl:field>
+      <xbl:field name="upgradeToggleLabel">
+        jQuery(this).anonymousByAttr("upgradeToggleLabel");
+      </xbl:field>
+      <xbl:field name="messageForm">
+        jQuery(this).anonymousByAttr("messageForm");
+      </xbl:field>
+      <xbl:field name="upgradeForm">
+        jQuery(this).anonymousByAttr("upgradeForm");
+      </xbl:field>
+      <xbl:field name="everChargeTextbox">
+        jQuery(this).anonymousByAttr("everCharges");
+      </xbl:field>
+      <xbl:method name="show">
+        <xbl:parameter name="login" />
+        <xbl:body>
+          <![CDATA[
+            this.location_id = Pmog.get_page().id;
+
+            if (login !== undefined) {
+              this.location_id = Pmog.getUserLocationId(login);
+            }
+
+            if(Pmog.user.levels.benefactor >= 7) {
+              jQuery(this.lockForm).show();
+            }
+
+            if(Pmog.user.levels.benefactor >= 10) {
+              jQuery(this.everForm).show();
+            }
+
+            if(Pmog.user.levels.destroyer >= 5) {
+              jQuery(this.trapForm).show();
+            }
+
+            if(Pmog.user.levels.benefactor >= 8) {
+              jQuery(this.stealthForm).show();
+            }
+
+            Pmog.user.addListener(this);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="userNotify">
+        <xbl:parameter name="user" />
+        <xbl:body>
+          <![CDATA[
+           var items = jQuery(this).anonymousNodes();
+            var spinners = jQuery(items).find('.spinner');
+            jQuery(spinners).each(function() {
+              this.setInventory();
+            })
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleUpgrades">
+        <xbl:body>
+          <![CDATA[
+          jQuery(this.upgradeForm).toggle();
+          if (this.upgradeForm.style.display === "none") {
+            this.upgradeToggleLabel.textContent = "show";
+          } else {
+            this.upgradeToggleLabel.textContent = "hide";
+          }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleTrapForm">
+        <xbl:body>
+          <![CDATA[
+            var trapped = this.trapCheckbox.checked;
+            if (trapped) {
+              jQuery(this.toolForm).hide();
+              jQuery(this.trapDesc).show();
+              this.reset();
+            } else {
+              jQuery(this.toolForm).show();
+              jQuery(this.trapDesc).hide();
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleStealthForm">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this.stealthDesc).toggle();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleManifest">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this.toolForm).toggle();
+            if (this.toolForm.style.display === "none") {
+              this.toolFormToggleLabel.textContent = "show";
+            } else {
+              this.toolFormToggleLabel.textContent = "hide";
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleMessage">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this.messageForm).toggle();
+            if (this.messageForm.style.display === "none") {
+              this.messageToggleLabel.textContent = "show";
+            } else {
+              this.messageToggleLabel.textContent = "hide";
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleLockForm">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this.lockDesc).toggle();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_toggleEverForm">
+        <xbl:body>
+          <![CDATA[
+            jQuery(this.everDesc).toggle();
+            this._calculateEverTotal();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="_calculateEverTotal">
+        <xbl:body>
+          <![CDATA[
+            ratios = [];
+
+            var mine_count = document.getAnonymousElementByAttribute(this, "tool", "mine").count;
+            if(mine_count > 0) {
+              ratios.push(Pmog.user.inventory.mines / mine_count);
+            }
+            var armor_count = document.getAnonymousElementByAttribute(this, "tool", "armor").count;
+            if(armor_count > 0) {
+              ratios.push(Pmog.user.inventory.armor / armor_count);
+            }
+            var crate_count = document.getAnonymousElementByAttribute(this, "tool", "crate").count;
+            if(crate_count > 0) {
+              ratios.push(Pmog.user.inventory.crates / crate_count);
+            }
+            var portal_count = document.getAnonymousElementByAttribute(this, "tool", "portal").count;
+            if(portal_count > 0) {
+              ratios.push(Pmog.user.inventory.portals / portal_count);
+            }
+            var st_nick_count = document.getAnonymousElementByAttribute(this, "tool", "st_nick").count;
+            if(st_nick_count > 0) {
+              ratios.push(Pmog.user.inventory.st_nicks / st_nick_count);
+            }
+            var grenade_count = document.getAnonymousElementByAttribute(this, "tool", "grenade").count;
+            if(grenade_count > 0) {
+              ratios.push(Pmog.user.inventory.grenades / grenade_count);
+            }
+            var watchdog_count = document.getAnonymousElementByAttribute(this, "tool", "watchdog").count;
+            if(watchdog_count > 0) {
+              ratios.push(Pmog.user.inventory.watchdogs / watchdog_count);
+            }
+            var lightpost_count = document.getAnonymousElementByAttribute(this, "tool", "lightpost").count;
+            if(lightpost_count > 0) {
+              ratios.push(Pmog.user.inventory.lightposts / lightpost_count);
+            }
+            var skeleton_key_count = document.getAnonymousElementByAttribute(this, "tool", "skeleton_key").count;
+            if(skeleton_key_count > 0) {
+              ratios.push(Pmog.user.inventory.skeleton_keys / skeleton_key_count);
+            }
+            var st_swatter_count = document.getAnonymousElementByAttribute(this, "tool", "st_swatter").count;
+            if(st_swatter_count > 0) {
+              ratios.push(Pmog.user.inventory.st_swatters / st_swatter_count);
+            }
+            var overweight_canary_count = document.getAnonymousElementByAttribute(this, "tool", "overweight_canary").count;
+            if(overweight_canary_count > 0) {
+              ratios.push(Pmog.user.inventory.overweight_canaries / overweight_canary_count);
+            }
+            var datapoint_count = document.getAnonymousElementByAttribute(this, "tool", "datapoints").count;
+            if(datapoint_count > 0) {
+              ratios.push(Pmog.user.datapoints / datapoint_count);
+            }
+            ratios.sort;
+
+            document.getAnonymousElementByAttribute(this, "anonid", "everMax").textContent = parseInt(ratios[0]);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery(ovrlay).ajaxStart(
+              function() {
+                this.stashButton.setAttribute("disabled", "true");
+              }).ajaxStop(
+              function() {
+                this.stashButton.setAttribute("disabled", "false");
+              }
+            );
+
+            if(!Pmog.page_validated("crate")) {
+              Pmog.crateHandleError(404, {flash: { error: "Error loading page, refresh the page and try again."} }, ovrlay);
+              return
+            }
+
+            var contents = {};
+            contents.crate = {};
+
+            contents.crate.comments = this.messageInput.value;
+
+            contents.crate.tools = {};
+
+            // this is buried because the controller uses its existence to check for upgrades
+            if(this.lockCheckbox.checked || this.trapCheckbox.checked || this.everCheckbox.checked || this.stealthCheckbox.checked ) {
+              contents.upgrade = {};
+            }
+
+            if(this.lockCheckbox.checked) {
+              contents.upgrade.locked = this.lockCheckbox.getAttribute('checked');
+              contents.upgrade.question = document.getAnonymousElementByAttribute(this, "anonid", "crateQuestion").value;
+              contents.upgrade.answer = document.getAnonymousElementByAttribute(this, "anonid", "crateAnswer").value;
+            }
+
+            if(this.everCheckbox.checked) {
+              contents.upgrade.charges = this.everChargeTextbox.value;
+            }
+
+            if(this.stealthCheckbox.checked) {
+              contents.upgrade.stealth = this.stealthCheckbox.getAttribute('checked');
+            }
+
+            if(this.trapCheckbox.checked) {
+              contents.upgrade.exploding = this.trapCheckbox.getAttribute('checked');
+            } else {
+              contents.crate.datapoints = document.getAnonymousElementByAttribute(this, "tool", "datapoints").count;
+              contents.crate.tools.armor = document.getAnonymousElementByAttribute(this, "tool", "armor").count;
+              contents.crate.tools.crates = document.getAnonymousElementByAttribute(this, "tool", "crate").count;
+              contents.crate.tools.lightposts = document.getAnonymousElementByAttribute(this, "tool", "lightpost").count;
+              contents.crate.tools.mines = document.getAnonymousElementByAttribute(this, "tool", "mine").count;
+              contents.crate.tools.portals = document.getAnonymousElementByAttribute(this, "tool", "portal").count;
+              contents.crate.tools.skeleton_keys = document.getAnonymousElementByAttribute(this, "tool", "skeleton_key").count;
+              contents.crate.tools.st_nicks = document.getAnonymousElementByAttribute(this, "tool", "st_nick").count;
+              contents.crate.tools.watchdogs = document.getAnonymousElementByAttribute(this, "tool", "watchdog").count;
+              contents.crate.tools.grenades = document.getAnonymousElementByAttribute(this, "tool", "grenade").count;
+              contents.crate.tools.st_swatters = document.getAnonymousElementByAttribute(this, "tool", "st_swatter").count;
+              contents.crate.tools.overweight_canaries = document.getAnonymousElementByAttribute(this, "tool", "overweight_canary").count;
+            }
+
+            JSONcrate = jQuery.toJSON(contents);
+
+              jQuery.ajax({
+                url: Pmog.private_url() + '/locations/' + ovrlay.location_id + '/crates.json?authenticity_token=' + Pmog.user.authenticity_token,
+                type: 'POST',
+                data: JSONcrate,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                panel_id: Pmog.tab_observer.selected_tab().panel_id,
+                success: function(data, statusText) {
+                  Pmog.handleSuccess(data, ovrlay, this.panel_id)
+                },
+                error: function(data, statusText, errorObject) {
+                  var resp = jQuery.evalJSON(data.responseText);
+                  // Pmog.logger.debug(toJSONString(resp));
+                  ovrlay.overlay.addError(resp.flash.error);
+                },
+              });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="onClose">
+        <xbl:body>
+          <![CDATA[
+            Pmog.user.removeListener(this);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="reset">
+        <xbl:body>
+          <![CDATA[
+            var items = jQuery(this).anonymousNodes();
+            jQuery(items).find(".spinner").each(function() {
+              this.reset();
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/crateform.css"/>
+    </xbl:resources>
+  </xbl:binding>
+
+  <xbl:binding id="toolspinner">
+    <xbl:content>
+      <div>
+        <div>
+          <xul:image xbl:inherits="src=image,tool" onclick="document.getBindingParent(this).increment();" style="width: 16px; height: 16px;" />
+          <xul:label xbl:inherits="value=label" />
+        </div>
+        <div>
+          <xul:textbox anonid="txtBox" type="number" hidespinbuttons="true" size="1" xbl:inherits="value,min,max,increment" onkeyup="jQuery('crateform')[0]._calculateEverTotal();" />
+          <xul:label anonid="inventory" value="" />
+        </div>
+      </div>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="inputBox">
+        document.getAnonymousElementByAttribute(this, "anonid", "txtBox");
+      </xbl:field>
+      <xbl:field name="inventory">
+        document.getAnonymousElementByAttribute(this, "anonid", "inventory");
+      </xbl:field>
+      <xbl:property name="count">
+        <xbl:getter>
+          return this.inputBox.value;
+        </xbl:getter>
+        <xbl:setter>
+          return this.inputBox.value = val;
+        </xbl:setter>
+      </xbl:property>
+      <xbl:property name="quantity" onget="return Pmog.user.inventory[this.getAttribute('property')]"/>
+      <xbl:property name="tool" onget="return this.getAttribute('tool');" onset="return this.setAttribute('tool', val);" />
+      <xbl:method name="increment">
+        <xbl:body>
+          <![CDATA[
+            var curnt = parseInt(this.count);
+            if (this.tool == 'datapoints' && curnt < 1000) {
+              this.count = curnt + 10;
+            } else if (this.tool != 'datapoints' && curnt < 10) {
+              this.count = curnt + 1;
+            }
+            jQuery('crateform')[0]._calculateEverTotal();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="reset">
+        <xbl:body>
+          <![CDATA[
+            this.count = 0;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:constructor>
+        <![CDATA[
+          this.setInventory();
+        ]]>
+      </xbl:constructor>
+      <xbl:method name="setInventory">
+        <xbl:body>
+          <![CDATA[
+            this.inventory.value = "of " + this.quantity;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="decrement">
+        <xbl:body>
+          <![CDATA[
+            var curnt = parseInt(this.count);
+            if (curnt > 0) {
+              if (this.tool == 'datapoints') {
+                this.count = curnt - 10;
+              } else {
+                this.count = curnt - 1;
+              }
+            }
+            jQuery('crateform')[0]._calculateEverTotal();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="dpspinner">
+    <xbl:content>
+      <div>
+        <div>
+          <xul:image xbl:inherits="src=image,tool" onclick="document.getBindingParent(this).increment();" />
+          <xul:label anonid="dpLabel" xbl:inherits="value=label" />
+        </div>
+        <div>
+          <xul:textbox anonid="txtBox" type="number" hidespinbuttons="true" size="4" onkeyup="jQuery('crateform')[0]._calculateEverTotal();" xbl:inherits="value,min,max,increment" />
+          <xul:label anonid="inventory" value="" />
+        </div>
+      </div>
+    </xbl:content>
+    <xbl:implementation>
+      <xbl:field name="inputBox">
+        document.getAnonymousElementByAttribute(this, "anonid", "txtBox");
+      </xbl:field>
+      <xbl:field name="inventory">
+        document.getAnonymousElementByAttribute(this, "anonid", "inventory");
+      </xbl:field>
+      <xbl:property name="count">
+        <xbl:getter>
+          return this.inputBox.value;
+      </xbl:getter>
+        <xbl:setter>
+          return this.inputBox.value = val;
+      </xbl:setter>
+      </xbl:property>
+      <xbl:property name="quantity" onget="return Pmog.user[this.getAttribute('property')]"/>
+      <xbl:property name="tool" onget="return this.getAttribute('tool');" onset="return this.setAttribute('tool', val);" />
+      <xbl:constructor>
+        <![CDATA[
+          this.setInventory();
+        ]]>
+      </xbl:constructor>
+      <xbl:method name="reset">
+        <xbl:body>
+          <![CDATA[
+            this.count = 0;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="setInventory">
+        <xbl:body>
+          <![CDATA[
+             this.inventory.value = "of " + commaFormatted(this.quantity);
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="increment">
+        <xbl:body>
+          <![CDATA[
+            var curnt = parseInt(this.count);
+            this.count = curnt + parseInt(this.getAttribute("increment"));
+            jQuery('crateform')[0]._calculateEverTotal();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="decrement">
+        <xbl:body>
+          <![CDATA[
+            var curnt = parseInt(this.count);
+            this.count = curnt - parseInt(this.getAttribute("increment"));
+            jQuery('crateform')[0]._calculateEverTotal();
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>
+

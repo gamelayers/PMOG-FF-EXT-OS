@@ -1,0 +1,386 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="mineBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="base-mine" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+
+      <xbl:field name="damage">
+        jQuery(this).anonymousByAttr("damage");
+      </xbl:field>
+
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("revengeButton");
+      </xbl:field>
+
+      <xbl:field name="dismissButton">
+        jQuery(this).anonymousByAttr("dismissButton");
+      </xbl:field>
+
+      <xbl:field name="contactButton">
+        jQuery(this).anonymousByAttr("addContactButton");
+      </xbl:field>
+
+      <xbl:field name="rivalButton">
+        jQuery(this).anonymousByAttr("addRivalButton");
+      </xbl:field>
+
+      <xbl:field name="commentButton">
+        jQuery(this).anonymousByAttr("commentButton");
+      </xbl:field>
+
+      <xbl:field name="headerElement">
+        jQuery(this).anonymousByAttr("mineArmorHeaderField");
+      </xbl:field>
+
+      <xbl:method name="attach">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+
+            jQuery.ajax({
+              url: Pmog.private_url() + '/users/' + this.storedParams.body.user + '/st_nicks/attach.json?authenticity_token=' + Pmog.user.authenticity_token,
+              type: 'PUT',
+              dataType: 'json',
+              data: '',
+              contentType: "application/json; charset=utf-8",
+              success: function(data) {
+                Pmog.st_nick_notice(data.flash.notice);
+                ovrlay.close();
+              },
+              error: function(data) {
+                Pmog.stNickHandleError(data.status, data.responseText, ovrlay);
+              },
+            });
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_determineVisibleButtons">
+        <xbl:body>
+          <![CDATA[
+            switch (this.relationship) {
+            case 'self':
+                this.revengeButton.hidden = true;
+                this.dismissButton.hidden = true;
+                break;
+            case 'none':
+            case 'contact':
+            case 'ally':
+                this.rivalButton.hidden = false;
+                this.dismissButton.hidden = true;
+                break;
+            case 'rival':
+              this.commentButton.hidden = false;
+              this.dismissButton.hidden = true;
+              break;
+            default:
+                this.revengeButton.hidden = false;
+                break;
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="minedamage" extends="chrome://pmog/content/bindings/mine.xml#base-mine">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="A Mine exploded!" margin="65" header="mineHeader" context="bad">
+          <div class="greyBox">
+             You tripped <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span>'s mine! -<span anonid="damage"></span> DP!
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).attach();" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            this.relationship = params.relationship;
+
+            this.damage.textContent = params.body.damage;
+
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+            SpecialEffect.prototype.window_quake(2);
+            Pmog.play_sound(MINE_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+
+  </xbl:binding>
+
+  <xbl:binding id="minevengeance" extends="chrome://pmog/content/bindings/mine.xml#base-mine">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="A Mine exploded triggering your vengeance!" margin="65" header="mineHeader" context="bad">
+          <div class="overlayTextContent">
+             Your Vengeance punished <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span> for leaving a Mine here! They took <span anonid="damage"></span>dp damage.
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).attach();" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+      </xul:pbox>
+      </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            var mineVengeanceHeaderClass = "mineVengeanceHeader";
+
+            this.damage.textContent = params.body.damage;
+
+            this.relationship = params.relationship;
+
+            if (params.body.armor_charges != null) {
+              switch(params.body.armor_charges) {
+                case 2:
+                  mineVengeanceHeaderClass = "mineVengeanceHeaderStage1";
+                  break;
+                case 1:
+                  mineVengeanceHeaderClass = "mineVengeanceHeaderStage2";
+                  break;
+                case 0:
+                  mineVengeanceHeaderClass = "mineVengeanceHeaderStage3";
+                  break;
+                default:
+                  //nada
+                  break;
+              }
+              this.overlay.setAttribute("header", mineVengeanceHeaderClass);
+            }
+
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+  <xbl:binding id="minearmor" extends="chrome://pmog/content/bindings/mine.xml#base-mine">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="A Mine exploded damaging your armor!" margin="60" header="mineHeader" context="bad">
+          <div class="greyBox">
+             You deflected <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span>'s mine!  -<span anonid="damage"></span> DP!
+          </div>
+          <div anonid="buttonContainer" class="buttonBox">
+            <div class="leftButton">
+              <xul:toolbarbutton anonid="revengeButton" oncommand="document.getBindingParent(this).attach();" />
+            </div>
+            <div class="rightButton">
+              <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+              <xul:toolbarbutton anonid="addAllyButton" oncommand="document.getBindingParent(this).addAlly();" hidden="true"/>
+              <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+              <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+              <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+            </div>
+            <div class="button-divider"></div>
+          </div>
+      </xul:pbox>
+      </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            var mineArmorHeaderClass = "mineArmorHeader";
+
+            this.damage.textContent = params.body.damage;
+
+            this.relationship = params.relationship;
+
+            if (params.body.armor_charges != null) {
+              switch(params.body.armor_charges) {
+                case 2:
+                  mineArmorHeaderClass = "mineArmorHeaderStage1";
+                  break;
+                case 1:
+                  mineArmorHeaderClass = "mineArmorHeaderStage2";
+                  break;
+                case 0:
+                  mineArmorHeaderClass = "mineArmorHeaderStage3";
+                  break;
+                default:
+                  //nada
+                  break;
+              }
+              this.overlay.setAttribute("header", mineArmorHeaderClass);
+            }
+
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+  <xbl:binding id="minedodge" extends="chrome://pmog/content/bindings/mine.xml#base-mine">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="A Mine exploded!" margin="120" header="mineHeader" context="bad">
+        <div class="overlayTextContent">
+          You dodged <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span>'s mine! -<span anonid="damage"></span> DP!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="vexButton" oncommand="document.getBindingParent(this).attach();" />
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+            <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+            <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+            <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("vexButton");
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            this.overlay.setAttribute("header", "mineDodgeHeader");
+            this.overlay.setAttribute("margin", 130);
+            this.relationship = params.relationship;
+
+            this.damage.textContent = params.body.damage;
+
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+            Pmog.play_sound(MINE_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="minedisarm" extends="chrome://pmog/content/bindings/mine.xml#base-mine">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="A Mine has been disarmed!" margin="120" header="mineHeader" context="bad">
+        <div class="overlayTextContent">
+          You disarmed <span anonid="player" onclick="document.getBindingParent(this).openProfile();" class="link"></span>'s mine! -<span anonid="damage"></span> DP! +1<img src="chrome://pmog/skin/images/icons/mine-16.png" />!
+        </div>
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="vexButton" oncommand="document.getBindingParent(this).attach();" />
+          </div>
+          <div class="rightButton">
+            <xul:toolbarbutton anonid="dismissButton" oncommand="document.getBindingParent(this).close();" />
+            <xul:toolbarbutton anonid="addRivalButton" oncommand="document.getBindingParent(this).addRival();" hidden="true"/>
+            <xul:toolbarbutton anonid="addContactButton" oncommand="document.getBindingParent(this).addContact();" hidden="true"/>
+            <xul:toolbarbutton anonid="commentButton" oncommand="Pmog.hud.openReply(document.getBindingParent(this).player, 'Whiskey Tango Foxtrot M8!')" hidden="true" />
+          </div>
+          <div class="button-divider"></div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+
+      <xbl:field name="revengeButton">
+        jQuery(this).anonymousByAttr("vexButton");
+      </xbl:field>
+
+      <xbl:method name="show">
+        <xbl:parameter name="params" />
+        <xbl:body>
+          <![CDATA[
+            this.storedParams = params;
+            this.setPlayer(params.body.user);
+            this.overlay.setAttribute("header", "mineDisarmHeader");
+            this.overlay.setAttribute("margin", 130);
+            this.relationship = params.relationship;
+
+            this.damage.textContent = params.body.damage;
+
+            this._determineVisibleButtons();
+            this._appendRelationshipText();
+
+            Pmog.play_sound(MINE_SOUND);
+
+            return this;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+
+  </xbl:binding>
+
+</xbl:bindings>

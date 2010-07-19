@@ -1,0 +1,2 @@
+override chrome://pmog/skin/star-rater/rater.css chrome://pmog/skin/mac/rater.css
+#override chrome://pmog/skin/tabs.css chrome://pmog/skin/mac/tabs.css

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://pmog/skin/pmog.css" type="text/css"?>
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<panel id="formPanel" noautohide="true" style="-moz-appearance: none;">
+    <message body="What's up?" avatar="http://localhost:3000/classic/shared/elements/user_default.jpg?1214172733" from="marc"/>
+	</panel>
+	
+	<button label="Open Me" oncommand="document.getElementById('formPanel').openPopupAtScreen(null, null, 0, 0, false, false);" />
+
+</window>

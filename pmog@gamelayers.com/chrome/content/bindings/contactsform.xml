@@ -1,0 +1,423 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE bindings [
+<!ENTITY % pmogDTD SYSTEM "chrome://pmog/locale/pmog.dtd">
+%pmogDTD;
+]>
+
+<xbl:bindings id="contactsBindings"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <xbl:binding id="contactsform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay"
+                type="wide-overlay"
+                title="Contacts"
+                header="contactsHeader"
+                margin="40">
+          <div class="greyBox">
+          <div class="max-width-310">
+            <div mode="normal" class="normal">
+              <span anonid="allFilter" onclick="document.getBindingParent(this).filter('all');" selected="true" class="filterType">All</span> |
+              <span anonid="alliesFilter" onclick="document.getBindingParent(this).filter('allies');" class="filterType">Allies</span> |
+              <span anonid="rivalsFilter" onclick="document.getBindingParent(this).filter('rivals');" class="filterType">Rivals</span> |
+              <span anonid="contactsFilter" onclick="document.getBindingParent(this).filter('contacts');" class="filterType">Contacts</span>
+            </div>
+
+            <xul:hbox type="search" flex="1" hidden="true">
+              <xul:label value="Search Results" />
+            </xul:hbox>
+
+            <div anonid="alltabcontainer" mode="normal" style="height: 300px; max-height: 300px; overflow-x: auto; background-color: white;"></div>
+
+            <xul:vbox anonid="resultsOuterBox" hidden="true" flex="1" mode="search">
+              <xul:hbox class="contactitem" style="color: white;" flex="1">
+                <div anonid="resultHeader" style="color: white;">
+                  <span anonid="resultCount"></span> results for <span anonid="searchTerm"></span>
+                </div>
+                <xul:spacer flex="1" />
+                <div anonid="clearSearch" onclick="jQuery('contactsform')[0].clearSearchResults();">
+                  Clear
+                </div>
+              </xul:hbox>
+              <!-- <xul:vbox anonid="resultscontainer" flex="1" style="height: 300px; max-height: 300px; overflow: auto; background-color: white;" /> -->
+              <div anonid="resultscontainer" flex="1" style="height: 300px; max-height: 300px; overflow: auto; background-color: white;"></div>
+            </xul:vbox>
+          </div>
+          <xul:label anonid="contactsLink" value="Visit your Contacts on the Web" class="cancel_label" flex="1" onclick="Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + '/acquaintances/' + Pmog.user.login);" />
+        </div>
+      </xul:pbox>
+    </xbl:content>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/base-overlay.css"/>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/contactsform.css"/>
+    </xbl:resources>
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+      <xbl:field name="title">
+        this.overlay.title;
+      </xbl:field>
+      <xbl:field name="spinner">
+        this.overlay.spinner;
+      </xbl:field>
+      <xbl:field name="playerList">
+        jQuery(this).anonymousByAttr("alltabcontainer");
+      </xbl:field>
+      <xbl:field name="searchList">
+        jQuery(this).anonymousByAttr("resultscontainer");
+      </xbl:field>
+      <xbl:field name="resultCount">
+         jQuery(this).anonymousByAttr("resultCount");
+       </xbl:field>
+       <xbl:field name="searchTerm">
+          jQuery(this).anonymousByAttr("searchTerm");
+        </xbl:field>
+
+      <xbl:property name="playerQuery"
+        onget="return jQuery(this).anonymousByAttr('searchBox')[0].value;"
+        onset="return this.setPlayerQuery(val);" />
+
+        <xbl:method name="show">
+          <xbl:body>
+            <![CDATA[
+              ovrlay = this;
+
+              if (!jQuery(this.overlay).anonymousByAttr("searchBox")) {
+                var searchBox = document.createElement("textbox");
+                ovrlay.overlay.titleBox.appendChild(searchBox);
+                searchBox.setAttribute("anonid", "searchBox");
+                searchBox.setAttribute("class", "searchBox");
+                searchBox.setAttribute("emptytext", "Search");
+                searchBox.setAttribute("onkeypress", "if (event.keyCode == KeyEvent.DOM_VK_RETURN) { jQuery('contactsform')[0].search(event); }");
+              }
+
+              // Retrieve a list of contacts from the server.
+                jQuery.ajax({
+                  url: Pmog.private_url() + '/acquaintances/' + Pmog.user.login +'.json?authenticity_token=' + Pmog.user.authenticity_token,
+                  type: 'GET',
+                  dataType: 'json',
+                  contentType: "application/json; charset=utf-8",
+                  success: function(data, statusText) {
+                      ovrlay.addContactsToTabs(data);
+                  },
+                  error: function(data, statusText, errorObject) {
+                      Pmog.handleError(data.status, data.responseText, ovrlay);
+                  },
+                });
+
+                return this;
+            ]]>
+          </xbl:body>
+        </xbl:method>
+
+      <xbl:method name="setPlayerQuery">
+        <xbl:parameter name="query" />
+        <xbl:body>
+          <![CDATA[
+            jQuery(this).anonymousByAttr('searchBox')[0].value = query;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="newSearch">
+        <xbl:body>
+          <![CDATA[
+            this.playerQuery= ""
+         ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="filter">
+        <xbl:parameter name="type" />
+        <xbl:body>
+          <![CDATA[
+            var items = jQuery(this).anonymousNodes();
+            jQuery(items).find('.filterType[selected=true]').removeAttr("selected");
+            switch(type) {
+              case "all":
+                jQuery(items).find('.filterType[anonid=allFilter]').attr("selected", "true");
+                var selectedItems = jQuery(items).find('contactitem');
+                jQuery(selectedItems).each(function() { this.hidden = false; });
+                break;
+              case "rivals":
+                jQuery(items).find('.filterType[anonid=rivalsFilter]').attr("selected", "true");
+                var show = jQuery(items).find('contactitem[type=rival]');
+                var hide = jQuery(items).find('contactitem:not([type=rival])');
+                jQuery(show).each(function() { this.hidden = false; });
+                jQuery(hide).each(function() { this.hidden = true; });
+                break;
+              case "allies":
+                jQuery(items).find('.filterType[anonid=alliesFilter]').attr("selected", "true");
+                var show = jQuery(items).find('contactitem[type=ally]');
+                var hide = jQuery(items).find('contactitem:not([type=ally])');
+                jQuery(show).each(function() { this.hidden = false; });
+                jQuery(hide).each(function() { this.hidden = true; });
+                break;
+              case "contacts":
+                jQuery(items).find('.filterType[anonid=contactsFilter]').attr("selected", "true");
+                var show = jQuery(items).find('contactitem[type=contact]');
+                var hide = jQuery(items).find('contactitem:not([type=contact])');
+                jQuery(show).each(function() { this.hidden = false; });
+                jQuery(hide).each(function() { this.hidden = true; });
+                break;
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="search">
+        <xbl:parameter name="event" />
+        <xbl:body>
+          <![CDATA[
+          ovrlay = this;
+
+          ovrlay.searchField = event.target;
+          ovrlay.searchTerm.textContent = event.target.value;
+
+          var url = Pmog.private_url() + '/users/search.json?q=' + event.target.value + '&authenticity_token=' + Pmog.user.authenticity_token;
+
+          jQuery.ajax({
+              url: url,
+              type: 'GET',
+              dataType: 'json',
+              contentType: "application/json; charset=utf-8",
+              success: function(data, statusText) {
+                ovrlay.displaySearchResults(data);
+              },
+              error: function(data, statusText, errorObject) {
+                  Pmog.handleError(data.status, data.responseText, ovrlay);
+              },
+          });
+
+        ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="visitProfile">
+        <xbl:parameter name="login" />
+        <xbl:parameter name="event" />
+        <xbl:body>
+          <![CDATA[
+          if(login === undefined){
+            login = Pmog.user.login
+          }
+          // Pmog.hud.openAndReuseOneTabPerURL(Pmog.BASE_URL + "/users/" + login, event);
+          this.displayProfile(login);
+        ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="displaySearchResults">
+        <xbl:parameter name="obj" />
+        <xbl:body>
+          <![CDATA[
+          ovrlay = this;
+          ovrlay.clearSearchResults();
+
+          ovrlay.resultCount.textContent = obj.results.length;
+
+          jQuery.each(obj.results, function(i) {
+              var contactItem = ovrlay.buildContactItem(obj.results[i]);
+              ovrlay.searchList.appendChild(contactItem);
+          });
+
+          var items = jQuery(this).anonymousNodes();
+          //jQuery(items).find('*[type=contacts]').each(function() { this.hidden = true; })
+          jQuery(items).find('*[mode=normal]').hide();
+          //jQuery(items).find('*[type=search]').each(function() { this.hidden = false; })
+          jQuery(items).find('*[mode=search]')[0].hidden = false;
+        ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="clearSearchResults">
+        <xbl:body>
+          <![CDATA[
+            this.searchField.value = "";
+            this.searchField.blur();
+            while (this.searchList.childNodes[1]) {
+              this.searchList.removeChild(this.searchList.childNodes[1]);
+            }
+            var items = jQuery(this).anonymousNodes();
+            //jQuery(items).find('*[type=contacts]').each(function() { this.hidden = false; })
+            jQuery(items).find('*[mode=normal]').show();
+            //jQuery(items).find('*[type=search]').each(function() { this.hidden = true; })
+            jQuery(items).find('*[mode=search]')[0].hidden = true;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="buildContactItem">
+        <xbl:parameter name="obj" />
+        <xbl:body>
+          <![CDATA[
+            try {
+                var contactItem = document.createElement('contactitem');
+                contactItem.setAttribute('avatar', Pmog.private_url() + obj.avatar_small);
+                contactItem.setAttribute('login', obj.login);
+                contactItem.setAttribute('type', obj.type);
+                contactItem.setAttribute('lastActive', obj.last_active);
+                contactItem.setAttribute('level', 'Level ' + obj.current_level);
+                contactItem.setAttribute('association', 'chrome://pmog/skin/images/icons/associations/' + obj.primary_association + '-16.png');
+                return contactItem;
+            } catch(e) {
+                return false;
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+      <xbl:method name="addContactsToTabs">
+        <xbl:parameter name="obj" />
+        <xbl:body>
+          <![CDATA[
+          // Allies Tab
+          var allies = obj.allies;
+          var rivals = obj.rivals;
+          var contacts = obj.contacts;
+
+          jQuery(allies).each(function() { this.type = 'ally'; });
+          jQuery(rivals).each(function() { this.type = 'rival'; });
+          jQuery(contacts).each(function() { this.type = 'contact'; });
+
+          var allContacts = allies.concat(rivals, contacts);
+          allContacts = allContacts.sort( function(a,b) {
+            if (a.login > b.login) {
+              return 1;
+            }
+
+            if (a.login < b.login) {
+              return -1;
+            }
+
+            return 0;
+          });
+
+          for(var x = 0; x < allContacts.length; x++) {
+            var contactItem = this.buildContactItem(allContacts[x], x);
+            this.playerList.appendChild(contactItem);
+          }
+        ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+  </xbl:binding>
+
+  <xbl:binding id="contactitem">
+    <xbl:content>
+      <div class="contactitem">
+        <img anonid="avatar" src="chrome://pmog/skin/images/icons/star-48.png" xbl:inherits="src=avatar" class="floatLeft contact_action" />
+        <img anonid="ally" xbl:inherits="type=type" type="contact" class="floatRight" />
+        <div>
+          <span anonid="login" style="color:#0071BC; cursor: pointer;" onclick="document.getBindingParent(this).openProfile();">Player Name</span>
+          <img anonid="classImage" xbl:inherits="src=association" src="chrome://pmog/skin/images/icons/associations/shoat-16.png" /><br />
+          <span anonid="level">Level 10</span>
+        </div>
+        <div>
+          <span anonid="lastActive">Last Active: about 5 minutes ago</span>
+        </div>
+        <div>
+      <img anonid="mail"
+                      class="contact_action"
+                      tiptext="Send a PMail to this player"
+                      src="chrome://pmog/skin/images/icons/pmail-16.png"
+                      onclick="Pmog.hud.openReply(document.getBindingParent(this).login)" />
+
+      <img anonid="grenade"
+                      class="contact_action"
+                      tiptext="Throw a Grenade"
+                      src="chrome://pmog/skin/images/icons/grenade-16.png"
+                      onclick="Pmog.tossGrenade(document.getBindingParent(this).login);" />
+
+      <img anonid="st_nick"
+                  class="contact_action"
+                  tiptext="Attach a st. nick"
+                  src="chrome://pmog/skin/images/icons/st_nick-16.png"
+                  onclick="Pmog.attachStNick(document.getBindingParent(this).login);" />
+
+        </div>
+      </div>
+    </xbl:content>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/contactsform.css"/>
+    </xbl:resources>
+    <xbl:implementation>
+      <xbl:field name="loginLabel">
+        jQuery(this).anonymousByAttr("login");
+      </xbl:field>
+
+      <xbl:field name="levelLabel">
+        jQuery(this).anonymousByAttr("level");
+      </xbl:field>
+
+      <xbl:field name="lastActiveLabel">
+        jQuery(this).anonymousByAttr("lastActive");
+      </xbl:field>
+
+      <xbl:field name="avatarImg">
+        jQuery(this).anonymousByAttr("avatar");
+      </xbl:field>
+
+      <xbl:field name="classImg">
+        jQuery(this).anonymousByAttr("classImage");
+      </xbl:field>
+
+      <xbl:field name="grenadeButton">
+        jQuery(this).anonymousByAttr("grenade");
+      </xbl:field>
+
+      <xbl:field name="summonButton">
+        jQuery(this).anonymousByAttr("summon");
+      </xbl:field>
+
+      <xbl:field name="stNickButton">
+        jQuery(this).anonymousByAttr("st_nick");
+      </xbl:field>
+
+      <xbl:field name="mailButton">
+        jQuery(this).anonymousByAttr("mail");
+      </xbl:field>
+
+      <xbl:constructor>
+        <![CDATA[
+          this.loginLabel.textContent = this.getAttribute("login");
+          this.levelLabel.textContent = this.getAttribute("level");
+          this.lastActiveLabel.textContent = "Active: " + this.getAttribute("lastActive");
+          this.avatarImg.src = this.getAttribute("avatar");
+          this.classImg.src = this.getAttribute("association");
+
+          jQuery([this.grenadeButton, this.stNickButton, this.mailButton]).hover(
+          function() {
+            Pmog.onTBBMouseOver(this);
+          },
+          function() {
+           Pmog.onTBBMouseOut(this);
+          }).bind("mousemove", function() {
+            Pmog.onTBBMouseMove(this);
+          });
+        ]]>
+      </xbl:constructor>
+
+      <xbl:property name="login" onget="return this.getAttribute('login');" onset="return this.setAttribute('login', val);" />
+
+      <xbl:method name="openProfile">
+        <xbl:body>
+          <![CDATA[
+            var profileOverlay = jQuery('profile')[0];
+            if (profileOverlay.parentNode.state === "open") {
+              if (profileOverlay.player !== this.login) {
+                profileOverlay.setPlayer(this.login);
+              } else {
+                profileOverlay.close();
+              }
+            } else {
+              Pmog.hud.toggleOverlayForm('profile');
+              profileOverlay.setPlayer(this.login);
+            }
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+    </xbl:implementation>
+  </xbl:binding>
+</xbl:bindings>

@@ -1,0 +1,2 @@
+override chrome://pmog/skin/star-rater/rater.css chrome://pmog/skin/linux/rater.css
+override chrome://pmog/skin/platform-toolbar.css chrome://pmog/skin/linux/platform-toolbar.css

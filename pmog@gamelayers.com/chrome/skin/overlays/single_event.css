@@ -1,0 +1,57 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.eventContainer {
+  width: 300px;
+  height: 110px;
+}
+
+html|*.eventActionBar {
+  background-color: #FFF;
+  border: 1px solid #C4C4C4;
+  color: #333;
+  font-size: 12px;
+  margin: 5px 2px;
+}
+
+html|*.eventActionBar html|a {
+  color: #1f00ff;
+  font-weight: normal;
+  font-style: normal;
+}
+
+html|*.eventMessage {
+  color: #333;
+  font-size: 12px;
+  max-width: 100%;
+  margin-left: 38px;
+}
+
+html|*.eventMessage html|a {
+  color: #1f00ff;
+}
+
+html|*.linkableContent {
+  vertical-align: top;
+}
+
+html|*.eventStreamInfo {
+  color: #333;
+  font-size: 9px;
+  text-align: right;
+}
+
+html|*.eventTimestamp {
+  color: #999;
+  font-size: 10px;
+  text-align: right;
+  margin-top: 10px;
+}
+
+html|*.event-three-corner-box {
+  -moz-border-radius-topright: 16px;
+  -moz-border-radius-bottomleft: 16px;
+  -moz-border-radius-bottomright: 16px;
+  padding: 5px;
+  margin: 0px;
+}

@@ -1,0 +1,12 @@
+@namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+html|*.character-limit-box {
+  display: block;
+  margin-left: 5px;
+  color: #A02923;
+}
+
+textbox {
+  width: 93%;
+}

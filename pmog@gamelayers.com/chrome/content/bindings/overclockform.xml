@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+<xbl:bindings id="overclockFormBindings"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+  <xbl:binding id="overclockform" extends="chrome://pmog/content/bindings/base.xml#baseOverlay">
+    <xbl:content>
+      <xul:pbox anonid="overlay" title="Overclock another player!" margin="80" header="overclockHeader">
+        <div class="greyBox" style="max-width: 220px;">
+          <div class="formLabel">Temporarily enhance the classpoints another player earns</div>
+          <div><xul:textbox anonid="messageTo" emptytext="playername" onkeypress="if (event.keyCode == KeyEvent.DOM_VK_RETURN) document.getBindingParent(this)._doSend();" /></div>
+          <div class="formLabel"><span anonid="overclockCount"></span><img src="chrome://pmog/skin/images/icons/alarmclock_16.png" style="display:inline;"/> remaining.</div>
+        </div>
+
+        <div anonid="buttonContainer" class="buttonBox">
+          <div class="leftButton">
+            <xul:toolbarbutton anonid="overclockButton" oncommand="document.getBindingParent(this)._doSend(event);" />
+          </div>
+          <div class="rightButton">
+            <xul:label anonid="cancelLink" value="Cancel" class="cancel_label" onclick="document.getBindingParent(this).close();" />
+          </div>
+          <div class="button-divider">
+          </div>
+        </div>
+      </xul:pbox>
+    </xbl:content>
+
+    <xbl:implementation>
+      <xbl:field name="overlay">
+        jQuery(this).anonymousByAttr("overlay");
+      </xbl:field>
+
+      <xbl:field name="_toField">
+        jQuery(this).anonymousByAttr("messageTo");
+      </xbl:field>
+
+      <xbl:field name="_sendButton">
+        jQuery(this).anonymousByAttr("overclockButton");
+      </xbl:field>
+
+      <xbl:field name="overclockCount">
+        jQuery(this).anonymousByAttr("overclockCount");
+      </xbl:field>
+
+      <xbl:property name="isVolatile" readonly="true" onget="return false;" />
+
+      <xbl:property name="recipient" onget="return this._toField.value;"
+                                     onset="return this.setRecipient(val);" />
+
+      <xbl:method name="show">
+        <xbl:body>
+           <![CDATA[
+            this.overclockCount.textContent = Pmog.user.daily_invite_buffs;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="setRecipient">
+        <xbl:parameter name="playername" />
+        <xbl:body>
+          <![CDATA[
+            this._toField.value = '@' + playername;
+          ]]>
+        </xbl:body>
+      </xbl:method>
+
+      <xbl:method name="_doSend">
+        <xbl:body>
+          <![CDATA[
+            ovrlay = this;
+            var user;
+
+            if(this._toField.value.search(/@/) > -1) {
+                user = strip(this._toField.value).split('@')[1];
+            } else {
+                user = strip(this._toField.value);
+            }
+
+            if(user === '') {
+              ovrlay.overlay.clearErrors();
+              ovrlay.overlay.addError("You must specify at least one player");
+              return false;
+            }
+
+            Pmog.overclockPlayer( user );
+          ]]>
+        </xbl:body>
+      </xbl:method>
+    </xbl:implementation>
+    <xbl:resources>
+      <xbl:stylesheet src="chrome://pmog/skin/overlays/overclock.css"/>
+    </xbl:resources>
+  </xbl:binding>
+</xbl:bindings>
